@@ -1309,7 +1309,6 @@ git commit -m "feat: add Box component"
 
 ```tsx
 // packages/ui/src/components/Stack/Stack.test.tsx
-import * as React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Stack } from './Stack';
@@ -1535,6 +1534,7 @@ export interface TypographyProps extends Omit<React.ComponentPropsWithoutRef<'p'
 
 ```ts
 import { cva } from 'class-variance-authority';
+import type * as React from 'react';
 import type { TypographyLevel } from './types';
 
 export const typographyVariants = cva('font-body', {
