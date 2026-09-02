@@ -9,7 +9,9 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
   JOY_COLORS.map((color) => ({ variant, color, class: SURFACE_COLOR_CLASSES[variant][color] })),
 );
 
-export const sheetVariants = cva('rounded-md', {
+// Bare Sheet has no border radius in Joy UI (verified against @mui/joy) — only
+// composed components like Card add their own radius on top of Sheet.
+export const sheetVariants = cva('', {
   variants: {
     variant: { solid: '', soft: '', outlined: '', plain: '' },
     color: { primary: '', neutral: '', danger: '', success: '', warning: '' },

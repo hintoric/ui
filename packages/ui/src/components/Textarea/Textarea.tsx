@@ -11,7 +11,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
   return (
     <textarea
       ref={ref}
-      className={cx(inputVariants({ variant, color, size }), 'min-h-16 items-start py-2', className)}
+      className={cx(inputVariants({ variant, color, size }), 'items-start py-1.5', className)}
       {...props}
     />
   );

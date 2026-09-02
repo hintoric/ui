@@ -2962,3 +2962,90 @@ Open `http://localhost:5173` and confirm, against Joy UI's own component docs at
 git add apps/playground
 git commit -m "feat: add playground app for manual visual QA of Phase 1 components"
 ```
+
+---
+
+## Post-Phase-1 correction: verified against the real `@mui/joy` package
+
+Task 18's manual playground check confirmed things *rendered*, but never checked
+values against real Joy UI — only against tokens this plan itself derived from
+Joy UI's *source formulas*. A later request to compare pixel-for-pixel led to
+installing the actual published `@mui/joy@5.0.0-beta.52` package (peer:
+`@emotion/react`, `@emotion/styled`, `react@18`) in a throwaway Vite sandbox and
+reading real computed styles via the browser. That surfaced several concrete
+mismatches, all fixed on `main` after Phase 1 shipped:
+
+1. **Border radius was 8px (`rounded-md`) everywhere; real Joy UI uses 6px
+   (`rounded-sm`)** for Button, IconButton, Input/Textarea, and bare Sheet.
+   Card is the one exception — Joy's Card genuinely uses 8px, confirmed
+   separately. Bare Sheet has **no radius of its own** (0px) in real Joy UI;
+   Card imposes its own `rounded-md` on top of Sheet, which `sheetVariants`
+   no longer provides. Fixed in `buttonVariants.ts`, `iconButtonVariants.ts`,
+   `inputVariants.ts`, `sheetVariants.ts` (base changed to `''`), and
+   `Card.tsx` (added explicit `rounded-md`).
+2. **`md`/`lg` sizes were too tall** — real Joy UI: sm=32px (already
+   correct), md=36px, lg=44px, for both Button and IconButton (Input already
+   had the right heights). Fixed `min-h-10`→`min-h-9` and `min-h-12`→
+   `min-h-11` in `buttonVariants.ts` and `inputVariants.ts`; `size-10`→
+   `size-9` and `size-12`→`size-11` in `iconButtonVariants.ts`.
+3. **Input's `sm` padding was 12px (`px-3`); real Joy UI uses 8px
+   (`px-2`)** for that size. Fixed in `inputVariants.ts`.
+4. **Input/Textarea's `outlined`/`plain` variants were transparent; real Joy
+   UI fills them with a `surface` background** (`theme.vars.palette
+   .background.surface`) — Joy's `StyledInputRoot` falls back to it whenever
+   a variant doesn't define its own `backgroundColor`, which is true of both
+   `outlined` and `plain`. The exact same fallback applies to bare `Sheet`
+   (and therefore `Card`) — its `outlined`/`plain` also get `bg-surface`,
+   not transparent. Button/IconButton were re-checked against the real
+   package too and are correctly transparent for `outlined`/`plain` — that
+   fallback is specific to Input and Sheet's styled roots, not Button's.
+   Added `INPUT_COLOR_CLASSES` to `colorVariantClasses.ts` (Input/Textarea
+   now use this instead of `INTERACTIVE_COLOR_CLASSES`) and changed
+   `SURFACE_COLOR_CLASSES`'s `outlined`/`plain` rows from `bg-transparent` to
+   `bg-surface`.
+5. **Input/Textarea had no shadow at all; real Joy UI applies `shadow.xs`**
+   to every variant except `plain`. Added `--shadow-xs` to `theme.css`
+   (`0px 1px 2px 0px rgba(21, 21, 21, 0.08)` light /
+   `rgba(0, 0, 0, 0.6)` dark, matching Joy's `shadowChannel`/`shadowOpacity`)
+   and `shadow-[var(--shadow-xs)]` on the `solid`/`soft`/`outlined` variant
+   slots in `inputVariants.ts`.
+6. **Input/Textarea had no hover-background change on Button/IconButton, but
+   `INTERACTIVE_COLOR_CLASSES` (which Input originally reused) *did* include
+   one.** Real Joy UI explicitly sets `backgroundColor: null` on Input's
+   `:hover`, i.e. no hover fill at all — confirmed by the fact that
+   `INPUT_COLOR_CLASSES` (point 4) simply never needed a `hover:` class in
+   the first place once written from scratch.
+7. **The focus ring used an *outer* `outline` with a 2px offset (a gap
+   around the input); real Joy UI uses an *inset* box-shadow ring flush
+   against the border, colored by the `color` prop** (`color="neutral"`
+   maps to `primary-500`; every other color maps to its own `-500`) —
+   confirmed by reading the real focus-within `::before` box-shadow
+   (`rgb(11, 107, 203) 0px 0px 0px 2px inset` for a neutral/default input).
+   Replaced the `focus-within:outline …` classes with a new
+   `INPUT_FOCUS_RING_CLASSES: Record<JoyColor, string>` map in
+   `colorVariantClasses.ts` (e.g.
+   `focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]`), wired
+   into `inputVariants.ts` via the `color` variant slot. This intentionally
+   simplifies Joy UI's separate `::before` overlay into one plain
+   `box-shadow` that replaces (rather than layers with) the resting
+   `shadow-xs` while focused — accepted as a minor, barely-visible
+   difference rather than replicating the overlay element.
+8. **Textarea's forced `min-h-16` was an invented value**, not based on any
+   real Joy UI measurement. Removed it — Textarea now uses the same
+   size-driven `min-h` as Input, plus `items-start py-1.5` for reasonable
+   multi-line padding (Joy UI's actual Textarea has its own more complex
+   `minRows`-driven sizing that wasn't reverse-engineered here).
+
+All corresponding component tests were updated to assert the corrected
+values (radius, `bg-surface`, the new focus-ring classes, IconButton's
+`size-9`), and `colorVariantClasses.test.ts` gained coverage for
+`INPUT_COLOR_CLASSES` and the `bg-surface` fallback. Re-verified with the
+same `@mui/joy` sandbox afterward: computed `background-color`, `border-
+radius`, `box-shadow`, and `min-height` for Button, IconButton, Sheet, Card,
+and Input now match the real package's values exactly, in both variant and
+size axes, and in both the resting and focused state.
+
+**Known remaining simplifications, not fixed:** Joy UI's exact box-model
+formulas for decorator spacing/`autofill` styling, and Textarea's real
+`minRows`/`maxRows`-driven sizing, were not reverse-engineered — Phase 1's
+simpler fixed paddings/heights are kept as a deliberate approximation.

@@ -13,7 +13,7 @@ export const Card = React.forwardRef<HTMLElement, CardProps>(function Card(
       ref={ref}
       variant={variant}
       color={color}
-      className={cx('flex flex-col gap-2 p-4', className)}
+      className={cx('flex flex-col gap-2 rounded-md p-4', className)}
       {...props}
     />
   );

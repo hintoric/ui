@@ -10,15 +10,15 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 );
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-md font-body font-medium transition-colors disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+  'inline-flex items-center justify-center gap-2 rounded-sm font-body font-medium transition-colors disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },
       color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
       size: {
         sm: 'min-h-8 px-3 text-sm',
-        md: 'min-h-10 px-4 text-base',
-        lg: 'min-h-12 px-6 text-lg',
+        md: 'min-h-9 px-4 text-base',
+        lg: 'min-h-11 px-6 text-lg',
       },
     },
     compoundVariants,

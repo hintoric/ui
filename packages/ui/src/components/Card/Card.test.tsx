@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { Card } from './Card';
 
 describe('Card', () => {
-  it('defaults to outlined/neutral with a column flex layout', () => {
+  it('defaults to outlined/neutral with a column flex layout and its own radius', () => {
     render(<Card data-testid="card">content</Card>);
     const el = screen.getByTestId('card');
-    expect(el).toHaveClass('border-neutral-outlined-border', 'flex', 'flex-col');
+    // Card imposes its own radius since bare Sheet has none.
+    expect(el).toHaveClass('border-neutral-outlined-border', 'flex', 'flex-col', 'rounded-md');
   });
 
   it('applies a different variant/color when requested', () => {

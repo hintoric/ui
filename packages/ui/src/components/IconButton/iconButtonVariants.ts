@@ -10,15 +10,15 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 );
 
 export const iconButtonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center rounded-md transition-colors disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+  'inline-flex shrink-0 items-center justify-center rounded-sm transition-colors disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },
       color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
       size: {
         sm: 'size-8',
-        md: 'size-10',
-        lg: 'size-12',
+        md: 'size-9',
+        lg: 'size-11',
       },
     },
     compoundVariants,

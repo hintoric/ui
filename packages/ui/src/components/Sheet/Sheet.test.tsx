@@ -5,7 +5,13 @@ import { Sheet } from './Sheet';
 describe('Sheet', () => {
   it('defaults to plain/neutral', () => {
     render(<Sheet data-testid="sheet">content</Sheet>);
-    expect(screen.getByTestId('sheet')).toHaveClass('text-neutral-plain-color');
+    // plain falls back to a surface background in Joy UI, not a transparent one.
+    expect(screen.getByTestId('sheet')).toHaveClass('text-neutral-plain-color', 'bg-surface');
+  });
+
+  it('has no border radius of its own (Card adds its own on top of Sheet)', () => {
+    render(<Sheet data-testid="sheet">content</Sheet>);
+    expect(screen.getByTestId('sheet')).not.toHaveClass('rounded-sm', 'rounded-md');
   });
 
   it('applies solid/primary classes when requested', () => {

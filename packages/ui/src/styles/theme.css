@@ -192,6 +192,9 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+
+  /* shadow.xs (Joy UI defaultTheme.shadow, light mode: shadowChannel '21 21 21' / shadowOpacity 0.08) */
+  --shadow-xs: 0px 1px 2px 0px rgba(21, 21, 21, 0.08);
 }
 
 [data-color-scheme="dark"] {
@@ -322,4 +325,7 @@
   --color-surface-2: var(--color-neutral-700);
   --color-surface-3: var(--color-neutral-600);
   --color-divider: rgba(99, 107, 116, 0.16);
+
+  /* shadow.xs (Joy UI defaultTheme.shadow, dark mode: shadowChannel '0 0 0' / shadowOpacity 0.6) */
+  --shadow-xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.6);
 }

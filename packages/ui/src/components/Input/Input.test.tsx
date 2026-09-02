@@ -13,7 +13,9 @@ describe('Input', () => {
   it('applies outlined/neutral classes to the wrapper by default', () => {
     render(<Input aria-label="name" />);
     const input = screen.getByRole('textbox', { name: 'name' });
-    expect(input.parentElement).toHaveClass('border-neutral-outlined-border');
+    // outlined (like plain) falls back to a surface background in Joy UI,
+    // not a transparent one — see INPUT_COLOR_CLASSES.
+    expect(input.parentElement).toHaveClass('border-neutral-outlined-border', 'bg-surface');
   });
 
   it('calls onChange with the new value while typing', async () => {
@@ -41,5 +43,24 @@ describe('Input', () => {
     const ref = React.createRef<HTMLInputElement>();
     render(<Input aria-label="name" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  it('uses an inset focus ring, not an outer outline with an offset', () => {
+    render(<Input aria-label="name" />);
+    const wrapper = screen.getByRole('textbox', { name: 'name' }).parentElement;
+    expect(wrapper).toHaveClass('focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]');
+    expect(wrapper).not.toHaveClass('focus-within:outline', 'focus-within:outline-offset-2');
+  });
+
+  it("maps color='neutral' to a primary-colored focus ring, like Joy UI", () => {
+    render(<Input aria-label="name" color="neutral" />);
+    const wrapper = screen.getByRole('textbox', { name: 'name' }).parentElement;
+    expect(wrapper).toHaveClass('focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]');
+  });
+
+  it('gives every other color its own matching focus ring color', () => {
+    render(<Input aria-label="name" color="danger" />);
+    const wrapper = screen.getByRole('textbox', { name: 'name' }).parentElement;
+    expect(wrapper).toHaveClass('focus-within:shadow-[inset_0_0_0_2px_var(--color-danger-500)]');
   });
 });
