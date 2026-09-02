@@ -2,3 +2,14 @@
 @import "./theme.css";
 
 @source "../";
+
+/*
+ * `canvas`/`surface*`/`ink-*`/`divider` are public, page-layout tokens meant
+ * for consumers to use directly in their own markup (e.g. `bg-canvas` on a
+ * page root) — not just internally by Phase 1 components. No component's own
+ * source literally contains most of these class names, so Tailwind's content
+ * scan (`@source "../"` above) never finds them and never generates their
+ * CSS. Force-generate them explicitly.
+ */
+@source inline("{bg,text,border}-{canvas,surface,surface-1,surface-2,surface-3,surface-popup}");
+@source inline("{bg,border}-divider");

@@ -309,7 +309,13 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@base-ui/react'],
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        '@base-ui/react',
+      ],
     },
     sourcemap: true,
   },
@@ -320,6 +326,8 @@ export default defineConfig({
   },
 });
 ```
+
+`react/jsx-runtime` (and its dev counterpart) must be externalized alongside plain `'react'` — with `jsx: 'react-jsx'`, every `.tsx` file's compiled JSX calls import from `react/jsx-runtime`, a *different* module specifier than `'react'` itself. Missing it from `external` doesn't error at build time; Rollup happily bundles React's whole `jsx-runtime` module (CJS wrapper included) straight into `dist/index.js`. The break only surfaces at runtime in a real browser: `Calling require for "react" in an environment that doesn't support...` — discovered in Task 18 when the playground app's first browser load threw exactly that.
 
 - [ ] **Step 6: Install dependencies**
 
@@ -696,9 +704,22 @@ git commit -m "chore: scaffold @hintoric/ui package with Vite library build"
 @import "./theme.css";
 
 @source "../";
+
+/*
+ * `canvas`/`surface*`/`ink-*`/`divider` are public, page-layout tokens meant
+ * for consumers to use directly in their own markup (e.g. `bg-canvas` on a
+ * page root) — not just internally by Phase 1 components. No component's own
+ * source literally contains most of these class names, so Tailwind's content
+ * scan (`@source "../"` above) never finds them and never generates their
+ * CSS. Force-generate them explicitly.
+ */
+@source inline("{bg,text,border}-{canvas,surface,surface-1,surface-2,surface-3,surface-popup}");
+@source inline("{bg,border}-divider");
 ```
 
 The `@source "../"` directive tells Tailwind v4 to scan every file under `packages/ui/src` (relative to this CSS file) for utility class names — including the literal strings that live in plain `.ts` data files such as `utils/colorVariantClasses.ts` (Task 5), not just `.tsx` files that render JSX.
+
+**Discovered during implementation:** the `@source inline(...)` lines above were added only after Task 18's playground app rendered a solid black page — `bg-canvas` produced no CSS rule at all. The pre-built `dist/style.css` strategy (spec §9) only ever generates utilities that appear literally somewhere inside `packages/ui/src`; `canvas`/`surface*`/`divider` aren't used by any Phase 1 component internally (only `ink-*` is, via `Typography`), so without forcing them, a consumer app referencing `bg-canvas` directly gets silently no styling — no build error, just a missing CSS rule.
 
 - [ ] **Step 3: Point the library entry at the stylesheet**
 
@@ -722,7 +743,13 @@ Vite's library mode derives the emitted CSS asset's name from the package name b
 
 ```ts
     rollupOptions: {
-      external: ['react', 'react-dom', '@base-ui/react'],
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        '@base-ui/react',
+      ],
       output: {
         assetFileNames: (asset) => (asset.names?.[0]?.endsWith('.css') ? 'style.css' : '[name][extname]'),
       },
@@ -2730,9 +2757,12 @@ export default defineConfig({
 
 - [ ] **Step 5: Create `apps/playground/src/main.tsx`**
 
+**Discovered during implementation:** `@hintoric/ui`'s build does not re-inject its CSS into `dist/index.js` — Vite's library mode extracts CSS into `dist/style.css` as a separate asset and drops the side-effect `import` from the JS bundle entirely. Every consumer, including this playground, must import `@hintoric/ui/styles.css` once at the app root.
+
 ```tsx
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
+import '@hintoric/ui/styles.css';
 import { App } from './App';
 
 const rootElement = document.getElementById('root');

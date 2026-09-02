@@ -33,6 +33,34 @@ importers:
         specifier: ^8.69.0
         version: 8.69.0(eslint@10.9.1(jiti@2.7.0))(typescript@7.0.2)
 
+  apps/playground:
+    dependencies:
+      '@hintoric/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      react:
+        specifier: ^19.2.8
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.8
+        version: 19.2.8(react@19.2.8)
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.18
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.5
+        version: 19.2.5(@types/react@19.2.18)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.2.2(jiti@2.7.0)(yaml@2.9.0))
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.2.2
+        version: 8.2.2(jiti@2.7.0)(yaml@2.9.0)
+
   packages/ui:
     dependencies:
       class-variance-authority:
