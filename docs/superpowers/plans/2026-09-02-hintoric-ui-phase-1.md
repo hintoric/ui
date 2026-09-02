@@ -16,7 +16,7 @@
 - No `sx` prop and no runtime JS theme object anywhere in the library — every component accepts a plain `className` (merged via the shared `cx()` utility) as its styling escape hatch (spec §3, §7).
 - Component names, prop names, defaults, and visual variants (`variant`, `color`, `size`, `component`, `startDecorator`/`endDecorator`) must match Joy UI's Phase 1 component set (spec §6) unless a deviation is explicitly called out in a task.
 - Every Tailwind utility class name used anywhere in `packages/ui/src` must appear as a **complete literal string** in the source. Never build a class name by interpolating a variable into a template string (e.g. `` `bg-${color}-500` ``) — Tailwind's v4 content scanner only recognizes complete literal tokens, so an interpolated name silently produces an unstyled component with no build error. Task 5 centralizes the one place where per-color/variant literals are enumerated; every other task must consume those constants rather than re-deriving class names dynamically.
-- Package manager is pnpm, pinned via `"packageManager": "pnpm@11.25.0"` in the root `package.json`.
+- Package manager is pnpm, pinned via `"packageManager": "pnpm@10.24.0"` in the root `package.json`.
 - Do not run `npm publish`, `pnpm publish`, or `changeset publish` as part of this plan — Task 2 and Task 17 only prepare the publish configuration. Publishing is a separate, explicitly-approved action.
 
 ---
@@ -50,7 +50,7 @@ packages:
 {
   "name": "hintoric-ui",
   "private": true,
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "pnpm --filter @hintoric/ui build",
     "test": "pnpm --filter @hintoric/ui test",
