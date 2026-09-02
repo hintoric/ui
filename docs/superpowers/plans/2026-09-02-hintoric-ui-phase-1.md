@@ -224,6 +224,7 @@ git commit -m "chore: scaffold pnpm workspace root"
   },
   "devDependencies": {
     "@base-ui/react": "^1.7.0",
+    "@typescript/typescript6": "^6.0.2",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -247,6 +248,8 @@ git commit -m "chore: scaffold pnpm workspace root"
   }
 }
 ```
+
+**Discovered during implementation:** TypeScript 7 no longer ships the classic JS Compiler API that `vite-plugin-dts` needs to generate rolled-up `.d.ts` files; `vite build` fails with `[unplugin-dts] The installed "typescript" package does not provide the JavaScript Compiler API`. The error message itself names the fix — install `@typescript/typescript6` as a compatibility shim alongside TypeScript 7 — which is already reflected in the `devDependencies` above.
 
 - [ ] **Step 2: Create `packages/ui/tsconfig.json`**
 
@@ -283,10 +286,14 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), dts({ include: ['src'], rollupTypes: true })],
+  plugins: [
+    react(),
+    tailwindcss(),
+    dts({ include: ['src'], exclude: ['src/test/**', '**/*.test.*'], rollupTypes: true }),
+  ],
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(import.meta.dirname, 'src/index.ts'),
       formats: ['es'],
       fileName: () => 'index.js',
     },
@@ -316,7 +323,7 @@ Expected: exits `0`; `packages/ui/dist/index.js` and `packages/ui/dist/index.d.t
 - [ ] **Step 8: Verify the test runner**
 
 Run: `pnpm --filter @hintoric/ui test`
-Expected: exits `0` with "No test files found" (no `*.test.ts` files exist yet — that's expected).
+Expected: exits `1` and prints "No test files found" (Vitest 4 treats zero matched test files as a failure by default; no `*.test.ts` files exist yet, so this is expected here and resolves itself starting in Task 4, once the first test file exists).
 
 - [ ] **Step 9: Commit**
 
