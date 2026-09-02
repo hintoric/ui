@@ -55,7 +55,7 @@ packages:
   "scripts": {
     "build": "pnpm --filter @hintoric/ui build",
     "test": "pnpm --filter @hintoric/ui test",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @hintoric/ui build && pnpm -r typecheck",
     "lint": "eslint .",
     "dev:playground": "pnpm --filter playground dev",
     "changeset": "changeset",
@@ -80,6 +80,8 @@ packages:
 2. `eslint-plugin-react@7.37.5`'s `react/display-name` rule throws (`contextOrFilename.getFilename is not a function`) under ESLint 10, whose rule-context API it doesn't yet support (its own peer range tops out at `^9.7`). Pinned back to the last ESLint 9.x release; pnpm flags `eslint@9.39.5` itself as deprecated (past its own support window) — accepted as the standard "plugin ecosystem lags the latest major" tradeoff rather than dropping React lint coverage.
 
 Run `pnpm lint` after Task 1's install step below to confirm — it also caught one real style issue later, fixed in Task 4 (`cx.test.ts`'s `no-constant-binary-expression`).
+
+3. Root `typecheck` (`pnpm -r typecheck`) fails on a fresh clone if `apps/playground`'s `tsc` runs before `packages/ui` has ever been built — `@hintoric/ui`'s `types` field points at `dist/index.d.ts`, which doesn't exist yet, so TypeScript reports `Cannot find module '@hintoric/ui'` (and, cascading from that single failure, spurious implicit-`any` errors on every prop typed against `@hintoric/ui`'s exports). `pnpm -r` does not infer this build-order dependency on its own. Fixed by having the root script build the library first: `"typecheck": "pnpm --filter @hintoric/ui build && pnpm -r typecheck"`.
 
 - [ ] **Step 3: Create `tsconfig.base.json`**
 

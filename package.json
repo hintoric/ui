@@ -6,7 +6,7 @@
   "scripts": {
     "build": "pnpm --filter @hintoric/ui build",
     "test": "pnpm --filter @hintoric/ui test",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @hintoric/ui build && pnpm -r typecheck",
     "lint": "eslint .",
     "dev:playground": "pnpm --filter playground dev",
     "changeset": "changeset",
