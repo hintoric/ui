@@ -268,6 +268,17 @@ git commit -m "chore: scaffold pnpm workspace root"
 
 ```ts
 import '@testing-library/jest-dom/vitest';
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+
+// `test.globals` below is intentionally `false` (tests use explicit imports),
+// which means Testing Library's own auto-cleanup detection never fires.
+// Register it explicitly, otherwise DOM nodes from one test's render() leak
+// into the next test in the same file — discovered in Task 7, where a second
+// `render()` in the same file produced two matching "go dark" buttons.
+afterEach(() => {
+  cleanup();
+});
 ```
 
 - [ ] **Step 4: Create a placeholder `packages/ui/src/index.ts`**
