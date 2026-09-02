@@ -46,11 +46,17 @@
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-dts": "^5.1.0",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "@vitest/browser-playwright": "^4.1.11",
+    "playwright": "^1.62.1",
+    "@mui/joy": "5.0.0-beta.52",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1"
   },
   "scripts": {
     "build": "vite build",
     "test": "vitest run",
+    "test:visual": "vitest run --config vitest.visual.config.ts",
     "typecheck": "tsc --noEmit"
   }
 }

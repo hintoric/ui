@@ -77,11 +77,15 @@
   --color-primary-solid-active-bg: var(--color-primary-700);
   --color-primary-solid-disabled-color: var(--color-neutral-400);
   --color-primary-solid-disabled-bg: var(--color-neutral-100);
-  --color-neutral-plain-color: var(--color-neutral-500);
+  /* Joy UI overrides plainColor/outlinedColor to neutral-700 specifically for
+     the neutral color (light mode) — every other color keeps the generic
+     -500 from createLightModeVariantVariables. Confirmed against @mui/joy's
+     extendTheme.ts and caught by Button.visual.test.tsx. */
+  --color-neutral-plain-color: var(--color-neutral-700);
   --color-neutral-plain-hover-bg: var(--color-neutral-100);
   --color-neutral-plain-active-bg: var(--color-neutral-200);
   --color-neutral-plain-disabled-color: var(--color-neutral-400);
-  --color-neutral-outlined-color: var(--color-neutral-500);
+  --color-neutral-outlined-color: var(--color-neutral-700);
   --color-neutral-outlined-border: var(--color-neutral-300);
   --color-neutral-outlined-hover-bg: var(--color-neutral-100);
   --color-neutral-outlined-active-bg: var(--color-neutral-200);

@@ -5,7 +5,7 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), dts({ include: ['src'], exclude: ['src/test/**', '**/*.test.*'], rollupTypes: true })],
+  plugins: [react(), tailwindcss(), dts({ include: ['src'], exclude: ['src/test/**', 'src/visual/**', '**/*.test.*'], rollupTypes: true })],
   build: {
     lib: {
       entry: resolve(import.meta.dirname, 'src/index.ts'),
@@ -30,5 +30,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
+    // Visual comparison tests run separately via `pnpm test:visual` (real
+    // browser + real @mui/joy, see vitest.visual.config.ts) — jsdom can't
+    // render either faithfully enough to compare computed styles.
+    exclude: ['**/node_modules/**', '**/*.visual.test.tsx'],
   },
 });

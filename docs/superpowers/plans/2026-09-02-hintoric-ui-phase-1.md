@@ -3049,3 +3049,41 @@ size axes, and in both the resting and focused state.
 formulas for decorator spacing/`autofill` styling, and Textarea's real
 `minRows`/`maxRows`-driven sizing, were not reverse-engineered — Phase 1's
 simpler fixed paddings/heights are kept as a deliberate approximation.
+
+## Post-Phase-1 addition: automated visual regression tests against real `@mui/joy`
+
+The manual comparisons above were ad hoc — a throwaway sandbox, rebuilt by
+hand each time. `packages/ui/src/visual/*.visual.test.tsx` (run via
+`pnpm test:visual`, separate from `pnpm test`) makes that permanent:
+
+- A dedicated `vitest.visual.config.ts` runs these files in real Chromium
+  (via `@vitest/browser-playwright`), because jsdom can't lay out real CSS
+  well enough to compare `getComputedStyle()` output.
+- Each test renders the same variant/color pair through both the real
+  `@mui/joy` package (installed as a `devDependency`, alongside its
+  `@emotion/react`/`@emotion/styled` peers — dev-only, the shipped package
+  stays Emotion-free) and our own component, then asserts their computed
+  `backgroundColor`, `color`, `borderRadius`, `minHeight`, `padding`, and
+  `cursor` are identical. This is the actual pass/fail signal, and it's what
+  caught a real bug immediately: Joy UI overrides `plainColor`/`outlinedColor`
+  to `neutral-700` specifically for the `neutral` color (every other color
+  uses the generic `-500` from `createLightModeVariantVariables`) — Phase 1's
+  `theme.css` had missed that override entirely. Fixed there.
+- Each test also calls Vitest's real `toMatchScreenshot()` on both the Joy
+  and the Hintoric element, so a human can open the committed PNGs under
+  `__screenshots__/` and look at the actual pixels — this is a visual aid,
+  not the pass/fail logic (two independently-rendered elements can differ by
+  a stray anti-aliased pixel even when every computed style is identical,
+  which would make direct image-to-image diffing noisy).
+- `Button.visual.test.tsx` covers 4 variants × 2 colors (primary, neutral) as
+  a representative slice — the other 3 colors just read different palette
+  tokens through the same formula, already covered exhaustively by
+  `colorVariantClasses.test.ts`. The same pattern isn't yet extended to
+  IconButton/Input/Textarea/Sheet/Card — worth doing as a follow-up.
+
+**Known limitation:** `toMatchScreenshot()` baselines are named per
+browser+platform (`*-chromium-darwin.png` on this Mac). They will not match
+on Linux CI without generating Linux baselines there (font rendering and
+sub-pixel anti-aliasing genuinely differ across platforms) — for now this
+suite is meant to be run locally; wiring it into CI needs a consistent
+(likely containerized) environment first.
