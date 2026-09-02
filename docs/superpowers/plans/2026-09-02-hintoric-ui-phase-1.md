@@ -2630,7 +2630,9 @@ Run: `pnpm --filter @hintoric/ui build`
 Expected: exits `0`.
 
 Run: `grep -c "ButtonProps" packages/ui/dist/index.d.ts`
-Expected: `1` or more (confirms the rolled-up type declarations include the component types).
+Expected: `1` or more.
+
+**Discovered during implementation:** despite `rollupTypes: true`, this toolchain's `dist/index.d.ts` is not a single flattened file — it's still bare `export … from './components/Box'`-style re-exports, and `dist/` keeps the full per-component `.d.ts` tree (`dist/components/Box/index.d.ts`, `dist/components/Box/types.d.ts`, etc.) alongside it. That's fine: `"files": ["dist"]` in `package.json` (Task 2) ships that whole tree, so the relative re-exports resolve correctly for consumers — this is the same shape most npm packages ship types in. `grep`-ing `dist/index.d.ts` for `ButtonProps` finds it as part of the `export type { ButtonProps } from './components/Button';` line, not as an inlined interface — still a valid confirmation that the entry point re-exports it.
 
 Run: `test -s packages/ui/dist/style.css && echo OK`
 Expected: `OK` (confirms the CSS bundle is non-empty).
