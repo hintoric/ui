@@ -339,6 +339,8 @@ git commit -m "chore: scaffold @hintoric/ui package with Vite library build"
 **Files:**
 - Create: `packages/ui/src/styles/theme.css`
 - Create: `packages/ui/src/styles/index.css`
+- Create: `packages/ui/src/styles/css.d.ts`
+- Modify: `packages/ui/vite.config.ts`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -695,7 +697,28 @@ Edit `packages/ui/src/index.ts` (created in Task 2) — add this import at the v
 import './styles/index.css';
 ```
 
-- [ ] **Step 4: Verify the CSS builds**
+- [ ] **Step 4: Create `packages/ui/src/styles/css.d.ts`**
+
+TypeScript has no built-in ambient type for a bare `import './foo.css'` side-effect import. Without this declaration, `vite-plugin-dts`'s type-checking pass fails the build with `TS2882: Cannot find module or type declarations for side-effect import of './styles/index.css'` — discovered when Step 6 below was first run.
+
+```ts
+declare module '*.css';
+```
+
+- [ ] **Step 5: Force a stable CSS output filename**
+
+Vite's library mode derives the emitted CSS asset's name from the package name by default (`@hintoric/ui` → `dist/ui.css`), not `style.css` as the package's `exports` map (Task 2) expects. Edit `packages/ui/vite.config.ts` — add an `output.assetFileNames` entry inside `build.rollupOptions`:
+
+```ts
+    rollupOptions: {
+      external: ['react', 'react-dom', '@base-ui/react'],
+      output: {
+        assetFileNames: (asset) => (asset.names?.[0]?.endsWith('.css') ? 'style.css' : '[name][extname]'),
+      },
+    },
+```
+
+- [ ] **Step 6: Verify the CSS builds**
 
 Run: `pnpm --filter @hintoric/ui build`
 Expected: exits `0`; `packages/ui/dist/style.css` now exists and contains the string `--color-primary-500` (confirms Tailwind processed `theme.css`).
@@ -703,10 +726,10 @@ Expected: exits `0`; `packages/ui/dist/style.css` now exists and contains the st
 Run: `grep -c "color-primary-500" packages/ui/dist/style.css`
 Expected: `1` or more.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add packages/ui/src/styles/theme.css packages/ui/src/styles/index.css packages/ui/src/index.ts
+git add packages/ui/src/styles/theme.css packages/ui/src/styles/index.css packages/ui/src/styles/css.d.ts packages/ui/src/index.ts packages/ui/vite.config.ts
 git commit -m "feat: port Joy UI's color palette and variant tokens as Tailwind v4 theme"
 ```
 

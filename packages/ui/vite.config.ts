@@ -14,6 +14,9 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ['react', 'react-dom', '@base-ui/react'],
+      output: {
+        assetFileNames: (asset) => (asset.names?.[0]?.endsWith('.css') ? 'style.css' : '[name][extname]'),
+      },
     },
     sourcemap: true,
   },
