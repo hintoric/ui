@@ -1,0 +1,6 @@
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm --filter @hintoric/ui build && pnpm --filter docs build",
+  "outputDirectory": "apps/docs/dist",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
