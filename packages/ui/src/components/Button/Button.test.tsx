@@ -63,4 +63,9 @@ describe('Button', () => {
     render(<Button ref={ref}>Click me</Button>);
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
+
+  it('shows a pointer cursor (Tailwind v4 Preflight no longer sets this for <button>)', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByRole('button')).toHaveClass('cursor-pointer');
+  });
 });

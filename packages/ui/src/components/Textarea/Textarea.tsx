@@ -11,7 +11,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(fun
   return (
     <textarea
       ref={ref}
-      className={cx(inputVariants({ variant, color, size }), 'items-start py-1.5', className)}
+      // resize-none matches Joy UI's real Textarea: the browser's native
+      // resize handle isn't clipped by border-radius, so leaving resize on
+      // shows a square poking out of the rounded corner.
+      className={cx(inputVariants({ variant, color, size }), 'items-start py-1.5 resize-none', className)}
       {...props}
     />
   );

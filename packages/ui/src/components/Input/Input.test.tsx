@@ -15,7 +15,7 @@ describe('Input', () => {
     const input = screen.getByRole('textbox', { name: 'name' });
     // outlined (like plain) falls back to a surface background in Joy UI,
     // not a transparent one — see INPUT_COLOR_CLASSES.
-    expect(input.parentElement).toHaveClass('border-neutral-outlined-border', 'bg-surface');
+    expect(input.parentElement).toHaveClass('border-neutral-outlined-border', 'bg-surface', 'cursor-text');
   });
 
   it('calls onChange with the new value while typing', async () => {

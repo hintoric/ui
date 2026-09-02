@@ -12,7 +12,7 @@ describe('IconButton', () => {
 
   it('defaults to plain/neutral and a square md size', () => {
     render(<IconButton aria-label="close">×</IconButton>);
-    expect(screen.getByRole('button')).toHaveClass('text-neutral-plain-color', 'size-9');
+    expect(screen.getByRole('button')).toHaveClass('text-neutral-plain-color', 'size-9', 'cursor-pointer');
   });
 
   it('applies solid/danger classes when requested', () => {

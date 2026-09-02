@@ -9,7 +9,7 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
   JOY_COLORS.map((color) => ({ variant, color, class: INPUT_COLOR_CLASSES[variant][color] })),
 );
 
-export const inputVariants = cva('inline-flex items-center gap-2 rounded-sm font-body transition-colors', {
+export const inputVariants = cva('inline-flex items-center gap-2 rounded-sm font-body transition-colors cursor-text', {
   variants: {
     // Joy UI applies shadow.xs to every variant except plain (verified
     // against @mui/joy's StyledInputRoot).

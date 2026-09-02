@@ -27,4 +27,9 @@ describe('Textarea', () => {
     render(<Textarea aria-label="bio" ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLTextAreaElement);
   });
+
+  it('disables the native resize handle (it ignores border-radius and pokes out of the rounded corner)', () => {
+    render(<Textarea aria-label="bio" />);
+    expect(screen.getByRole('textbox', { name: 'bio' })).toHaveClass('resize-none');
+  });
 });
