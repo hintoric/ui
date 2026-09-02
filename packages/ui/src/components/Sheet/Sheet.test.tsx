@@ -1,0 +1,24 @@
+import { describe, expect, it } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { Sheet } from './Sheet';
+
+describe('Sheet', () => {
+  it('defaults to plain/neutral', () => {
+    render(<Sheet data-testid="sheet">content</Sheet>);
+    expect(screen.getByTestId('sheet')).toHaveClass('text-neutral-plain-color');
+  });
+
+  it('applies solid/primary classes when requested', () => {
+    render(
+      <Sheet variant="solid" color="primary" data-testid="sheet">
+        content
+      </Sheet>,
+    );
+    expect(screen.getByTestId('sheet')).toHaveClass('bg-primary-solid-bg', 'text-primary-solid-color');
+  });
+
+  it('renders the element passed via the component prop', () => {
+    render(<Sheet component="section" data-testid="sheet" />);
+    expect(screen.getByTestId('sheet').tagName).toBe('SECTION');
+  });
+});
