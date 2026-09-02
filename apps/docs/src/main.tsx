@@ -1,0 +1,16 @@
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import '@hintoric/ui/styles.css';
+import './styles.css';
+import { App } from './App';
+
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('#root element not found');
+}
+
+createRoot(rootElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
