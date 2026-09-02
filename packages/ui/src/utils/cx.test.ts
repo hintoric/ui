@@ -3,7 +3,7 @@ import { cx } from './cx';
 
 describe('cx', () => {
   it('joins truthy class names and drops falsy ones', () => {
-    expect(cx('a', false && 'b', undefined, 'c')).toBe('a c');
+    expect(cx('a', false, undefined, 'c')).toBe('a c');
   });
 
   it('resolves conflicting Tailwind classes, keeping the last one', () => {

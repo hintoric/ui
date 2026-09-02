@@ -50,6 +50,7 @@ packages:
 {
   "name": "hintoric-ui",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "pnpm --filter @hintoric/ui build",
@@ -62,16 +63,23 @@ packages:
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.1",
-    "@eslint/js": "^10.0.1",
-    "eslint": "^10.9.1",
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "prettier": "^3.9.6",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.69.0"
   }
 }
 ```
+
+**Discovered during implementation — two version pins had to be walked back from "latest," specifically for this root-level lint tooling only:**
+
+1. `typescript-eslint@8.69.0` hard-refuses to run against TypeScript 7 (`typescript-eslint does not support TS 7.0`, not just a peer-dep warning). `packages/ui` and `apps/playground` keep their own `typescript@^7.0.2` for their own build/typecheck (Task 2's `@typescript/typescript6` shim still applies there) — this pin only affects what `eslint .` from the root sees.
+2. `eslint-plugin-react@7.37.5`'s `react/display-name` rule throws (`contextOrFilename.getFilename is not a function`) under ESLint 10, whose rule-context API it doesn't yet support (its own peer range tops out at `^9.7`). Pinned back to the last ESLint 9.x release; pnpm flags `eslint@9.39.5` itself as deprecated (past its own support window) — accepted as the standard "plugin ecosystem lags the latest major" tradeoff rather than dropping React lint coverage.
+
+Run `pnpm lint` after Task 1's install step below to confirm — it also caught one real style issue later, fixed in Task 4 (`cx.test.ts`'s `no-constant-binary-expression`).
 
 - [ ] **Step 3: Create `tsconfig.base.json`**
 
@@ -165,6 +173,9 @@ export default tseslint.config(
 
 Run: `pnpm install`
 Expected: exits `0`. No `packages/*` or `apps/*` exist yet, so pnpm only installs the root `devDependencies` — that's expected at this point.
+
+Run: `pnpm lint`
+Expected: exits `0`, no output (nothing to lint yet beyond `eslint.config.js` itself).
 
 - [ ] **Step 9: Commit**
 
@@ -792,7 +803,7 @@ import { cx } from './cx';
 
 describe('cx', () => {
   it('joins truthy class names and drops falsy ones', () => {
-    expect(cx('a', false && 'b', undefined, 'c')).toBe('a c');
+    expect(cx('a', false, undefined, 'c')).toBe('a c');
   });
 
   it('resolves conflicting Tailwind classes, keeping the last one', () => {
