@@ -3,6 +3,18 @@ import './styles/index.css';
 export { ColorSchemeProvider, useColorScheme } from './theme/ColorSchemeProvider';
 export type { ColorSchemeMode, ColorSchemeProviderProps } from './theme/ColorSchemeProvider';
 
+export { DateTimeProvider, useDateTimeDefaults } from './theme/DateTimeProvider';
+export type { DateTimeContextValue, DateTimeProviderProps, HourCycle } from './theme/DateTimeProvider';
+
+export { RelativeTime } from './components/RelativeTime';
+export type {
+  RelativeTimeProps,
+  RelativeTimeFormatMode,
+  RelativeTimeFormatStyle,
+  RelativeTimeTense,
+  RelativeTimePrecision,
+} from './components/RelativeTime';
+
 export { Box } from './components/Box';
 export type { BoxProps } from './components/Box';
 
