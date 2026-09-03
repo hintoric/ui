@@ -117,4 +117,13 @@ export type { LinearProgressProps } from './components/LinearProgress';
 export { Skeleton } from './components/Skeleton';
 export type { SkeletonProps } from './components/Skeleton';
 
+export { Radio } from './components/Radio';
+export type { RadioProps } from './components/Radio';
+
+export { RadioGroup, RadioGroupContext } from './components/RadioGroup';
+export type { RadioGroupProps, RadioGroupContextValue } from './components/RadioGroup';
+
+export { Switch } from './components/Switch';
+export type { SwitchProps } from './components/Switch';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
