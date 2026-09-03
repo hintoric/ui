@@ -80,6 +80,16 @@ body,
   height: 100%;
 }
 
+/* Without this, the vertical scrollbar only appears once page height
+   exceeds the viewport — and appearing/disappearing narrows/widens the
+   content area, rewrapping every paragraph on the page. Any small height
+   change can trigger it (a heading's fallback-vs-webfont swap included, even
+   with metric-matched fonts), so reserve the scrollbar's space unconditionally
+   rather than relying on font metrics alone to prevent it. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
