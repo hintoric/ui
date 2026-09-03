@@ -11,6 +11,16 @@ import * as React from 'react';
 // use-sync-external-store/cjs/use-sync-external-store-shim/with-selector.production.js
 // (MIT licensed, Meta Platforms, Inc.), built on React's native
 // useSyncExternalStore.
+//
+// The ref/closure mutations below (an `inst` ref read and lazily initialized
+// during render, and memoization state reassigned from inside the useMemo'd
+// selector) are exactly what React's own reference implementation does --
+// they're inherent to this caching algorithm, not an oversight. The
+// react-hooks lint rules below are tuned for application code and don't
+// have a way to know this low-level primitive is safe; restructuring it to
+// satisfy them risks introducing a real bug in sync-external-store
+// semantics that @tanstack/react-store depends on.
+/* eslint-disable react-hooks/refs, react-hooks/immutability, react-hooks/exhaustive-deps */
 export function useSyncExternalStoreWithSelector<Snapshot, Selection>(
   subscribe: (onStoreChange: () => void) => () => void,
   getSnapshot: () => Snapshot,

@@ -32,21 +32,26 @@ export function RelativeTime({
   const date = React.useMemo(() => toDate(dateProp), [dateProp]);
   const options: RelativeTimeFormatOptions = { format, formatStyle, tense, threshold, precision, locale, timeZone, hourCycle };
 
-  const [, forceUpdate] = React.useReducer((n: number) => n + 1, 0);
-  const result = computeRelativeTimeText(date, Date.now(), options);
+  // Seeded once via the lazy initializer (runs a single time, not on every
+  // render), so the render body itself never reads the clock -- later values
+  // arrive only through the scheduler's onTick below.
+  const [now, setNow] = React.useState(() => Date.now());
+  const result = computeRelativeTimeText(date, now, options);
   const needsUpdates = Number.isFinite(result.nextUpdateMs);
 
-  // A ref (not a dependency) so the scheduler always calls the LATEST
-  // options/date without the effect below needing to re-run on every tick --
-  // it only needs to re-run when whether-we-need-updates-at-all changes.
+  // Written in an insertion effect (not during render) so the scheduler can
+  // call the LATEST options/date without the effect below needing to re-run
+  // on every tick -- it only needs to re-run when whether-we-need-updates-
+  // at-all changes.
   const getNextDelayMsRef = React.useRef<() => number>(() => Infinity);
-  getNextDelayMsRef.current = () => computeRelativeTimeText(date, Date.now(), options).nextUpdateMs;
+  React.useInsertionEffect(() => {
+    getNextDelayMsRef.current = () => computeRelativeTimeText(date, Date.now(), options).nextUpdateMs;
+  });
 
   React.useEffect(() => {
     if (!needsUpdates) return undefined;
-    return scheduleRelativeTimeUpdate(() => getNextDelayMsRef.current(), forceUpdate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [needsUpdates, date, format, tense, threshold, precision, locale, timeZone, hourCycle]);
+    return scheduleRelativeTimeUpdate(() => getNextDelayMsRef.current(), () => setNow(Date.now()));
+  }, [needsUpdates]);
 
   const isValidDate = !Number.isNaN(date.getTime());
 
