@@ -33,6 +33,7 @@ export const NAV: NavGroup[] = [
       { to: '/chip', label: 'Chip' },
       { to: '/avatar', label: 'Avatar' },
       { to: '/alert', label: 'Alert' },
+      { to: '/data-grid', label: 'DataGrid' },
     ],
   },
   {
