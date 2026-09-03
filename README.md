@@ -7,20 +7,21 @@
 </p>
 
 <p align="center">
-  A React component library built on <a href="https://base-ui.com">Base UI</a> (behavior) and Tailwind CSS (styling).
+  A React component library. It uses <a href="https://base-ui.com">Base UI</a> for behavior and Tailwind CSS for styling.
 </p>
 
 ## What this is
 
-`@hintoric/ui` gives you a consistent set of production-ready React components — buttons, inputs,
-cards, tables, tabs, and more — with the same `variant`/`color`/`size` system applied everywhere.
-Behavior and accessibility come from [Base UI](https://base-ui.com); styling comes from Tailwind
-CSS v4, so there's no CSS-in-JS runtime.
+`@hintoric/ui` is a set of production-ready React components: buttons, inputs, cards, tables,
+tabs, and more. Every component uses the same `variant`, `color`, and `size` system.
 
-If you're coming from [MUI Joy UI](https://mui.com/joy-ui/): the component names and props
-(`variant`, `color`, `size`, `startDecorator`/`endDecorator`, `component`) match closely, so
-existing code ports over with minimal changes — but this isn't a Joy UI clone, the internals are
-entirely our own.
+[Base UI](https://base-ui.com) provides behavior and accessibility. Tailwind CSS v4 provides the
+styles. The library has no CSS-in-JS runtime.
+
+Users of [MUI Joy UI](https://mui.com/joy-ui/) will find familiar names and props: `variant`,
+`color`, `size`, `startDecorator`, `endDecorator`, and `component`. Existing Joy UI code needs only
+small changes to work with this library. This library is not a copy of Joy UI — the internal code
+is entirely our own.
 
 ## Packages
 
