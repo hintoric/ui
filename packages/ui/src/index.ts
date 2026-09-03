@@ -39,4 +39,7 @@ export type { AvatarProps } from './components/Avatar';
 export { Alert } from './components/Alert';
 export type { AlertProps } from './components/Alert';
 
+export { Checkbox } from './components/Checkbox';
+export type { CheckboxProps } from './components/Checkbox';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

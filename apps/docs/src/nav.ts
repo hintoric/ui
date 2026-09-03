@@ -41,6 +41,7 @@ export const NAV: NavGroup[] = [
       { to: '/icon-button', label: 'IconButton' },
       { to: '/input', label: 'Input' },
       { to: '/textarea', label: 'Textarea' },
+      { to: '/checkbox', label: 'Checkbox' },
     ],
   },
   {

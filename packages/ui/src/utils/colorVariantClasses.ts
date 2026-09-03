@@ -107,6 +107,45 @@ export const STATIC_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> 
   },
 };
 
+// Checkbox/Radio/Switch's own "box" element behaves like Sheet (falls back to
+// `background.surface` for outlined/plain) but ALSO gets Button-style
+// hover/active/disabled treatment — a combination none of the maps above
+// cover alone. The box itself is a <span> (Base UI's Checkbox.Root), so
+// native `:disabled` can't target it — but Base UI puts a `data-disabled`
+// attribute directly on that same root when disabled, so `data-[disabled]:`
+// styles it without needing a separate `group` wrapper. Confirmed against
+// @mui/joy's Checkbox.js source.
+export const CHECKBOX_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'bg-primary-solid-bg text-primary-solid-color hover:bg-primary-solid-hover-bg active:bg-primary-solid-active-bg data-[disabled]:bg-primary-solid-disabled-bg data-[disabled]:text-primary-solid-disabled-color',
+    neutral: 'bg-neutral-solid-bg text-neutral-solid-color hover:bg-neutral-solid-hover-bg active:bg-neutral-solid-active-bg data-[disabled]:bg-neutral-solid-disabled-bg data-[disabled]:text-neutral-solid-disabled-color',
+    danger: 'bg-danger-solid-bg text-danger-solid-color hover:bg-danger-solid-hover-bg active:bg-danger-solid-active-bg data-[disabled]:bg-danger-solid-disabled-bg data-[disabled]:text-danger-solid-disabled-color',
+    success: 'bg-success-solid-bg text-success-solid-color hover:bg-success-solid-hover-bg active:bg-success-solid-active-bg data-[disabled]:bg-success-solid-disabled-bg data-[disabled]:text-success-solid-disabled-color',
+    warning: 'bg-warning-solid-bg text-warning-solid-color hover:bg-warning-solid-hover-bg active:bg-warning-solid-active-bg data-[disabled]:bg-warning-solid-disabled-bg data-[disabled]:text-warning-solid-disabled-color',
+  },
+  soft: {
+    primary: 'bg-primary-soft-bg text-primary-soft-color hover:bg-primary-soft-hover-bg active:bg-primary-soft-active-bg data-[disabled]:bg-primary-soft-disabled-bg data-[disabled]:text-primary-soft-disabled-color',
+    neutral: 'bg-neutral-soft-bg text-neutral-soft-color hover:bg-neutral-soft-hover-bg active:bg-neutral-soft-active-bg data-[disabled]:bg-neutral-soft-disabled-bg data-[disabled]:text-neutral-soft-disabled-color',
+    danger: 'bg-danger-soft-bg text-danger-soft-color hover:bg-danger-soft-hover-bg active:bg-danger-soft-active-bg data-[disabled]:bg-danger-soft-disabled-bg data-[disabled]:text-danger-soft-disabled-color',
+    success: 'bg-success-soft-bg text-success-soft-color hover:bg-success-soft-hover-bg active:bg-success-soft-active-bg data-[disabled]:bg-success-soft-disabled-bg data-[disabled]:text-success-soft-disabled-color',
+    warning: 'bg-warning-soft-bg text-warning-soft-color hover:bg-warning-soft-hover-bg active:bg-warning-soft-active-bg data-[disabled]:bg-warning-soft-disabled-bg data-[disabled]:text-warning-soft-disabled-color',
+  },
+  outlined: {
+    primary: 'border border-primary-outlined-border text-primary-outlined-color bg-surface hover:bg-primary-outlined-hover-bg active:bg-primary-outlined-active-bg data-[disabled]:text-primary-outlined-disabled-color data-[disabled]:border-primary-outlined-disabled-border',
+    neutral: 'border border-neutral-outlined-border text-neutral-outlined-color bg-surface hover:bg-neutral-outlined-hover-bg active:bg-neutral-outlined-active-bg data-[disabled]:text-neutral-outlined-disabled-color data-[disabled]:border-neutral-outlined-disabled-border',
+    danger: 'border border-danger-outlined-border text-danger-outlined-color bg-surface hover:bg-danger-outlined-hover-bg active:bg-danger-outlined-active-bg data-[disabled]:text-danger-outlined-disabled-color data-[disabled]:border-danger-outlined-disabled-border',
+    success: 'border border-success-outlined-border text-success-outlined-color bg-surface hover:bg-success-outlined-hover-bg active:bg-success-outlined-active-bg data-[disabled]:text-success-outlined-disabled-color data-[disabled]:border-success-outlined-disabled-border',
+    warning: 'border border-warning-outlined-border text-warning-outlined-color bg-surface hover:bg-warning-outlined-hover-bg active:bg-warning-outlined-active-bg data-[disabled]:text-warning-outlined-disabled-color data-[disabled]:border-warning-outlined-disabled-border',
+  },
+  plain: {
+    primary: 'text-primary-plain-color bg-surface hover:bg-primary-plain-hover-bg active:bg-primary-plain-active-bg data-[disabled]:text-primary-plain-disabled-color',
+    neutral: 'text-neutral-plain-color bg-surface hover:bg-neutral-plain-hover-bg active:bg-neutral-plain-active-bg data-[disabled]:text-neutral-plain-disabled-color',
+    danger: 'text-danger-plain-color bg-surface hover:bg-danger-plain-hover-bg active:bg-danger-plain-active-bg data-[disabled]:text-danger-plain-disabled-color',
+    success: 'text-success-plain-color bg-surface hover:bg-success-plain-hover-bg active:bg-success-plain-active-bg data-[disabled]:text-success-plain-disabled-color',
+    warning: 'text-warning-plain-color bg-surface hover:bg-warning-plain-hover-bg active:bg-warning-plain-active-bg data-[disabled]:text-warning-plain-disabled-color',
+  },
+};
+
 // Input/Textarea share Button/IconButton's palette but not their interaction
 // styling: Joy UI's StyledInputRoot explicitly sets `backgroundColor: null` on
 // hover (no hover fill) and, like Sheet, falls back to `background.surface`

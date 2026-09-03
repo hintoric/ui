@@ -9,6 +9,7 @@ import { TypographyPage } from './pages/TypographyPage';
 import { ChipPage } from './pages/ChipPage';
 import { AvatarPage } from './pages/AvatarPage';
 import { AlertPage } from './pages/AlertPage';
+import { CheckboxPage } from './pages/CheckboxPage';
 import { SheetPage } from './pages/SheetPage';
 import { CardPage } from './pages/CardPage';
 import { ButtonPage } from './pages/ButtonPage';
@@ -31,6 +32,7 @@ export function App() {
             <Route path="/chip" element={<ChipPage />} />
             <Route path="/avatar" element={<AvatarPage />} />
             <Route path="/alert" element={<AlertPage />} />
+            <Route path="/checkbox" element={<CheckboxPage />} />
             <Route path="/sheet" element={<SheetPage />} />
             <Route path="/card" element={<CardPage />} />
             <Route path="/button" element={<ButtonPage />} />
