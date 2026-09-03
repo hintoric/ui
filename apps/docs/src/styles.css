@@ -54,7 +54,7 @@ a {
 }
 
 .docs-sidebar-logo {
-  height: 22px;
+  height: 28px;
   width: auto;
 }
 
@@ -113,8 +113,53 @@ a {
   margin: 0 auto;
 }
 
+/*
+ * Matches @hintoric/ui's own Typography scale exactly (see
+ * packages/ui/src/components/Typography/typographyVariants.ts) using the
+ * same --text-*/--font-weight-*/--tracking-tight tokens its Tailwind build
+ * exposes on :root — so the docs read with the same type scale the library
+ * itself ships, not the browser's unstyled h1-h4 defaults.
+ */
+.docs-content h1,
+.docs-content h2,
+.docs-content h3,
+.docs-content h4 {
+  margin: 2em 0 0.5em;
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--text-4xl--line-height);
+  color: var(--color-ink-primary);
+}
+
 .docs-content h1 {
   margin-top: 0;
+  font-size: var(--text-4xl);
+}
+
+.docs-content h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--text-2xl--line-height);
+}
+
+.docs-content h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--text-xl--line-height);
+}
+
+.docs-content h4 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--text-lg--line-height);
+  letter-spacing: normal;
+}
+
+.docs-content p {
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  color: var(--color-ink-secondary);
 }
 
 .docs-lede {
@@ -194,14 +239,4 @@ a {
   background-color: var(--color-surface-1);
   padding: 1px 5px;
   border-radius: var(--radius-xs);
-}
-
-.docs-toggle {
-  border: 1px solid var(--color-divider);
-  background: var(--color-surface);
-  color: var(--color-ink-primary);
-  border-radius: var(--radius-sm);
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
 }
