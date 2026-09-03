@@ -141,22 +141,32 @@ Zwei Render-Modi, beide über denselben Hook/Context:
 const { table } = useDataGrid({ columns, data });
 
 <DataGrid table={table}>
-  {table.getHeaderGroups().map((hg) => (
-    <DataGridRow key={hg.id}>
-      {hg.headers.map((header) => (
-        <DataGridHeaderCell key={header.id} header={header} />
-      ))}
-    </DataGridRow>
-  ))}
-  {table.getRowModel().rows.map((row) => (
-    <DataGridRow key={row.id}>
-      {row.getAllCells().map((cell) => (
-        <DataGridCell key={cell.id} cell={cell} />
-      ))}
-    </DataGridRow>
-  ))}
+  <thead>
+    {table.getHeaderGroups().map((hg) => (
+      <DataGridRow key={hg.id}>
+        {hg.headers.map((header) => (
+          <DataGridHeaderCell key={header.id} header={header} />
+        ))}
+      </DataGridRow>
+    ))}
+  </thead>
+  <tbody>
+    {table.getRowModel().rows.map((row) => (
+      <DataGridRow key={row.id}>
+        {row.getAllCells().map((cell) => (
+          <DataGridCell key={cell.id} cell={cell} />
+        ))}
+      </DataGridRow>
+    ))}
+  </tbody>
 </DataGrid>;
 ```
+
+Explizite `<thead>`/`<tbody>`-Tags sind erforderlich (nicht optional): `TABLE_BORDER_AXIS_CLASS`
+(wiederverwendet von `Table`) selektiert Rahmen separat über `[&_thead_tr>*]` und
+`[&_tbody_tr:not(:last-of-type)>*]` — ohne diese Tags greifen die Rahmen-Klassen nicht (siehe
+`Table`s eigene Historie dazu in `tableVariants.ts`). `DataGrid`s Shorthand-Rendering erzeugt
+intern dieselbe `<thead>`/`<tbody>`-Struktur.
 
 `row.getAllCells()` (nicht `getVisibleCells()`) wird verwendet: Letzteres gehört zum
 `columnVisibilityFeature`, das Phase 1 nicht registriert (kein Spalten-Ein-/Ausblenden in
