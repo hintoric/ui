@@ -1,4 +1,5 @@
 import type * as React from 'react';
+import { CodeBlock } from './CodeBlock';
 
 export interface DemoProps {
   children: React.ReactNode;
@@ -13,9 +14,5 @@ export interface CodeProps {
 }
 
 export function Code({ children }: CodeProps) {
-  return (
-    <pre className="docs-code">
-      <code>{children}</code>
-    </pre>
-  );
+  return <CodeBlock>{children}</CodeBlock>;
 }

@@ -17,6 +17,7 @@ import { IconButtonPage } from './pages/IconButtonPage';
 import { InputPage } from './pages/InputPage';
 import { TextareaPage } from './pages/TextareaPage';
 import { ColorSchemeProviderPage } from './pages/ColorSchemeProviderPage';
+import { RoadmapPage } from './pages/RoadmapPage';
 
 export function App() {
   return (
@@ -40,6 +41,7 @@ export function App() {
             <Route path="/input" element={<InputPage />} />
             <Route path="/textarea" element={<TextareaPage />} />
             <Route path="/color-scheme-provider" element={<ColorSchemeProviderPage />} />
+            <Route path="/roadmap" element={<RoadmapPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

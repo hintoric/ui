@@ -14,6 +14,7 @@ export const NAV: NavGroup[] = [
     links: [
       { to: '/', label: 'Overview' },
       { to: '/getting-started', label: 'Installation' },
+      { to: '/roadmap', label: 'Roadmap' },
     ],
   },
   {
