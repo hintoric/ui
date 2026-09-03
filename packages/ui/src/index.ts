@@ -138,4 +138,25 @@ export type { BreadcrumbsProps } from './components/Breadcrumbs';
 export { Grid } from './components/Grid';
 export type { GridProps } from './components/Grid';
 
+export { Modal } from './components/Modal';
+export type { ModalProps } from './components/Modal';
+
+export { ModalDialog } from './components/ModalDialog';
+export type { ModalDialogProps } from './components/ModalDialog';
+
+export { ModalClose } from './components/ModalClose';
+export type { ModalCloseProps } from './components/ModalClose';
+
+export { ModalOverflow } from './components/ModalOverflow';
+export type { ModalOverflowProps } from './components/ModalOverflow';
+
+export { DialogTitle } from './components/DialogTitle';
+export type { DialogTitleProps } from './components/DialogTitle';
+
+export { DialogContent } from './components/DialogContent';
+export type { DialogContentProps } from './components/DialogContent';
+
+export { DialogActions } from './components/DialogActions';
+export type { DialogActionsProps } from './components/DialogActions';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

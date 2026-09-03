@@ -80,7 +80,7 @@ const GROUPS: RoadmapGroup[] = [
     title: 'Surfaces',
     items: [
       { name: 'Accordion', done: false },
-      { name: 'Modal / Dialog', done: false },
+      { name: 'Modal / Dialog', done: true },
       { name: 'Drawer', done: false },
     ],
   },

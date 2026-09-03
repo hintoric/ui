@@ -23,6 +23,16 @@ export async function settleTransitions(): Promise<void> {
  * full string.
  */
 export function lastShadowLayer(boxShadow: string): string {
+  return lastShadowLayers(boxShadow, 1);
+}
+
+/**
+ * Like {@link lastShadowLayer}, but for shadows with more than one real
+ * layer (e.g. `--shadow-md`'s two-layer elevation) — compares the last `n`
+ * comma-separated layers instead of just the final one, still ignoring any
+ * leading invisible placeholder layers Tailwind adds.
+ */
+export function lastShadowLayers(boxShadow: string, n: number): string {
   if (boxShadow === 'none') return 'none';
   const layers: string[] = [];
   let depth = 0;
@@ -38,5 +48,5 @@ export function lastShadowLayer(boxShadow: string): string {
     }
   }
   layers.push(current.trim());
-  return layers[layers.length - 1];
+  return layers.slice(-n).join(', ');
 }
