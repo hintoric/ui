@@ -63,6 +63,7 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'ListDivider', done: true },
       { name: 'ListSubheader', done: true },
       { name: 'Table', done: true },
+      { name: 'DataGrid (Phase 1: sort + resize)', done: true },
       { name: 'Tooltip', done: true },
     ],
   },
