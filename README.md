@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="https://cdn.hintoric.com/assets/logo/black.svg" alt="hintoric/ui" width="240" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.hintoric.com/assets/logo/ui/white.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://cdn.hintoric.com/assets/logo/ui/black.svg" />
+    <img src="https://cdn.hintoric.com/assets/logo/ui/black.svg" alt="hintoric/ui" width="240" />
+  </picture>
 </p>
 
 <h1 align="center">@hintoric/ui</h1>
