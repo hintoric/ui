@@ -183,6 +183,25 @@ export type { AutocompleteOptionProps } from './components/AutocompleteOption';
 export { Table } from './components/Table';
 export type { TableProps, TableBorderAxis } from './components/Table';
 
+export { DataGrid, DataGridRow, DataGridHeaderCell, DataGridCell, useDataGrid } from './components/DataGrid';
+export type {
+  DataGridProps,
+  DataGridShorthandProps,
+  DataGridCompoundProps,
+  DataGridStyleProps,
+  DataGridRowProps,
+  DataGridHeaderCellProps,
+  DataGridCellProps,
+  UseDataGridOptions,
+  UseDataGridResult,
+  DataGridColumnDef,
+  DataGridTable,
+  DataGridHeader,
+  DataGridRowInstance,
+  DataGridCellInstance,
+  DataGridColumn,
+} from './components/DataGrid';
+
 export { Accordion } from './components/Accordion';
 export type { AccordionProps } from './components/Accordion';
 
