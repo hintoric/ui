@@ -187,8 +187,18 @@
   --color-surface-3: var(--color-neutral-300);
   --color-divider: rgba(99, 107, 116, 0.2);
 
-  /* typography font stack (Joy UI defaultTheme.fontFamily) */
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* typography font stack. Joy UI's own defaultTheme.fontFamily leads with
+     'Inter' too, but Joy's own docs/apps actually load Inter as a real
+     webfont wherever they use that default — we don't self-host it (unlike
+     Montserrat, which does have real @font-face rules in the docs app), so
+     naming it here only means: if a visitor happens to have a font literally
+     named Inter installed locally, the browser matches it by name. That's
+     not just an unintentional style difference — Chromium's local-font
+     matching can itself have a brief async glyph-load delay on first
+     reference, which showed up as visible mid-page text reflow. Deliberate
+     deviation from Joy's default: drop 'Inter' so body text only ever
+     resolves to an already-available system font, with no load of any kind. */
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   /* radius scale (Joy UI defaultTheme.radius) */
   --radius-xs: 2px;
