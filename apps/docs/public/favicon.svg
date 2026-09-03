@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-8 -8 201 205">
+  <style>
+    #hintoric-ui-icon { fill: #000; stroke: #000; }
+    @media (prefers-color-scheme: dark) {
+      #hintoric-ui-icon { fill: #fff; stroke: #fff; }
+    }
+  </style>
+  <g id="hintoric-ui-icon">
+    <circle cx="94.9289" cy="116.962" r="65.4719" fill="none" stroke-width="13"/>
+    <circle cx="94.9289" cy="117.962" r="30.9859" fill="none" stroke-width="10"/>
+    <path d="M62.9389 124.215L63.011 106.215L1.15889e-06 114.986L62.9389 124.215Z"/>
+    <path d="M122.036 105.962L121.964 123.962L184.975 115.191L122.036 105.962Z"/>
+    <path d="M104.318 89.9613L86.3251 90.0336L94.5016 4.29114e-06L104.318 89.9613Z"/>
+  </g>
+</svg>

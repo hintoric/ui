@@ -26,7 +26,11 @@ export function Layout() {
     <div className="docs-shell">
       <aside className="docs-sidebar">
         <NavLink to="/" className="docs-sidebar-brand">
-          <img src="https://cdn.hintoric.com/assets/logo/black.svg" alt="hintoric/ui" className="docs-sidebar-logo" />
+          <img
+            src={`https://cdn.hintoric.com/assets/logo/ui/${mode === 'dark' ? 'white' : 'black'}.svg`}
+            alt="hintoric/ui"
+            className="docs-sidebar-logo"
+          />
         </NavLink>
         {NAV.map((group) => (
           <div className="docs-nav-group" key={group.title}>
