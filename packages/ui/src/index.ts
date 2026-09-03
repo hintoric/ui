@@ -222,4 +222,16 @@ export type { TabProps } from './components/Tab';
 export { TabPanel } from './components/TabPanel';
 export type { TabPanelProps } from './components/TabPanel';
 
+export { Stepper } from './components/Stepper';
+export type { StepperProps } from './components/Stepper';
+
+export { Step } from './components/Step';
+export type { StepProps } from './components/Step';
+
+export { StepButton } from './components/StepButton';
+export type { StepButtonProps } from './components/StepButton';
+
+export { StepIndicator } from './components/StepIndicator';
+export type { StepIndicatorProps } from './components/StepIndicator';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

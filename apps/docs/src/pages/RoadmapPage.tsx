@@ -90,7 +90,7 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'Breadcrumbs', done: true },
       { name: 'Menu', done: true },
       { name: 'Tabs', done: true },
-      { name: 'Stepper', done: false },
+      { name: 'Stepper', done: true },
       { name: 'Link', done: true },
     ],
   },
