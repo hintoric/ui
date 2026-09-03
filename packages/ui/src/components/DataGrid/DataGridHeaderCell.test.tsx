@@ -58,4 +58,11 @@ describe('DataGridHeaderCell', () => {
     const cell = screen.getByRole('columnheader', { name: 'Name' });
     expect(cell.querySelector('div')).toBeInTheDocument();
   });
+
+  it('gates the hover background behind a real hover: variant, not a permanent class', () => {
+    renderHeaderCell('name');
+    const cell = screen.getByRole('columnheader', { name: 'Name' });
+    expect(cell.className).toContain('hover:bg-neutral-plain-hover-bg');
+    expect(cell.className).not.toContain(' bg-neutral-plain-hover-bg');
+  });
 });

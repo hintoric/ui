@@ -3,10 +3,9 @@ import * as React from 'react';
 import { flexRender } from '@tanstack/react-table';
 import type { RowData } from '@tanstack/react-table';
 import { cx } from '../../utils/cx';
-import { HOVER_BG_CLASS } from '../../utils/colorVariantClasses';
 import { ArrowDropDownIcon } from '../../internal/svg-icons/ArrowDropDownIcon';
 import { useDataGridContext } from './DataGridContext';
-import { DATAGRID_RESIZE_HANDLE_CLASS, DATAGRID_SORT_ICON_CLASS } from './dataGridVariants';
+import { DATAGRID_HEADER_HOVER_CLASS, DATAGRID_RESIZE_HANDLE_CLASS, DATAGRID_SORT_ICON_CLASS } from './dataGridVariants';
 import type { DataGridHeaderCellProps } from './types';
 
 function DataGridHeaderCellInner<TData extends RowData>(
@@ -24,7 +23,7 @@ function DataGridHeaderCellInner<TData extends RowData>(
       colSpan={header.colSpan}
       className={cx(
         'group relative',
-        canSort && cx('cursor-pointer select-none', HOVER_BG_CLASS[variant][color]),
+        canSort && cx('cursor-pointer select-none', DATAGRID_HEADER_HOVER_CLASS[variant][color]),
         className,
       )}
       onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
