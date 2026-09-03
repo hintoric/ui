@@ -42,4 +42,25 @@ export type { AlertProps } from './components/Alert';
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
 
+export { Divider } from './components/Divider';
+export type { DividerProps } from './components/Divider';
+
+export { AspectRatio } from './components/AspectRatio';
+export type { AspectRatioProps } from './components/AspectRatio';
+
+export { Container } from './components/Container';
+export type { ContainerProps, ContainerMaxWidth } from './components/Container';
+
+export { Badge } from './components/Badge';
+export type { BadgeProps } from './components/Badge';
+
+export { ButtonGroup } from './components/ButtonGroup';
+export type { ButtonGroupProps } from './components/ButtonGroup';
+
+export { ChipDelete } from './components/ChipDelete';
+export type { ChipDeleteProps } from './components/ChipDelete';
+
+export { AvatarGroup } from './components/AvatarGroup';
+export type { AvatarGroupProps } from './components/AvatarGroup';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
