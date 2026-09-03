@@ -132,4 +132,10 @@ export type { TooltipProps } from './components/Tooltip';
 export { ToggleButtonGroup } from './components/ToggleButtonGroup';
 export type { ToggleButtonGroupProps } from './components/ToggleButtonGroup';
 
+export { Breadcrumbs } from './components/Breadcrumbs';
+export type { BreadcrumbsProps } from './components/Breadcrumbs';
+
+export { Grid } from './components/Grid';
+export type { GridProps } from './components/Grid';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
