@@ -4,6 +4,13 @@
   "description": "Joy UI's look and API, built on Base UI and Tailwind CSS.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://ui.hintoric.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hintoric/ui.git",
+    "directory": "packages/ui"
+  },
+  "bugs": "https://github.com/hintoric/ui/issues",
   "sideEffects": ["**/*.css"],
   "main": "./dist/index.js",
   "module": "./dist/index.js",

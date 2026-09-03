@@ -13,6 +13,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      id-token: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
@@ -27,10 +28,14 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      # npm's OIDC trusted publishing (no NPM_TOKEN secret) needs npm >= 11.5.1;
+      # pin a version new enough regardless of what Node 24's runner image bundles.
+      - name: Update npm for OIDC trusted publishing
+        run: npm install -g npm@^11.6.2
 
       - name: Lint
         run: pnpm lint
@@ -50,4 +55,3 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
