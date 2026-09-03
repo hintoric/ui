@@ -63,4 +63,49 @@ export type { ChipDeleteProps } from './components/ChipDelete';
 export { AvatarGroup } from './components/AvatarGroup';
 export type { AvatarGroupProps } from './components/AvatarGroup';
 
+export { Link } from './components/Link';
+export type { LinkProps } from './components/Link';
+
+export { FormControl, FormControlContext } from './components/FormControl';
+export type { FormControlProps, FormControlContextValue } from './components/FormControl';
+
+export { FormLabel } from './components/FormLabel';
+export type { FormLabelProps } from './components/FormLabel';
+
+export { FormHelperText } from './components/FormHelperText';
+export type { FormHelperTextProps } from './components/FormHelperText';
+
+export { CardActions } from './components/CardActions';
+export type { CardActionsProps } from './components/CardActions';
+
+export { CardContent } from './components/CardContent';
+export type { CardContentProps } from './components/CardContent';
+
+export { CardCover } from './components/CardCover';
+export type { CardCoverProps } from './components/CardCover';
+
+export { CardOverflow } from './components/CardOverflow';
+export type { CardOverflowProps } from './components/CardOverflow';
+
+export { List } from './components/List';
+export type { ListProps } from './components/List';
+
+export { ListItem } from './components/ListItem';
+export type { ListItemProps } from './components/ListItem';
+
+export { ListItemButton } from './components/ListItemButton';
+export type { ListItemButtonProps } from './components/ListItemButton';
+
+export { ListItemContent } from './components/ListItemContent';
+export type { ListItemContentProps } from './components/ListItemContent';
+
+export { ListItemDecorator } from './components/ListItemDecorator';
+export type { ListItemDecoratorProps } from './components/ListItemDecorator';
+
+export { ListDivider } from './components/ListDivider';
+export type { ListDividerProps } from './components/ListDivider';
+
+export { ListSubheader } from './components/ListSubheader';
+export type { ListSubheaderProps } from './components/ListSubheader';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

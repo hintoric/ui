@@ -36,6 +36,42 @@ export const INTERACTIVE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, stri
   },
 };
 
+// The same `-active-bg` tokens INTERACTIVE_COLOR_CLASSES applies on `:active`,
+// but as a persistent (non-pseudo-class) background — used for a "selected"
+// state (e.g. ListItemButton), which Joy UI implements as a permanently-
+// applied `${variant}Active` style, not a color/variant switch. Confirmed
+// against @mui/joy's ListItemButton.js source.
+export const ACTIVE_BG_CLASS: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'bg-primary-solid-active-bg',
+    neutral: 'bg-neutral-solid-active-bg',
+    danger: 'bg-danger-solid-active-bg',
+    success: 'bg-success-solid-active-bg',
+    warning: 'bg-warning-solid-active-bg',
+  },
+  soft: {
+    primary: 'bg-primary-soft-active-bg text-primary-soft-active-color',
+    neutral: 'bg-neutral-soft-active-bg text-neutral-soft-active-color',
+    danger: 'bg-danger-soft-active-bg text-danger-soft-active-color',
+    success: 'bg-success-soft-active-bg text-success-soft-active-color',
+    warning: 'bg-warning-soft-active-bg text-warning-soft-active-color',
+  },
+  outlined: {
+    primary: 'bg-primary-outlined-active-bg',
+    neutral: 'bg-neutral-outlined-active-bg',
+    danger: 'bg-danger-outlined-active-bg',
+    success: 'bg-success-outlined-active-bg',
+    warning: 'bg-warning-outlined-active-bg',
+  },
+  plain: {
+    primary: 'bg-primary-plain-active-bg',
+    neutral: 'bg-neutral-plain-active-bg',
+    danger: 'bg-danger-plain-active-bg',
+    success: 'bg-success-plain-active-bg',
+    warning: 'bg-warning-plain-active-bg',
+  },
+};
+
 export const SURFACE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
   solid: {
     primary: 'bg-primary-solid-bg text-primary-solid-color',
