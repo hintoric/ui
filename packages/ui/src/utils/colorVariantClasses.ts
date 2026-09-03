@@ -72,6 +72,44 @@ export const ACTIVE_BG_CLASS: Record<JoyVariant, Record<JoyColor, string>> = {
   },
 };
 
+// The same `-hover-bg` tokens INTERACTIVE_COLOR_CLASSES applies on `:hover`,
+// but as an unconditional background — for cases like Option's `highlighted`
+// state (keyboard/pointer navigation within a listbox), which Joy UI drives
+// via a `.highlighted` class rather than the `:hover` pseudo-class, so a
+// component picking its own Tailwind classes from JS state (not CSS) needs
+// the bare background utility. Confirmed against @mui/joy's Option.js source
+// (`&.highlighted` styled with `${variant}Hover`).
+export const HOVER_BG_CLASS: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'bg-primary-solid-hover-bg',
+    neutral: 'bg-neutral-solid-hover-bg',
+    danger: 'bg-danger-solid-hover-bg',
+    success: 'bg-success-solid-hover-bg',
+    warning: 'bg-warning-solid-hover-bg',
+  },
+  soft: {
+    primary: 'bg-primary-soft-hover-bg',
+    neutral: 'bg-neutral-soft-hover-bg',
+    danger: 'bg-danger-soft-hover-bg',
+    success: 'bg-success-soft-hover-bg',
+    warning: 'bg-warning-soft-hover-bg',
+  },
+  outlined: {
+    primary: 'bg-primary-outlined-hover-bg',
+    neutral: 'bg-neutral-outlined-hover-bg',
+    danger: 'bg-danger-outlined-hover-bg',
+    success: 'bg-success-outlined-hover-bg',
+    warning: 'bg-warning-outlined-hover-bg',
+  },
+  plain: {
+    primary: 'bg-primary-plain-hover-bg',
+    neutral: 'bg-neutral-plain-hover-bg',
+    danger: 'bg-danger-plain-hover-bg',
+    success: 'bg-success-plain-hover-bg',
+    warning: 'bg-warning-plain-hover-bg',
+  },
+};
+
 export const SURFACE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
   solid: {
     primary: 'bg-primary-solid-bg text-primary-solid-color',
@@ -218,6 +256,42 @@ export const INPUT_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> =
   },
 };
 
+// Select's root shares Input's surface fallback (outlined/plain render with a
+// `surface` fill, not transparent) but — unlike Input — DOES get a hover fill
+// per variant (`theme.variants[\`${variant}Hover\`][color]`), and no `:active`
+// treatment at all (it's a toggle, not a press). Confirmed against @mui/joy's
+// Select.js source (`SelectRoot`'s `&:hover` rule).
+export const SELECT_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'bg-primary-solid-bg text-primary-solid-color hover:bg-primary-solid-hover-bg disabled:bg-primary-solid-disabled-bg disabled:text-primary-solid-disabled-color',
+    neutral: 'bg-neutral-solid-bg text-neutral-solid-color hover:bg-neutral-solid-hover-bg disabled:bg-neutral-solid-disabled-bg disabled:text-neutral-solid-disabled-color',
+    danger: 'bg-danger-solid-bg text-danger-solid-color hover:bg-danger-solid-hover-bg disabled:bg-danger-solid-disabled-bg disabled:text-danger-solid-disabled-color',
+    success: 'bg-success-solid-bg text-success-solid-color hover:bg-success-solid-hover-bg disabled:bg-success-solid-disabled-bg disabled:text-success-solid-disabled-color',
+    warning: 'bg-warning-solid-bg text-warning-solid-color hover:bg-warning-solid-hover-bg disabled:bg-warning-solid-disabled-bg disabled:text-warning-solid-disabled-color',
+  },
+  soft: {
+    primary: 'bg-primary-soft-bg text-primary-soft-color hover:bg-primary-soft-hover-bg disabled:bg-primary-soft-disabled-bg disabled:text-primary-soft-disabled-color',
+    neutral: 'bg-neutral-soft-bg text-neutral-soft-color hover:bg-neutral-soft-hover-bg disabled:bg-neutral-soft-disabled-bg disabled:text-neutral-soft-disabled-color',
+    danger: 'bg-danger-soft-bg text-danger-soft-color hover:bg-danger-soft-hover-bg disabled:bg-danger-soft-disabled-bg disabled:text-danger-soft-disabled-color',
+    success: 'bg-success-soft-bg text-success-soft-color hover:bg-success-soft-hover-bg disabled:bg-success-soft-disabled-bg disabled:text-success-soft-disabled-color',
+    warning: 'bg-warning-soft-bg text-warning-soft-color hover:bg-warning-soft-hover-bg disabled:bg-warning-soft-disabled-bg disabled:text-warning-soft-disabled-color',
+  },
+  outlined: {
+    primary: 'border border-primary-outlined-border text-primary-outlined-color bg-surface hover:bg-primary-outlined-hover-bg disabled:text-primary-outlined-disabled-color disabled:border-primary-outlined-disabled-border',
+    neutral: 'border border-neutral-outlined-border text-neutral-outlined-color bg-surface hover:bg-neutral-outlined-hover-bg disabled:text-neutral-outlined-disabled-color disabled:border-neutral-outlined-disabled-border',
+    danger: 'border border-danger-outlined-border text-danger-outlined-color bg-surface hover:bg-danger-outlined-hover-bg disabled:text-danger-outlined-disabled-color disabled:border-danger-outlined-disabled-border',
+    success: 'border border-success-outlined-border text-success-outlined-color bg-surface hover:bg-success-outlined-hover-bg disabled:text-success-outlined-disabled-color disabled:border-success-outlined-disabled-border',
+    warning: 'border border-warning-outlined-border text-warning-outlined-color bg-surface hover:bg-warning-outlined-hover-bg disabled:text-warning-outlined-disabled-color disabled:border-warning-outlined-disabled-border',
+  },
+  plain: {
+    primary: 'text-primary-plain-color bg-surface hover:bg-primary-plain-hover-bg disabled:text-primary-plain-disabled-color',
+    neutral: 'text-neutral-plain-color bg-surface hover:bg-neutral-plain-hover-bg disabled:text-neutral-plain-disabled-color',
+    danger: 'text-danger-plain-color bg-surface hover:bg-danger-plain-hover-bg disabled:text-danger-plain-disabled-color',
+    success: 'text-success-plain-color bg-surface hover:bg-success-plain-hover-bg disabled:text-success-plain-disabled-color',
+    warning: 'text-warning-plain-color bg-surface hover:bg-warning-plain-hover-bg disabled:text-warning-plain-disabled-color',
+  },
+};
+
 // Joy UI's Input focuses with an INSET ring flush against its border (no
 // outline offset/gap), colored by `--Input-focusedHighlight`, which maps
 // `color="neutral"` to primary-500 and every other color to its own 500.
@@ -228,4 +302,15 @@ export const INPUT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
   danger: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-danger-500)]',
   success: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-success-500)]',
   warning: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-warning-500)]',
+};
+
+// Same inset-ring formula as INPUT_FOCUS_RING_CLASSES, but Select's trigger IS
+// the real interactive `<button>` (Base UI's Select.Trigger), so it can use
+// `:focus-visible` directly instead of needing `:focus-within` on a wrapper.
+export const SELECT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
+  primary: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
+  neutral: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
+  danger: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-danger-500)]',
+  success: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-success-500)]',
+  warning: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-warning-500)]',
 };

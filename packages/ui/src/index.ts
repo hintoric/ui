@@ -165,4 +165,10 @@ export type { DrawerProps } from './components/Drawer';
 export { Snackbar } from './components/Snackbar';
 export type { SnackbarProps, SnackbarAnchorOrigin } from './components/Snackbar';
 
+export { Select } from './components/Select';
+export type { SelectProps } from './components/Select';
+
+export { Option } from './components/Option';
+export type { OptionProps } from './components/Option';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
