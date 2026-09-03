@@ -126,4 +126,10 @@ export type { RadioGroupProps, RadioGroupContextValue } from './components/Radio
 export { Switch } from './components/Switch';
 export type { SwitchProps } from './components/Switch';
 
+export { Tooltip } from './components/Tooltip';
+export type { TooltipProps } from './components/Tooltip';
+
+export { ToggleButtonGroup } from './components/ToggleButtonGroup';
+export type { ToggleButtonGroupProps } from './components/ToggleButtonGroup';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
