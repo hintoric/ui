@@ -108,4 +108,13 @@ export type { ListDividerProps } from './components/ListDivider';
 export { ListSubheader } from './components/ListSubheader';
 export type { ListSubheaderProps } from './components/ListSubheader';
 
+export { CircularProgress } from './components/CircularProgress';
+export type { CircularProgressProps } from './components/CircularProgress';
+
+export { LinearProgress } from './components/LinearProgress';
+export type { LinearProgressProps } from './components/LinearProgress';
+
+export { Skeleton } from './components/Skeleton';
+export type { SkeletonProps } from './components/Skeleton';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

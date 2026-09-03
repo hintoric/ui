@@ -9,6 +9,7 @@ export function Layout() {
     <div className="docs-shell">
       <aside className="docs-sidebar">
         <NavLink to="/" className="docs-sidebar-brand">
+          <img src="https://cdn.hintoric.com/assets/logo/black.svg" alt="" className="docs-sidebar-logo" />
           @hintoric/ui
         </NavLink>
         {NAV.map((group) => (

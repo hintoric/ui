@@ -43,12 +43,19 @@ a {
 }
 
 .docs-sidebar-brand {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-weight: 700;
   font-size: 1.05rem;
   margin-bottom: 20px;
   text-decoration: none;
   color: var(--color-ink-primary);
+}
+
+.docs-sidebar-logo {
+  height: 22px;
+  width: auto;
 }
 
 .docs-nav-group {
