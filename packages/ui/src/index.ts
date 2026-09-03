@@ -159,4 +159,10 @@ export type { DialogContentProps } from './components/DialogContent';
 export { DialogActions } from './components/DialogActions';
 export type { DialogActionsProps } from './components/DialogActions';
 
+export { Drawer } from './components/Drawer';
+export type { DrawerProps } from './components/Drawer';
+
+export { Snackbar } from './components/Snackbar';
+export type { SnackbarProps, SnackbarAnchorOrigin } from './components/Snackbar';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

@@ -73,7 +73,7 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'CircularProgress', done: true },
       { name: 'LinearProgress', done: true },
       { name: 'Skeleton', done: true },
-      { name: 'Snackbar', done: false },
+      { name: 'Snackbar', done: true },
     ],
   },
   {
@@ -81,7 +81,7 @@ const GROUPS: RoadmapGroup[] = [
     items: [
       { name: 'Accordion', done: false },
       { name: 'Modal / Dialog', done: true },
-      { name: 'Drawer', done: false },
+      { name: 'Drawer', done: true },
     ],
   },
   {
