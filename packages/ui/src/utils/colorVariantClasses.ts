@@ -71,6 +71,42 @@ export const SURFACE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>>
   },
 };
 
+// Avatar (and other non-interactive, non-surface elements) apply
+// `theme.variants[variant][color]` directly with no backgroundColor fallback
+// beforehand — unlike Sheet/Chip/Card, which set `background.surface` first.
+// So outlined/plain render fully transparent here, not surface-filled.
+// Confirmed against @mui/joy's Avatar.js source.
+export const STATIC_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'bg-primary-solid-bg text-primary-solid-color',
+    neutral: 'bg-neutral-solid-bg text-neutral-solid-color',
+    danger: 'bg-danger-solid-bg text-danger-solid-color',
+    success: 'bg-success-solid-bg text-success-solid-color',
+    warning: 'bg-warning-solid-bg text-warning-solid-color',
+  },
+  soft: {
+    primary: 'bg-primary-soft-bg text-primary-soft-color',
+    neutral: 'bg-neutral-soft-bg text-neutral-soft-color',
+    danger: 'bg-danger-soft-bg text-danger-soft-color',
+    success: 'bg-success-soft-bg text-success-soft-color',
+    warning: 'bg-warning-soft-bg text-warning-soft-color',
+  },
+  outlined: {
+    primary: 'border border-primary-outlined-border text-primary-outlined-color bg-transparent',
+    neutral: 'border border-neutral-outlined-border text-neutral-outlined-color bg-transparent',
+    danger: 'border border-danger-outlined-border text-danger-outlined-color bg-transparent',
+    success: 'border border-success-outlined-border text-success-outlined-color bg-transparent',
+    warning: 'border border-warning-outlined-border text-warning-outlined-color bg-transparent',
+  },
+  plain: {
+    primary: 'text-primary-plain-color bg-transparent',
+    neutral: 'text-neutral-plain-color bg-transparent',
+    danger: 'text-danger-plain-color bg-transparent',
+    success: 'text-success-plain-color bg-transparent',
+    warning: 'text-warning-plain-color bg-transparent',
+  },
+};
+
 // Input/Textarea share Button/IconButton's palette but not their interaction
 // styling: Joy UI's StyledInputRoot explicitly sets `backgroundColor: null` on
 // hover (no hover fill) and, like Sheet, falls back to `background.surface`

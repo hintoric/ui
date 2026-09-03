@@ -27,7 +27,12 @@ export const NAV: NavGroup[] = [
   },
   {
     title: 'Data display',
-    links: [{ to: '/typography', label: 'Typography' }],
+    links: [
+      { to: '/typography', label: 'Typography' },
+      { to: '/chip', label: 'Chip' },
+      { to: '/avatar', label: 'Avatar' },
+      { to: '/alert', label: 'Alert' },
+    ],
   },
   {
     title: 'Inputs',

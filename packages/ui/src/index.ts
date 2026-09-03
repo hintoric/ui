@@ -30,4 +30,13 @@ export type { InputProps } from './components/Input';
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';
 
+export { Chip } from './components/Chip';
+export type { ChipProps } from './components/Chip';
+
+export { Avatar } from './components/Avatar';
+export type { AvatarProps } from './components/Avatar';
+
+export { Alert } from './components/Alert';
+export type { AlertProps } from './components/Alert';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

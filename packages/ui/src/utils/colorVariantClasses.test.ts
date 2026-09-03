@@ -3,13 +3,14 @@ import {
   INTERACTIVE_COLOR_CLASSES,
   SURFACE_COLOR_CLASSES,
   INPUT_COLOR_CLASSES,
+  STATIC_COLOR_CLASSES,
   type JoyColor,
   type JoyVariant,
 } from './colorVariantClasses';
 
 const VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
-const MAPS = { INTERACTIVE_COLOR_CLASSES, SURFACE_COLOR_CLASSES, INPUT_COLOR_CLASSES };
+const MAPS = { INTERACTIVE_COLOR_CLASSES, SURFACE_COLOR_CLASSES, INPUT_COLOR_CLASSES, STATIC_COLOR_CLASSES };
 
 describe('colorVariantClasses', () => {
   it('defines all four variants for every map', () => {
@@ -56,5 +57,18 @@ describe('colorVariantClasses', () => {
   it('gives Input a surface background for outlined/plain instead of transparent', () => {
     expect(INPUT_COLOR_CLASSES.outlined.neutral).toContain('bg-surface');
     expect(INPUT_COLOR_CLASSES.plain.neutral).toContain('bg-surface');
+  });
+
+  it('keeps static classes free of hover/active/disabled pseudo-classes', () => {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        expect(STATIC_COLOR_CLASSES[variant][color]).not.toMatch(/hover:|active:|disabled:/);
+      }
+    }
+  });
+
+  it('gives Avatar a transparent background for outlined/plain, unlike Sheet/Card/Input', () => {
+    expect(STATIC_COLOR_CLASSES.outlined.neutral).toContain('bg-transparent');
+    expect(STATIC_COLOR_CLASSES.plain.neutral).toContain('bg-transparent');
   });
 });
