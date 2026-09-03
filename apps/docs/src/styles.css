@@ -116,7 +116,7 @@ a {
 /*
  * Matches @hintoric/ui's own Typography scale exactly (see
  * packages/ui/src/components/Typography/typographyVariants.ts) using the
- * same --text-*/--font-weight-*/--tracking-tight tokens its Tailwind build
+ * same --text-*, --font-weight-*, and --tracking-tight tokens its Tailwind build
  * exposes on :root — so the docs read with the same type scale the library
  * itself ships, not the browser's unstyled h1-h4 defaults.
  */
