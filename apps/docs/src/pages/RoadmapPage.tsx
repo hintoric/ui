@@ -64,6 +64,8 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'ListSubheader', done: true },
       { name: 'Table', done: true },
       { name: 'DataGrid (Phase 1: sort + resize)', done: true },
+      { name: 'RelativeTime', done: true },
+      { name: 'DateTimeProvider', done: true },
       { name: 'Tooltip', done: true },
     ],
   },
