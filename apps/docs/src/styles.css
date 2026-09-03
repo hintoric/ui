@@ -4,7 +4,14 @@
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 600 800;
-  font-display: swap;
+  /* `optional` (not `swap`): with `swap`, the browser always paints the
+     fallback font first and swaps to Montserrat once it loads — visible on
+     every load, preload or not, since the swap itself is unavoidable with
+     that mode. `optional` swaps only if the font is already available within
+     the first render (near-instant on a cached repeat visit); otherwise it
+     keeps the fallback for the rest of that page view. No visible flicker,
+     at the cost of occasionally not showing Montserrat on a cold first load. */
+  font-display: optional;
   src: url('/fonts/montserrat-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -12,7 +19,14 @@
   font-family: 'Montserrat';
   font-style: normal;
   font-weight: 600 800;
-  font-display: swap;
+  /* `optional` (not `swap`): with `swap`, the browser always paints the
+     fallback font first and swaps to Montserrat once it loads — visible on
+     every load, preload or not, since the swap itself is unavoidable with
+     that mode. `optional` swaps only if the font is already available within
+     the first render (near-instant on a cached repeat visit); otherwise it
+     keeps the fallback for the rest of that page view. No visible flicker,
+     at the cost of occasionally not showing Montserrat on a cold first load. */
+  font-display: optional;
   src: url('/fonts/montserrat-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
@@ -225,6 +239,11 @@ a {
   font-weight: 600;
 }
 
+.docs-code-block {
+  position: relative;
+  margin: 0 0 24px;
+}
+
 .docs-code {
   background-color: var(--color-surface-1);
   border-radius: var(--radius-md);
@@ -233,8 +252,38 @@ a {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.85rem;
   line-height: 1.5;
-  margin: 0 0 24px;
+  margin: 0;
   color: var(--color-ink-primary);
+}
+
+.docs-code-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-divider);
+  background-color: var(--color-surface-2);
+  color: var(--color-ink-secondary);
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    color 150ms;
+}
+
+.docs-code-copy:hover,
+.docs-code-copy:focus-visible {
+  border-color: var(--color-ink-tertiary);
+  color: var(--color-ink-primary);
+}
+
+.docs-code-copy[data-copied='true'] {
+  border-color: var(--color-success-500);
+  color: var(--color-success-600, var(--color-success-500));
 }
 
 /* Prism.js token colors, mapped to our own theme tokens so highlighted code
