@@ -22,6 +22,39 @@ const data: Person[] = [
   { name: 'Katherine Johnson', age: 101, role: 'Physicist' },
 ];
 
+interface BudgetRow {
+  item: string;
+  category: string;
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: number;
+}
+
+const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+function currencyCell(value: number) {
+  return <span style={{ display: 'block', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{currency.format(value)}</span>;
+}
+
+const budgetColumns: DataGridColumnDef<BudgetRow>[] = [
+  { accessorKey: 'item', header: 'Item', size: 180 },
+  { accessorKey: 'category', header: 'Category', size: 140 },
+  { accessorKey: 'q1', header: 'Q1', size: 110, cell: (info) => currencyCell(info.getValue<number>()) },
+  { accessorKey: 'q2', header: 'Q2', size: 110, cell: (info) => currencyCell(info.getValue<number>()) },
+  { accessorKey: 'q3', header: 'Q3', size: 110, cell: (info) => currencyCell(info.getValue<number>()) },
+  { accessorKey: 'q4', header: 'Q4', size: 110, cell: (info) => currencyCell(info.getValue<number>()) },
+];
+
+const budgetData: BudgetRow[] = [
+  { item: 'Cloud hosting', category: 'Infrastructure', q1: 12400, q2: 12800, q3: 13100, q4: 14200 },
+  { item: 'Design tools', category: 'Software', q1: 2100, q2: 2100, q3: 2400, q4: 2400 },
+  { item: 'Conference travel', category: 'Marketing', q1: 5200, q2: 800, q3: 6100, q4: 3400 },
+  { item: 'Contractor hours', category: 'Engineering', q1: 18500, q2: 21300, q3: 19800, q4: 22600 },
+  { item: 'Office supplies', category: 'Operations', q1: 640, q2: 590, q3: 710, q4: 660 },
+  { item: 'Ad spend', category: 'Marketing', q1: 9000, q2: 11500, q3: 8700, q4: 15200 },
+];
+
 export function DataGridPage() {
   return (
     <>
@@ -66,6 +99,36 @@ export function DataGridPage() {
         </div>
       </Demo>
       <Code>{`<DataGrid columns={columns} data={data} variant="outlined" color="danger" borderAxis="both" />`}</Code>
+
+      <h2>Spreadsheet-style example</h2>
+      <p>
+        Column <code>cell</code> renderers are plain functions, so numbers, currency, and any other
+        formatting work the same way they do in TanStack Table itself — here formatted as
+        right-aligned USD and laid out with a full Excel-like grid (<code>borderAxis=&quot;both&quot;</code>).
+        Sort by any quarter to see it work on formatted numeric columns too.
+      </p>
+      <Demo>
+        <DataGrid columns={budgetColumns} data={budgetData} borderAxis="both" size="sm" />
+      </Demo>
+      <Code>{`const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+
+const columns: DataGridColumnDef<BudgetRow>[] = [
+  { accessorKey: 'item', header: 'Item', size: 180 },
+  { accessorKey: 'category', header: 'Category', size: 140 },
+  {
+    accessorKey: 'q1',
+    header: 'Q1',
+    size: 110,
+    cell: (info) => (
+      <span style={{ display: 'block', textAlign: 'right' }}>
+        {currency.format(info.getValue<number>())}
+      </span>
+    ),
+  },
+  // ...q2, q3, q4 follow the same pattern
+];
+
+<DataGrid columns={columns} data={budgetData} borderAxis="both" size="sm" />`}</Code>
 
       <h2>Compound mode</h2>
       <p>
