@@ -31,8 +31,43 @@
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* A metric-adjusted stand-in for Montserrat, used while it loads (or
+   whenever font-display: optional keeps the fallback for the page view).
+   Without this, the fallback (Arial/system-ui/etc.) has a different average
+   character width than Montserrat, so headings occupy different widths —
+   visible as text "jumping" and even re-wrapping onto different lines the
+   moment Montserrat becomes available. `size-adjust` scales the fallback's
+   glyphs to match Montserrat's width; ascent/descent/line-gap-override then
+   correct the (now-scaled) vertical metrics back to Montserrat's own, so
+   line height matches too.
+   `size-adjust` here is NOT derived from the fonts' OS/2 xAvgCharWidth
+   fields (Montserrat 624/1000em vs Arial's published 904/2048em) — that
+   ratio (~141%) was tried first and measured, via canvas measureText() in a
+   real browser, to be badly wrong: it made the fallback wider than
+   Montserrat itself. xAvgCharWidth is a frequency-weighted average over the
+   font's full character set and is a poor predictor for a specific string.
+   The value below is empirical instead: canvas-measured width ratio of a
+   ~100-character representative sample (English pangram + this site's own
+   heading vocabulary) rendered in real Montserrat vs real Arial at the
+   actual heading weights (600/700/800), averaged. Re-measuring several
+   actual heading strings afterward showed single-digit-percent width
+   differences (down from the ~40% the xAvgCharWidth-based value produced) —
+   a static override can't match every possible string exactly, but this
+   removes nearly all of the visible reflow. ascent/descent-override are
+   Montserrat's own OS/2 vertical metrics (extracted from
+   montserrat-latin.woff2 via fontTools: unitsPerEm 1000, ascent 968,
+   descent 251, lineGap 0) divided by this size-adjust. */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial');
+  size-adjust: 109.593%;
+  ascent-override: 88.326%;
+  descent-override: 22.903%;
+  line-gap-override: 0%;
+}
+
 :root {
-  --font-heading: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Montserrat', 'Montserrat Fallback', ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
