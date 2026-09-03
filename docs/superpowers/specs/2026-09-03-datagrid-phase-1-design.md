@@ -57,6 +57,17 @@ hinzugefügt. Kein Base-UI-Primitive nötig: TanStack Table liefert die headless
 aus — analog zur bestehenden `Table`-Komponente, die ebenfalls ohne Base-UI-Primitive
 auskommt.
 
+**Versions-Hinweis (nach Recherche gegen das echte Package korrigiert):** Die aktuelle
+`latest`-Version ist `9.x`, die die klassische v8-`useReactTable({ columns, data,
+getCoreRowModel: getCoreRowModel() })`-API vollständig ersetzt hat — diese existiert in v9
+nur noch als `@deprecated` markiertes `useLegacyTable` unter einem separaten
+`/legacy`-Importpfad. Nach expliziter Nutzer-Entscheidung baut Phase 1 auf v9s neuer
+`useTable`/`tableFeatures`-API auf (siehe Abschnitt 5) statt auf dem veralteten Legacy-Pfad
+oder einem Pin auf `^8`. Die Namen der Runtime-Optionen und -Methoden
+(`enableSorting`, `onSortingChange`, `header.getResizeHandler()`, `column.getSize()`, etc.)
+sind gegenüber v8 unverändert geblieben — geändert hat sich nur die Art, wie Features beim
+Hook registriert werden (`tableFeatures({...})` statt einzelner `getXRowModel()`-Optionen).
+
 ## 4. Dateistruktur
 
 ```
@@ -77,13 +88,30 @@ packages/ui/src/visual/
 
 ## 5. API & State-Modell
 
-`useDataGrid` ist ein dünner Pass-Through zu `useReactTable` (gleiche Options-Namen wie
-TanStack selbst), sodass jeder, der TanStack Table bereits kennt, die Component sofort
-nutzen kann — kein eigenes State-Management erfunden.
+`useDataGrid` ist ein dünner Wrapper um TanStack Table v9s `useTable`-Hook. Die
+Feature-Zusammensetzung (`tableFeatures({...})`) wird **einmalig auf Modulebene**
+fest verdrahtet — Consumer sehen davon nichts, sie übergeben weiterhin dieselben
+Options-Namen wie in TanStack Table v8 (`enableSorting`, `onSortingChange`,
+`enableColumnResizing`, `onColumnSizingChange`), da sich diese Namen zwischen v8 und v9
+nicht geändert haben (siehe Abschnitt 3):
+
+```tsx
+// useDataGrid.ts — einmalig, modulweit
+import { tableFeatures, rowSortingFeature, columnSizingFeature, columnResizingFeature, createSortedRowModel } from '@tanstack/react-table';
+
+const dataGridFeatures = tableFeatures({
+  rowSortingFeature,
+  columnSizingFeature,
+  columnResizingFeature,
+  sortedRowModel: createSortedRowModel(),
+});
+```
+
+Aufruf durch Consumer:
 
 ```tsx
 const { table } = useDataGrid<TData>({
-  columns,                              // ColumnDef<TData>[] (re-exportiert von uns)
+  columns,                              // DataGridColumnDef<TData>[] (re-exportiert von uns, an dataGridFeatures gebunden)
   data,
   enableSorting,                        // default true
   enableColumnResizing,                 // default true
@@ -91,6 +119,13 @@ const { table } = useDataGrid<TData>({
   columnSizing, onColumnSizingChange,   // optional, controlled — sonst verwaltet TanStack intern
 });
 ```
+
+`ColumnDef`/`Table`/`Header`/`Row`/`Cell` sind in v9 generisch über das konkrete
+Feature-Set (`ColumnDef<TFeatures, TData, TValue>`), nicht nur über `TData` wie in v8. Wir
+re-exportieren daher eigene, an `typeof dataGridFeatures` gebundene Alias-Typen
+(`DataGridColumnDef<TData, TValue>`, `DataGridTable<TData>`, `DataGridHeader<TData>`,
+`DataGridRowInstance<TData>`, `DataGridCellInstance<TData>`), damit Consumer nie mit dem
+`TFeatures`-Typparameter selbst hantieren müssen.
 
 Zwei Render-Modi, beide über denselben Hook/Context:
 
@@ -115,13 +150,17 @@ const { table } = useDataGrid({ columns, data });
   ))}
   {table.getRowModel().rows.map((row) => (
     <DataGridRow key={row.id}>
-      {row.getVisibleCells().map((cell) => (
+      {row.getAllCells().map((cell) => (
         <DataGridCell key={cell.id} cell={cell} />
       ))}
     </DataGridRow>
   ))}
 </DataGrid>;
 ```
+
+`row.getAllCells()` (nicht `getVisibleCells()`) wird verwendet: Letzteres gehört zum
+`columnVisibilityFeature`, das Phase 1 nicht registriert (kein Spalten-Ein-/Ausblenden in
+dieser Phase) — `getAllCells()` ist eine Core-Methode und immer verfügbar.
 
 Spaltenbreiten für Resizing folgen dem von TanStack empfohlenen
 `<colgroup><col style={{ width }} /></colgroup>`-Ansatz (Tailwind kann keine dynamischen
