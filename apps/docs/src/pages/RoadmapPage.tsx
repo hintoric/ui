@@ -42,8 +42,8 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'Switch', done: true },
       { name: 'Select', done: true },
       { name: 'Option', done: true },
-      { name: 'Slider', done: false },
-      { name: 'Autocomplete', done: false },
+      { name: 'Slider', done: true },
+      { name: 'Autocomplete', done: true },
     ],
   },
   {
@@ -62,7 +62,7 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'ListItemDecorator', done: true },
       { name: 'ListDivider', done: true },
       { name: 'ListSubheader', done: true },
-      { name: 'Table', done: false },
+      { name: 'Table', done: true },
       { name: 'Tooltip', done: true },
     ],
   },
@@ -79,7 +79,7 @@ const GROUPS: RoadmapGroup[] = [
   {
     title: 'Surfaces',
     items: [
-      { name: 'Accordion', done: false },
+      { name: 'Accordion', done: true },
       { name: 'Modal / Dialog', done: true },
       { name: 'Drawer', done: true },
     ],
@@ -88,8 +88,8 @@ const GROUPS: RoadmapGroup[] = [
     title: 'Navigation',
     items: [
       { name: 'Breadcrumbs', done: true },
-      { name: 'Menu', done: false },
-      { name: 'Tabs', done: false },
+      { name: 'Menu', done: true },
+      { name: 'Tabs', done: true },
       { name: 'Stepper', done: false },
       { name: 'Link', done: true },
     ],

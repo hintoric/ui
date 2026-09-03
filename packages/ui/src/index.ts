@@ -171,4 +171,55 @@ export type { SelectProps } from './components/Select';
 export { Option } from './components/Option';
 export type { OptionProps } from './components/Option';
 
+export { Slider } from './components/Slider';
+export type { SliderProps } from './components/Slider';
+
+export { Autocomplete } from './components/Autocomplete';
+export type { AutocompleteProps } from './components/Autocomplete';
+
+export { AutocompleteOption } from './components/AutocompleteOption';
+export type { AutocompleteOptionProps } from './components/AutocompleteOption';
+
+export { Table } from './components/Table';
+export type { TableProps, TableBorderAxis } from './components/Table';
+
+export { Accordion } from './components/Accordion';
+export type { AccordionProps } from './components/Accordion';
+
+export { AccordionGroup } from './components/AccordionGroup';
+export type { AccordionGroupProps } from './components/AccordionGroup';
+
+export { AccordionSummary } from './components/AccordionSummary';
+export type { AccordionSummaryProps } from './components/AccordionSummary';
+
+export { AccordionDetails } from './components/AccordionDetails';
+export type { AccordionDetailsProps } from './components/AccordionDetails';
+
+export { Dropdown } from './components/Dropdown';
+export type { DropdownProps } from './components/Dropdown';
+
+export { MenuButton } from './components/MenuButton';
+export type { MenuButtonProps } from './components/MenuButton';
+
+export { Menu } from './components/Menu';
+export type { MenuProps } from './components/Menu';
+
+export { MenuItem } from './components/MenuItem';
+export type { MenuItemProps } from './components/MenuItem';
+
+export { MenuList } from './components/MenuList';
+export type { MenuListProps } from './components/MenuList';
+
+export { Tabs } from './components/Tabs';
+export type { TabsProps } from './components/Tabs';
+
+export { TabList } from './components/TabList';
+export type { TabListProps } from './components/TabList';
+
+export { Tab } from './components/Tab';
+export type { TabProps } from './components/Tab';
+
+export { TabPanel } from './components/TabPanel';
+export type { TabPanelProps } from './components/TabPanel';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
