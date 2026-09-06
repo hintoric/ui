@@ -21,18 +21,24 @@ export function SelectPage() {
       <h2>Basic usage</h2>
       <Demo>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Select defaultValue="berlin" aria-label="City">
-            <Option value="berlin">Berlin</Option>
-            <Option value="hamburg">Hamburg</Option>
-            <Option value="freiburg">Freiburg</Option>
-          </Select>
-          <Select placeholder="Pick a city…" aria-label="City, empty">
-            <Option value="berlin">Berlin</Option>
-            <Option value="hamburg">Hamburg</Option>
-          </Select>
-          <Select placeholder="Disabled" disabled aria-label="City, disabled">
-            <Option value="berlin">Berlin</Option>
-          </Select>
+          <div style={{ width: 180 }}>
+            <Select defaultValue="berlin" aria-label="City">
+              <Option value="berlin">Berlin</Option>
+              <Option value="hamburg">Hamburg</Option>
+              <Option value="freiburg">Freiburg</Option>
+            </Select>
+          </div>
+          <div style={{ width: 180 }}>
+            <Select placeholder="Pick a city…" aria-label="City, empty">
+              <Option value="berlin">Berlin</Option>
+              <Option value="hamburg">Hamburg</Option>
+            </Select>
+          </div>
+          <div style={{ width: 180 }}>
+            <Select placeholder="Disabled" disabled aria-label="City, disabled">
+              <Option value="berlin">Berlin</Option>
+            </Select>
+          </div>
         </div>
       </Demo>
       <Code>{`<Select defaultValue="berlin" onChange={(value) => console.log(value)}>
@@ -64,7 +70,7 @@ export function SelectPage() {
 
       <h2>Sizes</h2>
       <Demo>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center', maxWidth: 520 }}>
           <Select size="sm" defaultValue="sm" aria-label="small">
             <Option value="sm">Small</Option>
           </Select>
@@ -84,14 +90,18 @@ export function SelectPage() {
       </p>
       <Demo>
         <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
-          <Select defaultValue="eur" startDecorator="€" aria-label="Currency">
-            <Option value="eur">Euro</Option>
-            <Option value="usd">Dollar</Option>
-          </Select>
-          <Select defaultValue="asc" indicator="↕" aria-label="Sort order">
-            <Option value="asc">Ascending</Option>
-            <Option value="desc">Descending</Option>
-          </Select>
+          <div style={{ width: 180 }}>
+            <Select defaultValue="eur" startDecorator="€" aria-label="Currency">
+              <Option value="eur">Euro</Option>
+              <Option value="usd">Dollar</Option>
+            </Select>
+          </div>
+          <div style={{ width: 180 }}>
+            <Select defaultValue="asc" indicator="↕" aria-label="Sort order">
+              <Option value="asc">Ascending</Option>
+              <Option value="desc">Descending</Option>
+            </Select>
+          </div>
         </div>
       </Demo>
       <Code>{`<Select defaultValue="eur" startDecorator="€" indicator="↕">
@@ -100,13 +110,15 @@ export function SelectPage() {
 
       <h2>Disabled options</h2>
       <Demo>
-        <Select defaultValue="free" aria-label="Plan">
-          <Option value="free">Free</Option>
-          <Option value="pro">Pro</Option>
-          <Option value="enterprise" disabled>
-            Enterprise (contact sales)
-          </Option>
-        </Select>
+        <div style={{ width: 260 }}>
+          <Select defaultValue="free" aria-label="Plan">
+            <Option value="free">Free</Option>
+            <Option value="pro">Pro</Option>
+            <Option value="enterprise" disabled>
+              Enterprise (contact sales)
+            </Option>
+          </Select>
+        </div>
       </Demo>
 
       <h2>Controlling the listbox</h2>
@@ -154,6 +166,25 @@ export function SelectPage() {
           { name: 'disabled', type: 'boolean', default: 'false', description: 'Makes the option unselectable.' },
         ]}
       />
+
+      <h2>Width</h2>
+      <p>
+        Select fills its container, the way a form field is expected to — it is
+        not sized to its selected label. Constrain it with a wrapper, or with{' '}
+        <code>style</code>/<code>className</code> on the trigger itself.
+      </p>
+      <Code>{`<div style={{ width: 180 }}>
+  <Select defaultValue="berlin">…</Select>
+</div>`}</Code>
+
+      <h2>The focus ring is always primary</h2>
+      <p>
+        Unlike Input, whose focus ring follows its <code>color</code>, Select&apos;s ring is the
+        same blue for every colour — a <code>color=&quot;danger&quot;</code> Select focuses to
+        primary, not danger. That is Joy UI&apos;s own behaviour, reproduced here: Select derives a
+        per-colour highlight and then unconditionally overwrites it with the flat focus colour,
+        where Input keeps the per-colour value through a fallback.
+      </p>
 
       <h2>Differences from Joy UI</h2>
       <p>
