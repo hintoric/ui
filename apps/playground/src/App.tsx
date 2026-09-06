@@ -6,6 +6,7 @@ import {
   ColorSchemeProvider,
   IconButton,
   Input,
+  LocaleSwitcher,
   Sheet,
   Stack,
   Textarea,
@@ -17,6 +18,24 @@ import {
 
 const VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
+
+function LocaleDemo() {
+  const [locale, setLocale] = React.useState('de');
+  return (
+    <Stack direction="row" spacing={2}>
+      <LocaleSwitcher
+        locales={[
+          { value: 'de', label: 'Deutsch' },
+          { value: 'en', label: 'English' },
+        ]}
+        value={locale}
+        onChange={setLocale}
+        aria-label="Sprache wählen"
+      />
+      <Typography level="body-sm">gewählt: {locale}</Typography>
+    </Stack>
+  );
+}
 
 function ColorSchemeToggle() {
   const { mode, setMode } = useColorScheme();
@@ -128,6 +147,7 @@ export function App() {
           <Stack direction="row" spacing={2}>
             <Typography level="h1">@hintoric/ui playground</Typography>
             <ColorSchemeToggle />
+        <LocaleDemo />
           </Stack>
           <ButtonShowcase />
           <IconButtonShowcase />

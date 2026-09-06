@@ -48,6 +48,9 @@ export const NAV: NavGroup[] = [
   },
   {
     title: 'Utils',
-    links: [{ to: '/color-scheme-provider', label: 'ColorSchemeProvider' }],
+    links: [
+      { to: '/color-scheme-provider', label: 'ColorSchemeProvider' },
+      { to: '/locale-switcher', label: 'LocaleSwitcher' },
+    ],
   },
 ];
