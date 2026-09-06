@@ -7,6 +7,7 @@ import { BoxPage } from './pages/BoxPage';
 import { StackPage } from './pages/StackPage';
 import { TypographyPage } from './pages/TypographyPage';
 import { ChipPage } from './pages/ChipPage';
+import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 import { AvatarPage } from './pages/AvatarPage';
 import { AlertPage } from './pages/AlertPage';
 import { CheckboxPage } from './pages/CheckboxPage';
@@ -32,6 +33,7 @@ export function App() {
             <Route path="/stack" element={<StackPage />} />
             <Route path="/typography" element={<TypographyPage />} />
             <Route path="/chip" element={<ChipPage />} />
+            <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
             <Route path="/avatar" element={<AvatarPage />} />
             <Route path="/alert" element={<AlertPage />} />
             <Route path="/checkbox" element={<CheckboxPage />} />
