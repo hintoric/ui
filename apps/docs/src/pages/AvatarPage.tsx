@@ -1,4 +1,4 @@
-import { Avatar } from '@hintoric/ui';
+import { Avatar, AvatarGroup } from '@hintoric/ui';
 import type { JoyColor, JoyVariant } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { VariantColorGrid } from '../components/VariantColorGrid';
@@ -58,6 +58,48 @@ export function AvatarPage() {
           { name: 'srcSet', type: 'string', description: 'Responsive image source set.' },
           { name: 'alt', type: 'string', description: 'Alt text for the image.' },
           { name: 'component', type: 'React.ElementType', default: "'div'", description: 'Renders as a different element/component.' },
+        ]}
+      />
+
+      <h2>Grouping avatars</h2>
+      <p>
+        <code>AvatarGroup</code> overlaps its children and applies a shared <code>size</code>. A
+        trailing avatar is the usual way to show the overflow count.
+      </p>
+      <Demo>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <AvatarGroup>
+            <Avatar>JW</Avatar>
+            <Avatar>AL</Avatar>
+            <Avatar>BK</Avatar>
+            <Avatar>+3</Avatar>
+          </AvatarGroup>
+          <AvatarGroup size="sm">
+            <Avatar color="primary">JW</Avatar>
+            <Avatar color="success">AL</Avatar>
+            <Avatar color="warning">BK</Avatar>
+          </AvatarGroup>
+          <AvatarGroup size="lg">
+            <Avatar variant="solid" color="primary">
+              JW
+            </Avatar>
+            <Avatar variant="solid" color="neutral">
+              AL
+            </Avatar>
+          </AvatarGroup>
+        </div>
+      </Demo>
+      <Code>{`<AvatarGroup>
+  <Avatar>JW</Avatar>
+  <Avatar>AL</Avatar>
+  <Avatar>+3</Avatar>
+</AvatarGroup>`}</Code>
+
+      <h2>AvatarGroup props</h2>
+      <PropsTable
+        rows={[
+          { name: 'children', type: 'React.ReactNode', description: 'The avatars to overlap.' },
+          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Shared size for the group. Set it here rather than on each avatar.' },
         ]}
       />
     </>
