@@ -26,15 +26,18 @@ const LOCALES = [
   { value: 'en', label: 'English' },
 ];
 
+// Module scope, not a useMemo: reading the clock during render is impure, and
+// this only has to be a fixed point in the past for the demo.
+const THREE_DAYS_AGO = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
 function LocaleDemo() {
   const [locale, setLocale] = React.useState('de');
-  const threeDaysAgo = React.useMemo(() => new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), []);
   return (
     <LocaleProvider locale={locale} onLocaleChange={setLocale} locales={LOCALES}>
       <Stack direction="row" spacing={2}>
         <LocaleSwitcher aria-label="Sprache wählen" />
         <Typography level="body-sm">
-          gewählt: {locale} · <RelativeTime date={threeDaysAgo} />
+          gewählt: {locale} · <RelativeTime date={THREE_DAYS_AGO} />
         </Typography>
       </Stack>
     </LocaleProvider>
