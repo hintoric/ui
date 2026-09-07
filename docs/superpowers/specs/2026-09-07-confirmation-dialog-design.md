@@ -235,3 +235,65 @@ FormControl-Kaskaden-Umbau anzufangen ist eine eigene Aufgabe.
 Fertig, wenn `pnpm test` und `pnpm test:visual` grün sind, die 20 Baseline-Screenshots unter
 `__screenshots__/` liegen und angesehen wurden, `pnpm typecheck` und `pnpm lint` grün sind, die
 Doku-Seite unter *Blocks* erreichbar ist und ein Changeset (minor) liegt.
+
+---
+
+## Addendum, 2026-09-07: drei Funde aus der Umsetzung
+
+### `Button`s Ladezustand war kaputt, und zwar für alle
+
+Sichtbar geworden im ersten `pending`-Screenshot dieses Blocks: die Beschriftung stand lesbar
+**hinter** dem Spinner. Ursache war nicht der Block, sondern `Button` selbst.
+
+`Button` setzte `loading && 'relative text-transparent'`, um die Beschriftung zu verbergen — und
+schaltet sich bei `loading` immer selbst ab (`disabled={disabled || loading}`). Damit greift
+`disabled:text-…-disabled-color` aus der Variantenkarte, und das hat mit `(0,2,0)` die höhere
+Spezifität als das nackte `text-transparent` mit `(0,1,0)`. Die Beschriftung blieb also sichtbar.
+
+Joy löst denselben Konflikt über die Reihenfolge und schreibt das sogar hin — `color: 'transparent'`
+steht dort hinter den Variantenstilen, mit dem Kommentar *„this has to come after the variant styles
+to take effect"* (`@mui/joy/Button/Button.js`). Bei Klassen aus einer geteilten Karte ist die
+Reihenfolge nicht unsere Wahl, also entscheidet die Wichtigkeit: `text-transparent!`.
+
+Das allein machte den Spinner unsichtbar, denn er zeichnet mit `border-current` und erbte die
+Transparenz. Auch dafür hat Joy die Antwort: sein Indikator bekommt ausdrücklich
+`theme.variants[variant + 'Disabled'][color].color`. Dafür gibt es jetzt `DISABLED_TEXT_CLASSES` in
+`colorVariantClasses.ts` — dieselben Farbtoken ohne den `disabled:`-Präfix.
+
+`Button.visual.test.tsx` hatte **keinen einzigen** `loading`-Fall; die jsdom-Tests prüften nur, dass
+ein ladender Knopf keine Klicks annimmt. Genau die Lücke, die der Abdeckungs-Audit vom 2026-09-06
+für 18 Komponenten beschreibt. Jetzt liegen fünf Farben Joy-verglichen vor.
+
+### Der `mounted`-Ref war unter `StrictMode` von Anfang an falsch
+
+Der schwerere Fehler, und nur im echten Browser zu finden. Der Ref hieß
+
+```tsx
+const mounted = React.useRef(true);
+React.useEffect(() => () => { mounted.current = false; }, []);
+```
+
+`StrictMode` führt jeden Effekt zweimal aus — einhängen, aufräumen, wieder einhängen. Der Cleanup
+setzte `mounted.current = false`, und **nichts** setzte ihn je zurück. Also war er ab dem ersten
+Rendern falsch, und jedes Ergebnis von `onConfirm` wurde mit ihm verworfen: kein Schließen bei
+Erfolg, kein Fehler bei Fehlschlag, ein Dialog, der für immer lädt.
+
+Die jsdom-Tests sahen das nicht, weil Testing Librarys `render` nicht in `StrictMode` rendert — die
+Doku- und die Playground-App aber schon (`apps/docs/src/main.tsx:13`). Der Ref wird jetzt im
+Effektkörper gesetzt, nicht nur im Cleanup gelöscht, und zwei Tests rendern ausdrücklich in
+`StrictMode`. **Jede neue Komponente mit einem `mounted`- oder Abbruch-Ref braucht so einen Test.**
+
+### `FormLabel` ist ein Flex-Container und zerlegt Sätze
+
+`prompt` liefert einen Satz mit Hervorhebung — „Tippe **kunde-4711** zum Bestätigen." `FormLabel` ist
+aber `flex` mit `gap: 0.5` (gebaut für ein kurzes Label plus Pflicht-Sternchen). Jeder lose
+Textknoten wird dort ein eigenes Flex-Item und verliert seine umgebenden Leerzeichen; der Satz wurde
+mit 2px statt echter Wortabstände gesetzt. `prompt(…)` steckt deshalb in genau einem `<span>`.
+
+### Zwei Verifikationsfallen, keine Produktfehler
+
+Für die nächste Sitzung, damit niemand ihnen nachjagt: das Enter des Browser-Panes trägt nicht die
+Standardaktion für implizites Absenden — ein blankes `<form><input><button type="submit">` sendet
+damit ebenso wenig ab wie unser Dialog, der Klickpfad dagegen schon. Und in einem verborgenen Tab
+laufen CSS-Transitions nicht zu Ende, weshalb ein geschlossener Dialog mit `data-ending-style` im DOM
+stehen bleibt, statt ausgehängt zu werden.

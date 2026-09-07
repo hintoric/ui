@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ColorSchemeProvider } from '@hintoric/ui';
 import { Layout } from './Layout';
+import { ScrollToTop } from './ScrollToTop';
 import { Home } from './pages/Home';
 import { GettingStarted } from './pages/GettingStarted';
 import { RoadmapPage } from './pages/RoadmapPage';
@@ -48,12 +49,14 @@ import { MenuPage } from './pages/MenuPage';
 import { StepperPage } from './pages/StepperPage';
 import { AccordionPage } from './pages/AccordionPage';
 import { ColorSchemeProviderPage } from './pages/ColorSchemeProviderPage';
+import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 
 export function App() {
   return (
     <ColorSchemeProvider>
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
@@ -109,6 +112,7 @@ export function App() {
             <Route path="/accordion" element={<AccordionPage />} />
 
             <Route path="/color-scheme-provider" element={<ColorSchemeProviderPage />} />
+            <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
           </Route>
         </Routes>

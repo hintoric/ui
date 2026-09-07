@@ -54,6 +54,65 @@ describe('Button visual parity with @mui/joy', () => {
     }
   }
 
+  // The coverage hole that let the loading label show through: Button had a
+  // `loading` prop, a jsdom test that it disables clicks, and no visual test at
+  // all. Joy hides the label by putting `color: transparent` AFTER its variant
+  // styles ("this has to come after the variant styles to take effect", its own
+  // Button.js comment) — a Tailwind `text-transparent` cannot win that on order
+  // alone, because `disabled:text-*` outranks it on specificity and Button
+  // always disables itself while loading.
+  for (const color of COLORS) {
+    it(`loading/solid/${color} hides its label the way Joy UI does`, async () => {
+      render(
+        <JoyCssVarsProvider>
+          <JoyButton data-testid={`joy-loading-${color}`} variant="solid" color={color} loading>
+            {color}
+          </JoyButton>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <ColorSchemeProvider>
+          <HintoricButton data-testid={`hintoric-loading-${color}`} variant="solid" color={color} loading>
+            {color}
+          </HintoricButton>
+        </ColorSchemeProvider>,
+      );
+      await settleTransitions();
+
+      const joyStyle = getComputedStyle(page.getByTestId(`joy-loading-${color}`).element());
+      const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-loading-${color}`).element());
+
+      expect(joyStyle.color).toBe('rgba(0, 0, 0, 0)');
+      expect(hintoricStyle.color).toBe(joyStyle.color);
+      expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+
+      // Making the root transparent is only half of it: Joy re-colours its
+      // indicator explicitly (`theme.variants[variant+'Disabled'][color].color`,
+      // since a loading button is always disabled), because an indicator drawn
+      // in `currentColor` would otherwise inherit the transparency and vanish.
+      const joyIndicator = page
+        .getByTestId(`joy-loading-${color}`)
+        .element()
+        .querySelector('.MuiButton-loadingIndicatorCenter') as HTMLElement;
+      const hintoricIndicator = page
+        .getByTestId(`hintoric-loading-${color}`)
+        .element()
+        .querySelector('span[aria-hidden="true"]') as HTMLElement;
+      expect(joyIndicator).toBeTruthy();
+      expect(hintoricIndicator).toBeTruthy();
+      expect(getComputedStyle(joyIndicator).color).not.toBe('rgba(0, 0, 0, 0)');
+      expect(getComputedStyle(hintoricIndicator).color).toBe(getComputedStyle(joyIndicator).color);
+
+      // The indicator shapes still differ by construction — Joy renders a
+      // CircularProgress, ours is a CSS border spinner — so the screenshots are
+      // for a human to compare, not a pass/fail signal.
+      await expect(page.getByTestId(`joy-loading-${color}`)).toMatchScreenshot(`button-loading-solid-${color}-joy`);
+      await expect(page.getByTestId(`hintoric-loading-${color}`)).toMatchScreenshot(
+        `button-loading-solid-${color}-hintoric`,
+      );
+    });
+  }
+
   it('shows the same focus-visible outline as Joy UI (generic theme.focus.default, not Input\'s inset ring)', async () => {
     render(
       <JoyCssVarsProvider>

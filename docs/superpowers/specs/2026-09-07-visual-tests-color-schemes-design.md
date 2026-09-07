@@ -10,7 +10,7 @@ Every component in `packages/ui/src/components/*` is covered in **both** colour 
 - components with an `@mui/joy` counterpart — computed-style parity against real Joy, in light **and** dark;
 - our own components and blocks — self-baseline screenshots per scheme, plus one assertion that dark actually differs from light.
 
-Scope for this design: all 63 existing test files, plus 19 new files for the components that have none (18 uncovered components and the new `ConfirmationDialog`).
+Scope for this design: all 63 existing test files, plus 19 new files for the components that have none (18 uncovered components and the new `ConfirmationDialog`). Every file touched also picks up the sizing assertion the 2026-09-06 audit recommended as P2 — see "Relationship to the 2026-09-06 coverage audit".
 
 ## Why dark parity is the valuable half
 
@@ -103,15 +103,22 @@ Note this exception only ever applies to **Flavour B**: Flavour A has no differe
 
 ## Relationship to the 2026-09-06 coverage audit
 
-That audit's finding stands and is not addressed here: **the pass/fail signal is a hand-written property list, and it is short.** This work multiplies coverage along a new axis (schemes) while leaving those lists as they are. A dark-mode bug in a property nobody listed stays invisible.
+That audit's core finding still stands: **the pass/fail signal is a hand-written property list, and it is short.** This work multiplies coverage along a new axis (schemes) and adds two properties to every list (below), but the lists remain hand-written. A dark-mode bug in a property nobody thought to list stays invisible, and no amount of scheme coverage changes that.
 
-Its open recommendations are deliberately **out of scope**:
+**P2 is folded into this work** (decided 2026-09-07). Every file this migration touches also gains the audit's missing sizing assertion — `display` and `width` compared inside a fixed-width parent — because the migration opens all 82 files exactly once and doing it later means a second full pass over the same files. It is the assertion that would have caught all four P1 bugs.
 
-- **P1** — `Input`, `Textarea`, `Autocomplete` shrink to content where Joy fills its container. Component bugs, not test bugs. Fixing them here would mix a component fix into an 82-file test migration.
-- **P2** — no test asserts `display` or `width` inside a fixed-width parent.
-- **P3** — uncovered hover / focus / disabled states across ~20 components.
+**P1 and P3 stay out of scope:**
 
-**One decision worth taking before Phase 2 starts:** P2 is one extra line per test, and this migration opens all 82 files exactly once anyway. Folding it in costs nearly nothing now and needs a second full pass over the suite later if skipped. P1 and P3 should stay out regardless — P1 is a component fix and P3 is per-component investigation. This is flagged for the reviewer, not decided here.
+- **P1** — `Input`, `Textarea` and `Autocomplete` shrink to content where Joy fills its container. These are component bugs, not test bugs; fixing them inside an 82-file test migration would mix two kinds of change in one diff.
+- **P3** — uncovered hover / focus / disabled states across ~20 components. Needs per-component investigation, not a mechanical pass.
+
+### Consequence of folding P2 in without fixing P1
+
+Adding the sizing assertion to `Input`, `Textarea` and `Autocomplete` makes those three assertions fail, because the audit already measured the divergence (201px / 210px / 229px against Joy's 400px / 400px / 353.5px).
+
+Those three get `it.fails()` with a comment pointing at P1 in the audit. This is deliberate: `it.fails()` asserts *that the assertion currently fails*, so the known bug is encoded in the suite rather than hidden by a `skip`, the suite stays green, and whoever fixes the component gets a red test telling them to drop the `it.fails()`. A plain `skip` would let the fix land unnoticed and the assertion rot.
+
+The three affected assertions must be listed in the Phase 2 report so the P1 fix has a checklist.
 
 ## Phases
 
@@ -119,7 +126,7 @@ Its open recommendations are deliberately **out of scope**:
 |---|---|---|
 | 0 | Helper, `setup.ts`, rename script; retrofit `Button` (A) and `LocaleSwitcher` (B) | `git status` shows **no modified** light PNGs — proves the migration is lossless. Dark PNGs exist and have been looked at. |
 | 1 | CLAUDE.md rules | — |
-| 2 | 58 remaining Flavour A retrofits, in batches: Buttons/Actions → Form controls → **Overlays/Portals** → Surfaces → Lists/Nav → Feedback/Data | `pnpm test:visual` green, no modified light PNGs, new dark PNGs listed for review |
+| 2 | 58 remaining Flavour A retrofits, in batches: Buttons/Actions → Form controls → **Overlays/Portals** → Surfaces → Lists/Nav → Feedback/Data | `pnpm test:visual` green, no modified light PNGs, new dark PNGs listed for review, P2 `it.fails()` cases listed |
 | 3 | 3 remaining Flavour B retrofits: `DataGrid`, `Grid`, `RelativeTime` | as above |
 | 4 | 19 new files: the 18 uncovered components plus `ConfirmationDialog` | as above |
 

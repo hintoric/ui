@@ -81,6 +81,8 @@ export type { AvatarGroupProps } from './components/AvatarGroup';
 
 export { LocaleSwitcher } from './components/LocaleSwitcher';
 export type { LocaleOption, LocaleSwitcherProps } from './components/LocaleSwitcher';
+export { ConfirmationDialog } from './components/ConfirmationDialog';
+export type { ConfirmationDialogProps } from './components/ConfirmationDialog';
 
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';

@@ -90,7 +90,10 @@ export const NAV: NavGroup[] = [
     // whole job (pick a language) out of several components, where everything
     // above is one part you assemble yourself.
     title: 'Blocks',
-    links: [{ to: '/locale-switcher', label: 'LocaleSwitcher' }],
+    links: [
+      { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
+      { to: '/locale-switcher', label: 'LocaleSwitcher' },
+    ],
   },
   {
     title: 'Utils',
