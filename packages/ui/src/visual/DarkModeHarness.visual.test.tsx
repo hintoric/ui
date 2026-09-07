@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
-import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton } from '@mui/joy';
+import { IconButton as JoyIconButton } from '@mui/joy';
 import { IconButton as HintoricIconButton } from '../components/IconButton';
 import { renderJoyDark, renderJoyLight, renderHintoricDark, renderHintoricLight } from './darkMode';
 import { settleTransitions } from './helpers';
