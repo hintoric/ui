@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { act } from '@testing-library/react';
 import { RelativeTime } from './RelativeTime';
 import { DateTimeProvider } from '../../theme/DateTimeProvider';
+import { LocaleProvider } from '../../theme/LocaleProvider';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -106,5 +107,38 @@ describe('RelativeTime', () => {
   it('forwards data-testid', () => {
     render(<RelativeTime date="2026-09-01T12:00:00Z" locale="en" data-testid="my-time" />);
     expect(screen.getByTestId('my-time')).toHaveTextContent('3 days ago');
+  });
+
+  it('reads the locale from LocaleProvider when no DateTimeProvider is mounted', () => {
+    render(
+      <LocaleProvider locale="de-DE">
+        <RelativeTime date="2026-09-01T12:00:00Z" />
+      </LocaleProvider>,
+    );
+    expect(screen.getByText('vor 3 Tagen')).toBeInTheDocument();
+  });
+
+  it("DateTimeProvider's locale wins over LocaleProvider's", () => {
+    // The narrower scope wins: "the UI is English but dates are German" is a
+    // deliberate choice and must not be overwritten by the app-wide language.
+    render(
+      <LocaleProvider locale="en">
+        <DateTimeProvider locale="de-DE">
+          <RelativeTime date="2026-09-01T12:00:00Z" />
+        </DateTimeProvider>
+      </LocaleProvider>,
+    );
+    expect(screen.getByText('vor 3 Tagen')).toBeInTheDocument();
+  });
+
+  it('an explicit prop wins over both providers', () => {
+    render(
+      <LocaleProvider locale="de-DE">
+        <DateTimeProvider locale="ja-JP">
+          <RelativeTime date="2026-09-01T12:00:00Z" locale="en" />
+        </DateTimeProvider>
+      </LocaleProvider>,
+    );
+    expect(screen.getByText('3 days ago')).toBeInTheDocument();
   });
 });
