@@ -13,7 +13,7 @@ import { Tabs as HintoricTabs } from '../components/Tabs';
 import { TabList as HintoricTabList } from '../components/TabList';
 import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
-import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -53,6 +53,11 @@ describe('Tabs visual parity with @mui/joy', () => {
           expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
           expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
 
+          // The selected Tab animates into its active background via
+          // `transition-colors`, so a screenshot taken straight after mount
+          // races the transition and lands on an intermediate colour — 1073
+          // pixels of drift between runs, measured 2026-09-07. Settle first.
+          await settleTransitions();
           await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`tabs-${variant}-${color}-joy-${scheme}`);
           await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`tabs-${variant}-${color}-hintoric-${scheme}`);
         });

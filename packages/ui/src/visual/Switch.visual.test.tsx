@@ -27,9 +27,15 @@ describe('Switch visual parity with @mui/joy', () => {
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
-        expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
-        expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
-        expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+        // Deliberately NO font comparison here. This file matches Joy's
+        // `.MuiSwitch-track` against our root, because our root IS the track
+        // equivalent — a slot mapping chosen for GEOMETRY. Typography does not
+        // survive it: Joy's SwitchTrack maps `md` to fontSize.sm (14px) while
+        // its root uses fontSize.md (16px), which our root correctly matches.
+        // Asserting fonts across that mapping compares a root against a track
+        // and reports a 16px-vs-14px "divergence" that does not exist —
+        // measured 2026-09-07, after a mechanical pass added the assertions
+        // here along with every other Flavour A file.
 
         await expect(page.getByTestId(`joy-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-joy-${scheme}`);
         await expect(page.getByTestId(`hintoric-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-hintoric-${scheme}`);

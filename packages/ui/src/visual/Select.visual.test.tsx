@@ -6,7 +6,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Select as JoySelect, Option as J
 import { Select as HintoricSelect } from '../components/Select';
 import { Option as HintoricOption } from '../components/Option';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { COLOR_SCHEMES, lastShadowLayer, lastShadowLayers, setColorScheme, settleTransitions } from './helpers';
+import { COLOR_SCHEMES, lastShadowLayer, lastShadowLayers, setColorScheme, settleTransitions, settleUntilStable } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -224,11 +224,33 @@ describe('Select visual parity with @mui/joy', () => {
           </ColorSchemeProvider>,
         );
 
+        // KNOWN FAILING in dark for `outlined` and `plain`: ours settles on
+        // `rgb(23,26,28)` (neutral-800) where Joy renders `rgb(11,13,14)`
+        // (neutral-900, which is our own `--color-surface` in dark).
+        //
+        // What is ruled out, measured 2026-09-07: it is not a transition race.
+        // `settleUntilStable` polls until the value stops changing and returns
+        // the same wrong colour, and the divergence survives in isolation as
+        // well as under load. It is also not the class map — SELECT_COLOR_
+        // CLASSES gives outlined and plain `bg-surface` with no disabled
+        // background override, which would resolve to Joy's value.
+        //
+        // Where neutral-800 actually comes from was not found. Do not "fix"
+        // this by chasing the number into a token; find the element and the
+        // rule first.
         await settleTransitions();
-        const joyStyle = getComputedStyle(page.getByTestId(`joy-disabled-${variant}`).element());
-        const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-disabled-${variant}`).element());
+        const joyEl = page.getByTestId(`joy-disabled-${variant}`).element();
+        const hintoricEl = page.getByTestId(`hintoric-disabled-${variant}`).element();
+        const joyBackground = await settleUntilStable(
+          () => getComputedStyle(joyEl).backgroundColor,
+        );
+        const hintoricBackground = await settleUntilStable(
+          () => getComputedStyle(hintoricEl).backgroundColor,
+        );
+        const joyStyle = getComputedStyle(joyEl);
+        const hintoricStyle = getComputedStyle(hintoricEl);
 
-        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+        expect(hintoricBackground).toBe(joyBackground);
         expect(hintoricStyle.color).toBe(joyStyle.color);
         expect(hintoricStyle.borderTopColor).toBe(joyStyle.borderTopColor);
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
