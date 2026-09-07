@@ -59,10 +59,30 @@ most-used component. Consequences worth knowing for later tasks:
   `text-sm` pairs with — measured, both `leading-normal` and `leading-[1.5]`
   left it at 20px. Use the `text-sm/[1.5]` shorthand.
 - Fixing a component **requires retaking its own baselines**, which breaks the
-  no-modified-light-baseline gate on purpose. Scope the retake: delete only
-  `*hintoric*` PNGs, never Joy's, then verify zero Joy baselines changed. That
-  check is what proves the retake was scoped correctly.
-- Add a changeset — it changes rendered output for consumers.
+  no-modified-light-baseline gate on purpose. Add a changeset too — it changes
+  rendered output for consumers.
+- **A component fix reaches further than that component's own file.** Retaking
+  only Button's 40 baselines left the suite red in four other files: `Menu`
+  (20), `LocaleSwitcher`, `ToggleButtonGroup` and `DarkTokens`, because
+  `MenuButton` and `ToggleButtonGroup` build on `buttonVariants`. Verified by
+  checking out the pre-fix `buttonVariants.ts` and re-running `Menu` — 22/22
+  green — then restoring it. Do that comparison rather than assuming a
+  1-pixel diff is flake.
+- **And it can legitimately change a *Joy* baseline.** Of those 23, twenty
+  were Joy's own `menu-*-joy-light` images, though Joy is untouched: `Menu`'s
+  test renders Joy's and our popup into the same document, both portalled to
+  `body`, and an element screenshot captures the real page — so our popup
+  shifting by a pixel bleeds into the region captured for Joy's. Our own
+  `menu-*-hintoric-light` images did not change at all, which is what
+  identifies the mechanism.
+
+  Worth knowing on its own: **`Menu`'s Joy reference images contain a sliver of
+  our component.** That predates this work and makes them imperfect
+  references. Not fixed here; fixing it means rendering the two popups so they
+  cannot overlap.
+- Collect the affected baselines from the run output rather than guessing:
+  `pnpm test:visual 2>&1 | grep -oE "src/visual/__screenshots__/[^ ]*\.png" |
+  grep -v vitest-attachments | sort -u`, delete those, re-run.
 
 ## Global Constraints
 
@@ -72,7 +92,7 @@ most-used component. Consequences worth knowing for later tasks:
 - Screenshot ids are always explicit. Never call `toMatchScreenshot()` without an id.
 - Baselines are named `<id>-chromium-darwin.png` on macOS and are local-only; no CI wiring exists.
 - A first run of a new assertion fails on purpose with "no existing reference screenshot found". Rerun once to confirm it passes.
-- **No light-mode baseline may change.** After every task, `git status` must show zero modified `*-light-chromium-darwin.png`. A modified light baseline means the change altered light rendering and must be understood before proceeding. The one sanctioned exception is a deliberate component fix, which requires retaking that component's own `*hintoric*` baselines — never Joy's; see Task 3 under "Discovered during implementation".
+- **No light-mode baseline may change.** After every task, `git status` must show zero modified `*-light-chromium-darwin.png`. A modified light baseline means the change altered light rendering and must be understood before proceeding. The one sanctioned exception is a deliberate component fix — which reaches further than that component's own file, and can even move a Joy baseline where two portalled popups share a document; see Task 3 under "Discovered during implementation" before retaking anything.
 - Never nest colour-scheme scopes. There is no `[data-color-scheme="light"]` block, so a light scope inside a dark region stays dark.
 - `COLOR_SCHEMES`, `ColorScheme` and `setColorScheme` live in `src/visual/helpers.ts`. The wrapper-scope helpers in `src/visual/darkMode.tsx` stay as they are and are used only by `DarkTokens` / `DarkVariant` / `DarkModeHarness`.
 - Do **not** fix component bugs in this plan, with one exception already taken: `Button`'s type scale (Task 3), fixed by explicit decision because it was fully measured and three classes wide. P1 from the 2026-09-06 audit (`Input`, `Textarea`, `Autocomplete` sizing) stays encoded with `it.fails()`, not repaired. Anything new that surfaces gets measured and reported first — the decision to fix or encode is the user's, not the executor's.
@@ -585,7 +605,7 @@ git commit -m "Cover Button in both colour schemes"
 - Consumes: `COLOR_SCHEMES`, `setColorScheme` from `./helpers`.
 - Produces: the Flavour B pattern that Task 11 applies to `DataGrid`, `Grid` and `RelativeTime`.
 
-- [ ] **Step 1: Put the two screenshot tests in a scheme loop**
+- [x] **Step 1: Put the two screenshot tests in a scheme loop**
 
 `LocaleSwitcher` needs `ColorSchemeProvider` — its existing tests render it bare, which works only because light is the default. Add the provider and the loop:
 
@@ -633,7 +653,7 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
   }
 ```
 
-- [ ] **Step 2: Write the failing dark-differs-from-light test**
+- [x] **Step 2: Write the failing dark-differs-from-light test**
 
 Append inside the `describe`:
 
@@ -669,7 +689,7 @@ Append inside the `describe`:
   });
 ```
 
-- [ ] **Step 3: Run to verify it fails, then passes**
+- [x] **Step 3: Run to verify it fails, then passes**
 
 Run: `pnpm test:visual LocaleSwitcher`
 Expected on the first run: FAIL with "no existing reference screenshot found" for the `-dark` ids.
@@ -678,11 +698,11 @@ Rerun. Expected: PASS.
 
 If `reads colour-scheme tokens rather than fixed colours` fails, that is a **real finding, not a test bug**: `LocaleSwitcher` is `Dropdown` + `MenuButton`, whose dark tokens `DarkTokens.visual.test.tsx` already verifies, so a failure here means the composition overrides them. Report it and stop rather than relaxing the assertion.
 
-- [ ] **Step 4: Look at the new baselines**
+- [x] **Step 4: Look at the new baselines**
 
 Open the new `locale-switcher-closed-dark` and `locale-switcher-open-dark` PNGs. The open menu is the interesting one — it is portalled, so it is the direct evidence that the mechanism works end to end. **Human review step.**
 
-- [ ] **Step 5: Confirm no light baseline moved**
+- [x] **Step 5: Confirm no light baseline moved**
 
 ```bash
 git status --short src/visual/__screenshots__/LocaleSwitcher.visual.test.tsx/ | grep -c 'light'
@@ -690,7 +710,7 @@ git status --short src/visual/__screenshots__/LocaleSwitcher.visual.test.tsx/ | 
 
 Expected: `0`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/ui/src/visual/LocaleSwitcher.visual.test.tsx packages/ui/src/visual/__screenshots__/LocaleSwitcher.visual.test.tsx
