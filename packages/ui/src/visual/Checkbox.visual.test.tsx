@@ -4,6 +4,9 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Checkbox as JoyCheckbox } from '@mui/joy';
 import { Checkbox as HintoricCheckbox } from '../components/Checkbox';
 import { settleTransitions } from './helpers';
+import { describeErrorParity } from './errorParity';
+import { FormControl as JoyFormControl } from '@mui/joy';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -135,5 +138,65 @@ describe('Checkbox visual parity with @mui/joy', () => {
     const hintoricBox = page.getByTestId('hintoric-disabled').element();
 
     expect(getComputedStyle(hintoricBox).cursor).toBe(getComputedStyle(joyBox).cursor);
+  });
+});
+
+// Joy's Checkbox has NO error prop — it reads formControl.error from context
+// and resolves `color = inProps.color || (error ? 'danger' : ...)`, so an explicit
+// colour wins. This matrix therefore proves the PRECEDENCE matches; the case
+// below proves the danger colour itself.
+describeErrorParity({
+  slug: 'checkbox',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyFormControl error>
+      <JoyCheckbox variant={variant} color={color} label="x" />
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricFormControl error>
+      <HintoricCheckbox variant={variant} color={color} label="x" />
+    </HintoricFormControl>
+  ),
+  // Joy hides the real <input> and paints a separate box; ours carries the
+  // role on the visible element itself. Same target, different DOM.
+  joyElement: (container) => container.querySelector('.MuiCheckbox-checkbox') as HTMLElement,
+  element: (container) => container.querySelector('[role="checkbox"]') as HTMLElement,
+});
+
+describe('Checkbox error state with no explicit colour', () => {
+  it('turns danger like Joy UI', async () => {
+    const { container: joyContainer } = render(
+      <div data-testid="joy-checkbox-danger">
+        <JoyCssVarsProvider>
+          <JoyFormControl error>
+            <JoyCheckbox label="x" />
+          </JoyFormControl>
+        </JoyCssVarsProvider>
+      </div>,
+    );
+    const { container: hintoricContainer } = render(
+      <div data-testid="hintoric-checkbox-danger">
+        <HintoricFormControl error>
+          <HintoricCheckbox label="x" />
+        </HintoricFormControl>
+      </div>,
+    );
+    await settleTransitions();
+
+    const joy = getComputedStyle(joyContainer.querySelector('.MuiCheckbox-checkbox') as HTMLElement);
+    const hintoric = getComputedStyle(
+      hintoricContainer.querySelector('[role="checkbox"]') as HTMLElement,
+    );
+    expect(hintoric.backgroundColor).toBe(joy.backgroundColor);
+    expect(hintoric.borderColor).toBe(joy.borderColor);
+
+    await expect(page.getByTestId('joy-checkbox-danger')).toMatchScreenshot(
+      'checkbox-error-nocolor-joy',
+    );
+    await expect(page.getByTestId('hintoric-checkbox-danger')).toMatchScreenshot(
+      'checkbox-error-nocolor-hintoric',
+    );
   });
 });

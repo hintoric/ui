@@ -71,8 +71,15 @@ export function describeErrorParity(config: ErrorParityConfig): void {
           const hintoricStyle = getComputedStyle(config.element(hintoricContainer));
 
           expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
           expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
+          // borderColor only where there is actually a border. With none, the
+          // property falls back to the element's `color`, and comparing that
+          // asserts nothing about the border — Switch's track has no border on
+          // either side, and the fallback made ours read black against Joy's
+          // white.
+          if (joyStyle.borderWidth !== '0px') {
+            expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          }
           expect(lastShadowLayer(hintoricStyle.boxShadow)).toBe(lastShadowLayer(joyStyle.boxShadow));
           config.assertStyles?.(hintoricStyle, joyStyle);
 

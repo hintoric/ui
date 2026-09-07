@@ -4,6 +4,9 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Switch as JoySwitch } from '@mui/joy';
 import { Switch as HintoricSwitch } from '../components/Switch';
 import { settleTransitions } from './helpers';
+import { describeErrorParity } from './errorParity';
+import { FormControl as JoyFormControl } from '@mui/joy';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
@@ -100,5 +103,65 @@ describe('Switch visual parity with @mui/joy', () => {
     hintoricEl.blur();
 
     expect(hintoricOutline).toBe(joyOutline);
+  });
+});
+
+// Same as Checkbox: no error prop, error read from formControl, explicit
+// colour wins. Switch has no variant axis — its variant is always solid.
+describeErrorParity({
+  slug: 'switch',
+  colors: COLORS,
+  renderJoy: ({ color }) => (
+    <JoyFormControl error>
+      <JoySwitch color={color} />
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ color }) => (
+    <HintoricFormControl error>
+      <HintoricSwitch color={color} />
+    </HintoricFormControl>
+  ),
+  // Joy hides the real <input> and paints a separate box; ours carries the
+  // role on the visible element itself. Same target, different DOM.
+  joyElement: (container) => container.querySelector('.MuiSwitch-track') as HTMLElement,
+  element: (container) => container.querySelector('[role="switch"]') as HTMLElement,
+});
+
+describe('Switch error state with no explicit colour', () => {
+  it('turns danger like Joy UI', async () => {
+    const { container: joyContainer } = render(
+      <div data-testid="joy-switch-danger">
+        <JoyCssVarsProvider>
+          <JoyFormControl error>
+            <JoySwitch />
+          </JoyFormControl>
+        </JoyCssVarsProvider>
+      </div>,
+    );
+    const { container: hintoricContainer } = render(
+      <div data-testid="hintoric-switch-danger">
+        <HintoricFormControl error>
+          <HintoricSwitch />
+        </HintoricFormControl>
+      </div>,
+    );
+    await settleTransitions();
+
+    const joy = getComputedStyle(joyContainer.querySelector('.MuiSwitch-track') as HTMLElement);
+    const hintoric = getComputedStyle(
+      hintoricContainer.querySelector('[role="switch"]') as HTMLElement,
+    );
+    // backgroundColor is the whole story for a Switch: the track carries the
+    // colour and has no border on either side. borderColor would fall back to
+    // each element's `color` and compare nothing about the border.
+    expect(hintoric.backgroundColor).toBe(joy.backgroundColor);
+    expect(hintoric.borderWidth).toBe(joy.borderWidth);
+
+    await expect(page.getByTestId('joy-switch-danger')).toMatchScreenshot(
+      'switch-error-nocolor-joy',
+    );
+    await expect(page.getByTestId('hintoric-switch-danger')).toMatchScreenshot(
+      'switch-error-nocolor-hintoric',
+    );
   });
 });

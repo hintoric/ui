@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { z } from 'zod';
 import { Checkbox } from './Checkbox';
+import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
 
 describe('Checkbox', () => {
   it('renders an unchecked checkbox by default', () => {
@@ -58,5 +60,28 @@ describe('Checkbox', () => {
     const box = screen.getByRole('checkbox');
     expect(box).toHaveAttribute('aria-disabled', 'true');
     expect(box).toHaveAttribute('data-disabled');
+  });
+});
+
+describe('Checkbox field matrix', () => {
+  runFieldMatrix({
+    name: 'agb',
+    render: (props) => <Checkbox {...props} />,
+    schema: z.object({ agb: z.literal(true, { message: 'Zustimmung erforderlich' }) }),
+    message: 'Zustimmung erforderlich',
+    validDefaults: { agb: true },
+    invalidDefaults: { agb: false },
+    expectInitialValue: () => {
+      expect(screen.getByRole('checkbox', { name: MATRIX_LABEL })).toBeChecked();
+    },
+    edit: async () => {
+      await userEvent.click(screen.getByRole('checkbox', { name: MATRIX_LABEL }));
+    },
+    expectedAfterEdit: { agb: false },
+    control: () => screen.getByRole('checkbox', { name: MATRIX_LABEL }),
+    // Checkbox carries its own inline <label>, so with no helper text the
+    // label IS the root — no FormControl wrapper is added.
+    standaloneRootTag: 'LABEL',
+    renderStandalone: () => <Checkbox name="agb" label="AGB" />,
   });
 });
