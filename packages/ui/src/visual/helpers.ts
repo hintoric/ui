@@ -1,3 +1,6 @@
+export const COLOR_SCHEMES = ['light', 'dark'] as const;
+export type ColorScheme = (typeof COLOR_SCHEMES)[number];
+
 /**
  * Every interactive component has `transition-colors` in its class list, which
  * puts `outline-color`/`background-color`/`color`/`border-color` etc. under a
@@ -49,4 +52,32 @@ export function lastShadowLayers(boxShadow: string, n: number): string {
   }
   layers.push(current.trim());
   return layers.slice(-n).join(', ');
+}
+
+/**
+ * Puts the whole document in `mode` — on <html>, not on a wrapper, so that
+ * portalled popups (Menu/Modal/Drawer/Tooltip/Snackbar/Select/Autocomplete)
+ * inherit it too. A wrapper element cannot work: Base UI portals mount onto
+ * `document.body`, a sibling of any wrapper, so their popups would render
+ * light inside a dark test — silently, and in exactly the components where a
+ * dark bug is hardest to notice.
+ *
+ * Both attributes are set because both selectors are attribute-based: ours
+ * (`theme.css`) and Joy's (`@mui/system` emits `[data-joy-color-scheme="dark"]`).
+ * Joy providers additionally need `defaultMode={scheme}` so Joy's JS-side mode
+ * matches its CSS-side mode.
+ *
+ * Light and dark therefore run sequentially rather than as siblings in one
+ * document. Nothing is lost: the pairing this suite needs is Joy-vs-Hintoric,
+ * never light-vs-dark.
+ *
+ * Awaits settleTransitions(): `transition-colors` is on every interactive
+ * component, so a synchronous getComputedStyle() right after the flip reads an
+ * intermediate value.
+ */
+export async function setColorScheme(mode: ColorScheme): Promise<void> {
+  const root = document.documentElement;
+  root.setAttribute('data-color-scheme', mode);
+  root.setAttribute('data-joy-color-scheme', mode);
+  await settleTransitions();
 }

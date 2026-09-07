@@ -5,17 +5,16 @@ import userEvent from '@testing-library/user-event';
 import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton } from '@mui/joy';
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { renderJoyDark, renderHintoricDark } from './darkMode';
-import { settleTransitions } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 const SIZES = ['sm', 'md', 'lg'] as const;
 
 // No variant × colour cross-product here, and that is deliberate: this is an
 // IconButton composition with no look of its own, and IconButton already
-// carries that full Joy-compared matrix (IconButton.visual.test.tsx). A second
-// cross-product would assert the same computed styles twice. What a
-// composition CAN get wrong is pass-through, icon choice and sizing — plus its
-// dark appearance, which is the whole point of the component.
+// carries that full Joy-compared matrix. A second cross-product would assert
+// the same computed styles twice. What a composition CAN get wrong is
+// pass-through, icon choice and sizing — plus its appearance per scheme, which
+// is the whole point of this particular component.
 describe('ColorSchemeToggle visual', () => {
   it.each(SIZES)('passes size %s through to the button', async (size) => {
     render(
@@ -24,7 +23,7 @@ describe('ColorSchemeToggle visual', () => {
       </ColorSchemeProvider>,
     );
     render(
-      <JoyCssVarsProvider>
+      <JoyCssVarsProvider defaultMode="light">
         <JoyIconButton data-testid={`joy-${size}`} variant="outlined" color="neutral" size={size}>
           +
         </JoyIconButton>
@@ -58,29 +57,32 @@ describe('ColorSchemeToggle visual', () => {
     expect(iconStyle.height).toBe('24px');
   });
 
-  it('is outlined by default', async () => {
+  it.each(COLOR_SCHEMES)('matches Joy UI in %s mode', async (scheme) => {
     render(
-      <ColorSchemeProvider defaultMode="system">
-        <ColorSchemeToggle data-testid="toggle" />
-      </ColorSchemeProvider>,
-    );
-    render(
-      <JoyCssVarsProvider>
+      <JoyCssVarsProvider defaultMode={scheme}>
         <JoyIconButton data-testid="joy" variant="outlined" color="neutral">
           +
         </JoyIconButton>
       </JoyCssVarsProvider>,
     );
-    await settleTransitions();
-
-    expect(getComputedStyle(page.getByTestId('toggle').element()).borderColor).toBe(
-      getComputedStyle(page.getByTestId('joy').element()).borderColor,
+    render(
+      <ColorSchemeProvider defaultMode="system">
+        <ColorSchemeToggle data-testid="toggle" />
+      </ColorSchemeProvider>,
     );
+    await setColorScheme(scheme);
+
+    const ours = getComputedStyle(page.getByTestId('toggle').element());
+    const joy = getComputedStyle(page.getByTestId('joy').element());
+
+    expect(ours.backgroundColor).toBe(joy.backgroundColor);
+    expect(ours.borderColor).toBe(joy.borderColor);
+    expect(ours.color).toBe(joy.color);
   });
 
   it('shows the same focus-visible outline as Joy UI', async () => {
     render(
-      <JoyCssVarsProvider>
+      <JoyCssVarsProvider defaultMode="light">
         <JoyIconButton data-testid="joy-focus">+</JoyIconButton>
       </JoyCssVarsProvider>,
     );
@@ -106,44 +108,49 @@ describe('ColorSchemeToggle visual', () => {
     expect(oursOutline).toBe(joyOutline);
   });
 
-  it('matches Joy in dark mode', async () => {
-    renderJoyDark(
-      <JoyIconButton data-testid="joy" variant="outlined" color="neutral">
-        +
-      </JoyIconButton>,
+  it('actually changes appearance between the two schemes', async () => {
+    render(
+      <ColorSchemeProvider defaultMode="system">
+        <ColorSchemeToggle data-testid="toggle" />
+      </ColorSchemeProvider>,
     );
-    renderHintoricDark(<ColorSchemeToggle data-testid="toggle" />);
-    await settleTransitions();
 
-    const ours = getComputedStyle(page.getByTestId('toggle').element());
-    const joy = getComputedStyle(page.getByTestId('joy').element());
+    await setColorScheme('light');
+    const light = getComputedStyle(page.getByTestId('toggle').element());
+    const lightPair = [light.color, light.borderColor].join('|');
 
-    expect(ours.backgroundColor).toBe(joy.backgroundColor);
-    expect(ours.borderColor).toBe(joy.borderColor);
-    expect(ours.color).toBe(joy.color);
+    await setColorScheme('dark');
+    const dark = getComputedStyle(page.getByTestId('toggle').element());
+    const darkPair = [dark.color, dark.borderColor].join('|');
+
+    // A committed PNG only regresses when a human looks at it. This is the one
+    // assertion a screenshot cannot make: that a hardcoded light colour did
+    // not sneak in.
+    expect(darkPair).not.toBe(lightPair);
   });
 
-  it('shows a different icon for each of the three modes', async () => {
+  it('shows a distinct icon per mode, each in the scheme that mode produces', async () => {
     render(
       <ColorSchemeProvider defaultMode="system">
         <ColorSchemeToggle data-testid="toggle" />
       </ColorSchemeProvider>,
     );
     const button = screen.getByRole('button');
-
-    // No computed style can tell whether the right symbol is on screen, so
-    // these three baselines are the actual signal, not decoration.
-    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-system');
-    await userEvent.click(button);
-    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-light');
-    await userEvent.click(button);
-    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-dark');
-  });
-
-  it('matches its own baseline in dark mode', async () => {
-    renderHintoricDark(<ColorSchemeToggle data-testid="toggle-dark" />);
     await settleTransitions();
 
-    await expect(page.getByTestId('toggle-dark')).toMatchScreenshot('colorschemetoggle-dark-scheme');
+    // No computed style can tell whether the right symbol is on screen, so
+    // these baselines are the actual signal, not decoration.
+    //
+    // Each shot is taken in the scheme that mode actually resolves to — the
+    // provider mirrors it onto <html> itself. Forcing a scheme that
+    // contradicts the mode (mode "dark" on a light page) would photograph a
+    // state no user can reach.
+    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-mode-system');
+    await userEvent.click(button);
+    await settleTransitions();
+    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-mode-light');
+    await userEvent.click(button);
+    await settleTransitions();
+    await expect(page.getByTestId('toggle')).toMatchScreenshot('colorschemetoggle-mode-dark');
   });
 });

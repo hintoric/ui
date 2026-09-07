@@ -9,10 +9,11 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { settleTransitions } from './helpers';
 
 /*
- * The menu is rendered through BaseMenu.Portal, which mounts outside any
- * wrapper element — so the `data-color-scheme` wrapper used elsewhere in this
- * suite cannot reach it. Dark mode has to come from the real provider, driven
- * through the storage key it reads.
+ * The menu is rendered through BaseMenu.Portal, which mounts onto
+ * document.body. The scheme therefore has to be document state, not a wrapper
+ * element — here it comes from the real provider (which mirrors the resolved
+ * scheme onto <html>), driven through the storage key the provider reads.
+ * That also fixes which entry is marked, so one setup covers both.
  */
 function renderInHostMenu(mode: 'light' | 'dark') {
   window.localStorage.setItem('hintoric-color-scheme', mode);
@@ -76,5 +77,29 @@ describe('ColorSchemeMenuItems visual', () => {
     await settleTransitions();
 
     await expect(page.getByRole('menu')).toMatchScreenshot('colorschememenuitems-dark');
+  });
+
+  it('actually changes appearance between the two schemes', async () => {
+    renderInHostMenu('light');
+    await screen.findByText('System');
+    await settleTransitions();
+    const light = getComputedStyle(entries()[0]);
+    const lightPair = [light.color, getComputedStyle(entries()[0].parentElement as Element).backgroundColor].join('|');
+
+    window.localStorage.setItem('hintoric-color-scheme', 'dark');
+    renderInHostMenu('dark');
+    await settleTransitions();
+    const darkEntries = entries();
+    const dark = getComputedStyle(darkEntries[darkEntries.length - 3]);
+    const darkPair = [
+      dark.color,
+      getComputedStyle(darkEntries[darkEntries.length - 3].parentElement as Element).backgroundColor,
+    ].join('|');
+
+    // The one assertion a committed PNG cannot make: that no hardcoded light
+    // colour survived. A popup that stayed light in a dark app was a real bug
+    // here — the provider only set the attribute on a div inside body, which
+    // portalled content is a sibling of, never a descendant.
+    expect(darkPair).not.toBe(lightPair);
   });
 });
