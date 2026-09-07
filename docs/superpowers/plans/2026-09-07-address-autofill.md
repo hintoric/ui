@@ -330,7 +330,7 @@ git commit -m "Add Joy-parity visual tests for Autocomplete loading/noOptionsTex
   string, opts: { limit: number; signal: AbortSignal }): Promise<AddressSuggestion[]>` (addressApi.ts).
   Task 4 and Task 5 both import from these two files.
 
-- [ ] **Step 1: Write `types.ts`**
+- [x] **Step 1: Write `types.ts`**
 
 ```ts
 import type * as React from 'react';
@@ -386,7 +386,7 @@ list — same shape `Autocomplete`'s own `AutocompleteProps` uses — so `aria-l
 Without this, nothing in this plan's own tests or docs page could target the field by test id, and
 an unlabeled instance (e.g. one cell of a variant×color grid) would have no accessible name at all.
 
-- [ ] **Step 2: Write the failing test for `addressApi.ts`**
+- [x] **Step 2: Write the failing test for `addressApi.ts`**
 
 ```ts
 // packages/ui/src/components/AddressAutofill/addressApi.test.ts
@@ -432,12 +432,12 @@ describe('fetchAddressSuggestions', () => {
 });
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `pnpm --filter @hintoric/ui test -- addressApi.test.ts`
 Expected: FAIL with "Cannot find module './addressApi'" (file doesn't exist yet).
 
-- [ ] **Step 4: Write `addressApi.ts`**
+- [x] **Step 4: Write `addressApi.ts`**
 
 ```ts
 import type { AddressSuggestion } from './types';
@@ -460,12 +460,12 @@ export async function fetchAddressSuggestions(
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `pnpm --filter @hintoric/ui test -- addressApi.test.ts`
 Expected: PASS.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/ui/src/components/AddressAutofill/types.ts packages/ui/src/components/AddressAutofill/addressApi.ts packages/ui/src/components/AddressAutofill/addressApi.test.ts
