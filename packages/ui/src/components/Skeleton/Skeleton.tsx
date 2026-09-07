@@ -25,7 +25,7 @@ export const Skeleton = React.forwardRef<HTMLSpanElement, SkeletonProps>(functio
       ref={ref}
       aria-hidden="true"
       className={cx(
-        'inline-block bg-neutral-200',
+        'inline-block bg-surface-3',
         VARIANT_CLASS[variant],
         animation === 'pulse' && 'animate-pulse',
         className,
