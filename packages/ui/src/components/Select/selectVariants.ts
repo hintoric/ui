@@ -28,7 +28,7 @@ export const selectVariants = cva(
   // alone does not reproduce Joy's fill-the-parent behaviour — Joy's
   // root is a <div>, which fills on its own. Ours is Base UI's trigger
   // <button>, so the width has to be asked for explicitly.
-  'relative flex w-full min-w-0 cursor-pointer items-center rounded-sm font-body outline-none transition-colors disabled:cursor-default',
+  'relative flex w-full min-w-0 cursor-pointer items-center rounded-sm font-body outline-none transition-colors disabled:pointer-events-none disabled:cursor-default',
   {
     variants: {
       // Joy UI applies shadow.xs to every variant except plain (same rule as

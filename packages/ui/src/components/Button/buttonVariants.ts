@@ -27,7 +27,7 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 // along on the size utility itself as `text-sm/[1.5]`. 1.5 is Joy's measured
 // `lineHeight.md`, not a Tailwind preset that happens to be close.
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 rounded-sm font-body font-semibold transition-colors cursor-pointer disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+  'inline-flex items-center justify-center gap-2 rounded-sm font-body font-semibold transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },

@@ -37,7 +37,7 @@ export const ChipDelete = React.forwardRef<HTMLButtonElement, ChipDeleteProps>(f
         // fontSize — the origin was not located. 500 is the right value
         // either way: Joy's Chip sets fontWeight.md, so an in-context
         // ChipDelete matches too.
-        'inline-flex size-5 shrink-0 items-center justify-center rounded-[50%] p-0 text-sm/[1.5] font-medium transition-colors cursor-pointer disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+        'inline-flex size-5 shrink-0 items-center justify-center rounded-[50%] p-0 text-sm/[1.5] font-medium transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
         INTERACTIVE_COLOR_CLASSES[variant][color],
         className,
       )}

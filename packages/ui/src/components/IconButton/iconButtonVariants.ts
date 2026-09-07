@@ -16,7 +16,7 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 // scale was — by comparing font properties, which nothing in the suite did
 // until the colour-scheme retrofit added them.
 export const iconButtonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center rounded-sm font-body font-medium transition-colors cursor-pointer disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+  'inline-flex shrink-0 items-center justify-center rounded-sm font-body font-medium transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },

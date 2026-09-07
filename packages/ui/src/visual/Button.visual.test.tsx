@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Button as JoyButton } from '@mui/joy';
 import { Button as HintoricButton } from '../components/Button';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { COLOR_SCHEMES, settleTransitions, setColorScheme } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -182,4 +182,51 @@ describe('Button visual parity with @mui/joy', () => {
       );
     });
   }
+
+  /**
+   * Disabled + hover, the combination P3 of the 2026-09-06 coverage audit
+   * lists Button as missing.
+   *
+   * It is asserted through `pointer-events` rather than by driving a real
+   * hover, because that turned out to be the actual mechanism: Joy sets
+   * `pointer-events: none` on a disabled button, so a hover state can never
+   * arise there — `user.hover()` on Joy's disabled button refuses outright
+   * with "element has pointer-events: none".
+   *
+   * That matters because CSS `:hover` otherwise matches a disabled <button> in
+   * Chrome, and a `hover:bg-*` utility with no disabled counterpart repaints a
+   * control the user cannot use. A disabled `outlined`/`plain` Select did
+   * exactly that until 2026-09-07, intermittently, depending on where the
+   * pointer happened to rest.
+   */
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`blocks pointer interaction while disabled like Joy UI in ${variant}/${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyButton data-testid="joy-disabled" variant={variant} disabled>
+              disabled
+            </JoyButton>
+          </JoyCssVarsProvider>,
+        );
+        render(
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricButton data-testid="hintoric-disabled" variant={variant} disabled>
+              disabled
+            </HintoricButton>
+          </ColorSchemeProvider>,
+        );
+
+        const joyStyle = getComputedStyle(page.getByTestId('joy-disabled').element());
+        const hintoricStyle = getComputedStyle(page.getByTestId('hintoric-disabled').element());
+
+        expect(hintoricStyle.pointerEvents).toBe(joyStyle.pointerEvents);
+        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+        expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+      });
+    }
+  }
+
 });
