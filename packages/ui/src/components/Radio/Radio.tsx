@@ -5,6 +5,17 @@ import { RadioGroup as BaseRadioGroup } from '@base-ui/react/radio-group';
 import { cx } from '../../utils/cx';
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
 import { radioBoxVariants, radioRootVariants } from './radioVariants';
+import { useFormContext } from 'react-hook-form';
+import { FormControlContext } from '../FormControl/FormControlContext';
+import {
+  CHECKED_PROPS,
+  FieldShell,
+  checkedAdapter,
+  omitProps,
+  useBoundField,
+  useFieldIds,
+  useForkRef,
+} from '../../internal/form';
 import type { RadioProps } from './types';
 
 const STANDALONE_VALUE = 'checked';
@@ -21,7 +32,7 @@ const STANDALONE_VALUE = 'checked';
 // `checked`/`defaultChecked`/`onCheckedChange` still work standalone —
 // mirroring Checkbox's controlled/uncontrolled mirror-state pattern so the
 // displayed color/dot stay correct for uncontrolled usage too.
-export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
+const RadioBase = React.forwardRef<HTMLElement, RadioProps>(function RadioBase(
   {
     variant = 'outlined',
     color,
@@ -35,12 +46,14 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
     disableIcon = false,
     label,
     name,
+    error,
     className,
     onCheckedChange,
     ...props
   },
   ref,
 ) {
+  const formControl = React.useContext(FormControlContext);
   const group = React.useContext(RadioGroupContext);
   const isGrouped = group !== undefined;
 
@@ -49,13 +62,23 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
 
   const ownValue = isGrouped ? value : STANDALONE_VALUE;
   const isChecked = isGrouped ? group.value === ownValue : standaloneChecked;
-  const effectiveColor = color ?? (isChecked ? 'primary' : 'neutral');
+  // An explicit colour beats the error state, as in Checkbox and Switch.
+  //
+  // Worth recording because the source misleads: @mui/joy's minified Radio.js
+  // reads `activeColor = formControl.error ? 'danger' : (inProps.color ?? …)`,
+  // which says the opposite. Measuring the real package says otherwise — a
+  // Joy Radio with color="primary" inside <FormControl error> renders
+  // rgb(11, 107, 203), not danger. The rendered package wins over a reading
+  // of its build output; see Radio.visual.test.tsx, whose non-danger cells
+  // fail the moment this is inverted.
+  const hasError = error ?? formControl?.error ?? false;
+  const effectiveColor = color ?? (hasError ? 'danger' : isChecked ? 'primary' : 'neutral');
 
   const box = (
     <BaseRadio.Root
       ref={ref}
       value={ownValue}
-      disabled={disabled}
+      disabled={disabled ?? formControl?.disabled}
       readOnly={readOnly}
       required={required}
       className={cx(radioBoxVariants({ variant, color: effectiveColor, size }), className)}
@@ -95,4 +118,76 @@ export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(
       {content}
     </BaseRadioGroup>
   );
+});
+
+/**
+ * RadioBase plus its optional FormHelperText. Like Checkbox, Radio renders its
+ * own inline <label>, so only the helper goes through the shell.
+ */
+const RadioField = React.forwardRef<HTMLElement, RadioProps>(function RadioField(
+  { helperText, error, required, id: idProp, ...props },
+  ref,
+) {
+  const { id, helperId } = useFieldIds(idProp, helperText != null);
+  return (
+    <FieldShell
+      helperText={helperText}
+      error={error}
+      required={required}
+      disabled={props.disabled}
+      id={id}
+      helperId={helperId}
+    >
+      <RadioBase
+        ref={ref}
+        id={id}
+        required={required}
+        // Passed explicitly, not just via FieldShell's FormControl: with no
+        // label and no helper text there IS no FormControl, so the context
+        // would never carry it.
+        error={error}
+        aria-describedby={helperId}
+        aria-invalid={error || undefined}
+        {...props}
+      />
+    </FieldShell>
+  );
+});
+
+const BoundRadio = React.forwardRef<HTMLElement, RadioProps>(function BoundRadio(
+  { name, onCheckedChange, error, helperText, ...rest },
+  ref,
+) {
+  const { fieldProps, errorMessage } = useBoundField(name!, checkedAdapter, { onCheckedChange });
+  const { ref: fieldRef, ...boundProps } = fieldProps as { ref: React.Ref<HTMLElement> };
+  const forkedRef = useForkRef(ref, fieldRef);
+  return (
+    <RadioField
+      {...omitProps(rest, CHECKED_PROPS)}
+      {...(boundProps as RadioProps)}
+      ref={forkedRef}
+      error={error || errorMessage != null}
+      helperText={errorMessage ?? helperText}
+    />
+  );
+});
+
+export const Radio = React.forwardRef<HTMLElement, RadioProps>(function Radio(props, ref) {
+  const form = useFormContext();
+  const group = React.useContext(RadioGroupContext);
+  // Inside a group the GROUP is the field and this Radio is only an option in
+  // it. Binding both would put two writers on one form path, and which value
+  // survived would depend on handler order.
+  //
+  // Honest caveat: this guard is currently unobservable. RadioBase wires no
+  // onCheckedChange at all on its grouped path — Base UI's RadioGroup drives
+  // the selection — so a grouped Radio cannot write the path even without
+  // this check, and a mutation test that removes the `group === undefined`
+  // clause fails nothing. It stays because it states which component owns the
+  // path, and it becomes load-bearing the moment that grouped path gains a
+  // change callback.
+  if (form && props.name && group === undefined) {
+    return <BoundRadio {...props} ref={ref} />;
+  }
+  return <RadioField {...props} ref={ref} />;
 });

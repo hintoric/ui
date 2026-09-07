@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { FormLabel } from './FormLabel';
+import { FormControl } from '../FormControl';
 
 describe('FormLabel', () => {
   it('renders as a <label>', () => {
@@ -16,5 +17,16 @@ describe('FormLabel', () => {
   it('does not show an asterisk by default', () => {
     render(<FormLabel>Email</FormLabel>);
     expect(screen.queryByText('*')).not.toBeInTheDocument();
+  });
+
+  it('is muted inside a disabled FormControl', () => {
+    // Joy sets --FormLabel-color from theme.variants.plainDisabled as well,
+    // not just the helper text. Confirmed against @mui/joy's FormControl.js.
+    render(
+      <FormControl disabled>
+        <FormLabel>E-Mail</FormLabel>
+      </FormControl>,
+    );
+    expect(screen.getByText('E-Mail')).toHaveClass('text-neutral-plain-disabled-color');
   });
 });

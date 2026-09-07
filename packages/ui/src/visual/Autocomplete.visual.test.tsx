@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, Autocomplete as JoyAutocomplete } from '@mui/joy';
+import { Autocomplete as JoyAutocomplete, CssVarsProvider as JoyCssVarsProvider, FormControl as JoyFormControl } from '@mui/joy';
 import { Autocomplete as HintoricAutocomplete } from '../components/Autocomplete';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { describeErrorParity } from './errorParity';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -94,4 +96,24 @@ describe('Autocomplete visual parity with @mui/joy', () => {
       expect(page.getByTestId('joy-disabled').element().querySelector('input')).toBeDisabled();
     });
   }
+});
+
+describeErrorParity({
+  slug: 'autocomplete',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyFormControl error>
+      <JoyAutocomplete variant={variant} color={color} options={OPTIONS} />
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricFormControl error>
+      <HintoricAutocomplete variant={variant} color={color} options={OPTIONS} />
+    </HintoricFormControl>
+  ),
+  // As with Select, Joy's painted element is its root, not the input's
+  // immediate parent.
+  joyElement: (container) => container.querySelector('.MuiAutocomplete-root') as HTMLElement,
+  element: (container) => container.querySelector('input')!.parentElement as HTMLElement,
 });

@@ -2,11 +2,13 @@ import type * as React from 'react';
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, Select as JoySelect, Option as JoyOption } from '@mui/joy';
+import { CssVarsProvider as JoyCssVarsProvider, FormControl as JoyFormControl, Option as JoyOption, Select as JoySelect } from '@mui/joy';
 import { Select as HintoricSelect } from '../components/Select';
 import { Option as HintoricOption } from '../components/Option';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, lastShadowLayers, setColorScheme, settleTransitions, settleUntilStable } from './helpers';
+import { describeErrorParity, parkPointer } from './errorParity';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -349,6 +351,74 @@ describe('Select visual parity with @mui/joy', () => {
       expect(hintoricStyle.paddingTop).toBe(joyStyle.paddingTop);
       expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
       expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
+    });
+  }
+});
+
+describeErrorParity({
+  slug: 'select',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyFormControl error>
+      <JoySelect variant={variant} color={color} placeholder="—">
+        <JoyOption value="a">A</JoyOption>
+      </JoySelect>
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricFormControl error>
+      <HintoricSelect variant={variant} color={color} placeholder="—">
+        <HintoricOption value="a">A</HintoricOption>
+      </HintoricSelect>
+    </HintoricFormControl>
+  ),
+  // Joy paints .MuiSelect-root and leaves its inner button transparent; our
+  // trigger button carries the classes itself.
+  joyElement: (container) => container.querySelector('.MuiSelect-root') as HTMLElement,
+  element: (container) => container.querySelector('button') as HTMLElement,
+  assertStyles: (hintoric, joy) => {
+    expect(hintoric.minHeight).toBe(joy.minHeight);
+    expect(hintoric.paddingLeft).toBe(joy.paddingLeft);
+  },
+});
+
+describe('Select error state with no explicit colour', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    it(`turns danger like Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      await parkPointer('select-nocolor');
+      const { container: joyContainer } = render(
+        <div data-testid="joy-select-danger">
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyFormControl error>
+              <JoySelect placeholder="—">
+                <JoyOption value="a">A</JoyOption>
+              </JoySelect>
+            </JoyFormControl>
+          </JoyCssVarsProvider>
+        </div>,
+      );
+      const { container: hintoricContainer } = render(
+        <div data-testid="hintoric-select-danger">
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricFormControl error>
+              <HintoricSelect placeholder="—">
+                <HintoricOption value="a">A</HintoricOption>
+              </HintoricSelect>
+            </HintoricFormControl>
+          </ColorSchemeProvider>
+        </div>,
+      );
+      await settleTransitions();
+
+      const joy = getComputedStyle(joyContainer.querySelector('.MuiSelect-root') as HTMLElement);
+      const hintoric = getComputedStyle(hintoricContainer.querySelector('button') as HTMLElement);
+      expect(hintoric.borderColor).toBe(joy.borderColor);
+      expect(hintoric.backgroundColor).toBe(joy.backgroundColor);
+
+      await expect(page.getByTestId('joy-select-danger')).toMatchScreenshot(`select-error-nocolor-joy-${scheme}`);
+      await expect(page.getByTestId('hintoric-select-danger')).toMatchScreenshot(`select-error-nocolor-hintoric-${scheme}`);
     });
   }
 });

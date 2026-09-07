@@ -4,6 +4,10 @@ import '../styles/index.css';
 
 afterEach(() => {
   cleanup();
+  // The colour scheme is document state (see setColorScheme in helpers.ts), so
+  // a dark test would tint every test after it without this reset.
+  document.documentElement.setAttribute('data-color-scheme', 'light');
+  document.documentElement.setAttribute('data-joy-color-scheme', 'light');
 });
 
 /*
@@ -11,23 +15,24 @@ afterEach(() => {
  * between them. ColorSchemeProvider persists the chosen mode, which means a
  * test that switches modes silently changes the starting mode of every test
  * after it — and a screenshot baseline taken that way is unreproducible.
- * Joy's own provider does the same under the key `joy-mode`.
  */
 beforeEach(() => {
   window.localStorage.clear();
 });
 
 /*
- * The document-level scheme attribute outlives a test too, for the same
- * reason. Reset it so a file's tests cannot depend on their own order.
+ * Without a scheme-aware page background, dark-mode screenshots of `plain` and
+ * `outlined` variants show light text on a white page and are useless to
+ * review.
  *
- * The body background is part of that state — setColorScheme paints it for
- * dark and clears it for light, and it must go back to cleared here. See the
- * comment on setColorScheme for why light deliberately has no painted page
- * background.
+ * Scoped to dark mode on purpose. An unscoped `body { background: canvas }` is
+ * white in light mode and so looks harmless, but it makes the body OPAQUE
+ * where it used to be transparent — and a screenshot that captured a
+ * transparent region changes from alpha to composited. ModalOverflow caught
+ * this: Joy's semi-transparent backdrop went from dark to light grey, 93% of
+ * pixels differing, with no layout change at all. Restricting the rule keeps
+ * every existing light-mode baseline byte-identical.
  */
-afterEach(() => {
-  document.documentElement.setAttribute('data-color-scheme', 'light');
-  document.documentElement.setAttribute('data-joy-color-scheme', 'light');
-  document.body.style.background = '';
-});
+const canvas = document.createElement('style');
+canvas.textContent = '[data-color-scheme="dark"] body { background: var(--color-canvas); }';
+document.head.appendChild(canvas);

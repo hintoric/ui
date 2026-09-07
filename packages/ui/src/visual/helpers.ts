@@ -1,3 +1,6 @@
+export const COLOR_SCHEMES = ['light', 'dark'] as const;
+export type ColorScheme = (typeof COLOR_SCHEMES)[number];
+
 /**
  * Every interactive component has `transition-colors` in its class list, which
  * puts `outline-color`/`background-color`/`color`/`border-color` etc. under a
@@ -51,57 +54,44 @@ export function lastShadowLayers(boxShadow: string, n: number): string {
   return layers.slice(-n).join(', ');
 }
 
-export const COLOR_SCHEMES = ['light', 'dark'] as const;
-export type ColorScheme = (typeof COLOR_SCHEMES)[number];
-
 /**
- * Puts the whole document into `mode`.
+ * Puts the whole document in `mode` — on <html>, not on a wrapper, so that
+ * portalled popups (Menu/Modal/Drawer/Tooltip/Snackbar/Select/Autocomplete)
+ * inherit it too. A wrapper element cannot work: Base UI portals mount onto
+ * `document.body`, a sibling of any wrapper, so their popups would render
+ * light inside a dark test — silently, and in exactly the components where a
+ * dark bug is hardest to notice.
  *
- * On <html>, deliberately, rather than on a wrapper element: Menu, Modal,
- * Drawer, Tooltip, Snackbar, Select and Autocomplete render their popup into a
- * portal on <body>, which no wrapper contains. A wrapper scope leaves those
- * popups light inside a dark test, silently — see darkMode.tsx, which takes
- * the wrapper approach for a different job and documents the same caveat.
+ * Both attributes are set because both selectors are attribute-based: ours
+ * (`theme.css`) and Joy's (`@mui/system` emits `[data-joy-color-scheme="dark"]`).
+ * Joy providers additionally need `defaultMode={scheme}` so Joy's JS-side mode
+ * matches its CSS-side mode.
  *
- * Both attributes are set because the two token systems use different ones:
- * ours reads `[data-color-scheme]` (theme.css), Joy's generated stylesheet
- * reads `[data-joy-color-scheme]`.
+ * Light and dark therefore run sequentially rather than as siblings in one
+ * document. Nothing is lost: the pairing this suite needs is Joy-vs-Hintoric,
+ * never light-vs-dark.
  *
  * Awaits settleTransitions(): `transition-colors` is on every interactive
- * component, so a getComputedStyle() immediately after the flip reads a value
- * mid-transition rather than the final one.
+ * component, so a synchronous getComputedStyle() right after the flip reads an
+ * intermediate value.
  */
 export async function setColorScheme(mode: ColorScheme): Promise<void> {
-  document.documentElement.setAttribute('data-color-scheme', mode);
-  document.documentElement.setAttribute('data-joy-color-scheme', mode);
-
-  /*
-   * Dark mode needs a painted page background, or a screenshot of any
-   * transparent element (`plain`/`outlined` variants) is dark text on a white
-   * page and no human can review it.
-   *
-   * Light mode must NOT get one, and this asymmetry is deliberate. The 1248
-   * existing light baselines were taken over a *transparent* page, and
-   * "transparent" is not "white" for anything semi-transparent composited on
-   * top of it: painting the body white shifted ModalOverflow's scrim from
-   * rgb(58,58,58) to rgb(110,110,110) and changed 93% of that baseline's
-   * pixels. Discovered by the no-modified-light-baseline gate, which is why
-   * that gate exists.
-   */
-  document.body.style.background = mode === 'dark' ? 'var(--color-canvas)' : '';
-
+  const root = document.documentElement;
+  root.setAttribute('data-color-scheme', mode);
+  root.setAttribute('data-joy-color-scheme', mode);
   await settleTransitions();
 }
 
+
 /**
  * Joy expresses line-height as a unitless ratio, so its computed value carries
- * the ratio's rounding: `lineHeight.sm` is 1.42858, and 1.42858 × 14px is
+ * the ratio's rounding: `lineHeight.sm` is 1.42858, and 1.42858 x 14px is
  * 20.00012px, which the browser reports as `20.0001px`. A Tailwind class that
  * states the same design intent lands on a clean `20px`.
  *
  * That 0.0001px is not a divergence anyone can see or should chase, so
  * line-height is the one property compared with a tolerance rather than by
- * string equality. Everything else in this suite stays exact — a loose
+ * string equality. Everything else in this suite stays exact - a loose
  * comparison is how real divergences hide.
  */
 export function expectSameLineHeight(ours: string, joy: string): void {
@@ -122,11 +112,10 @@ export function expectSameLineHeight(ours: string, joy: string): void {
 /**
  * Waits until a computed value stops changing, rather than guessing a delay.
  *
- * `settleTransitions`' fixed 200ms is enough for most state changes but not
- * all of them under full-suite load — Select's disabled/plain background read
- * as `rgb(23,26,28)` instead of the settled `rgb(11,13,14)` in roughly one run
- * in three, which looks exactly like a real divergence and is not one. Polling
- * for stability removes the guess.
+ * `settleTransitions`' fixed 200ms is enough for most state changes but not all
+ * of them under full-suite load: Select's disabled background read as an
+ * intermediate colour in roughly one run in three, which looks exactly like a
+ * real divergence and is not one. Polling for stability removes the guess.
  *
  * Returns the settled value. Gives up after `timeout` and returns whatever it
  * last saw, so a genuinely animating element still fails its assertion rather

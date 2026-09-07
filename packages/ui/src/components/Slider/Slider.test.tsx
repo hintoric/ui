@@ -3,6 +3,9 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Slider } from './Slider';
 
+import { z } from 'zod';
+import { runFieldMatrix } from '../../test/fieldMatrix';
+
 describe('Slider', () => {
   it('renders a single thumb by default', () => {
     render(<Slider defaultValue={30} />);
@@ -37,5 +40,31 @@ describe('Slider', () => {
   it('defaults to solid/primary/md', () => {
     render(<Slider defaultValue={40} data-testid="control" />);
     expect(screen.getByTestId('control')).toHaveClass('h-[42px]');
+  });
+});
+
+describe('Slider field matrix', () => {
+  runFieldMatrix({
+    name: 'menge',
+    render: (props) => <Slider {...props} />,
+    schema: z.object({ menge: z.number().min(30, 'zu klein') }),
+    message: 'zu klein',
+    validDefaults: { menge: 20 },
+    invalidDefaults: { menge: 5 },
+    expectInitialValue: () => {
+      expect(screen.getByRole('slider')).toHaveAttribute('aria-valuenow', '20');
+    },
+    edit: async () => {
+      screen.getByRole('slider').focus();
+      await userEvent.keyboard('{ArrowRight}');
+    },
+    expectedAfterEdit: { menge: 21 },
+    // role="slider" is Base UI's hidden range input, which focuses and carries
+    // aria-describedby. aria-invalid stays on the thumb wrapper around it,
+    // because Base UI only forwards some aria props inward.
+    control: () => screen.getByRole('slider'),
+    invalidTarget: () => screen.getByRole('slider').parentElement!,
+    standaloneRootTag: 'DIV',
+    renderStandalone: () => <Slider name="menge" aria-label="menge" />,
   });
 });

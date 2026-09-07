@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LocaleSwitcher } from './LocaleSwitcher';
+import { LocaleProvider } from '../../theme/LocaleProvider';
 
 const locales = [
   { value: 'de', label: 'Deutsch' },
@@ -56,5 +57,86 @@ describe('LocaleSwitcher', () => {
     render(<LocaleSwitcher locales={locales} value="fr" onChange={vi.fn()} />);
 
     expect(screen.getByRole('button')).toHaveTextContent('fr');
+  });
+
+  it('needs no props at all inside a LocaleProvider', async () => {
+    const user = userEvent.setup();
+    const onLocaleChange = vi.fn();
+    render(
+      <LocaleProvider locale="de" onLocaleChange={onLocaleChange} locales={locales}>
+        <LocaleSwitcher />
+      </LocaleProvider>,
+    );
+
+    expect(screen.getByRole('button')).toHaveTextContent('Deutsch');
+
+    await user.click(screen.getByRole('button'));
+    await user.click(await screen.findByText('English'));
+
+    expect(onLocaleChange).toHaveBeenCalledWith('en');
+  });
+
+  it('an explicit value prop wins over the provider', () => {
+    render(
+      <LocaleProvider locale="de" onLocaleChange={vi.fn()} locales={locales}>
+        <LocaleSwitcher value="en" />
+      </LocaleProvider>,
+    );
+
+    expect(screen.getByRole('button')).toHaveTextContent('English');
+  });
+
+  it('an explicit onChange prop wins over the provider', async () => {
+    const user = userEvent.setup();
+    const onLocaleChange = vi.fn();
+    const onChange = vi.fn();
+    render(
+      <LocaleProvider locale="de" onLocaleChange={onLocaleChange} locales={locales}>
+        <LocaleSwitcher onChange={onChange} />
+      </LocaleProvider>,
+    );
+
+    await user.click(screen.getByRole('button'));
+    await user.click(await screen.findByText('English'));
+
+    expect(onChange).toHaveBeenCalledWith('en');
+    expect(onLocaleChange).not.toHaveBeenCalled();
+  });
+
+  it('an explicit locales prop wins over the provider', async () => {
+    const user = userEvent.setup();
+    render(
+      <LocaleProvider locale="de" onLocaleChange={vi.fn()} locales={locales}>
+        <LocaleSwitcher locales={[{ value: 'de', label: 'Deutsch' }]} />
+      </LocaleProvider>,
+    );
+
+    await user.click(screen.getByRole('button'));
+
+    expect(screen.queryByText('English')).not.toBeInTheDocument();
+  });
+
+  it('throws naming the missing piece when neither prop nor provider supplies locales', () => {
+    expect(() => render(<LocaleSwitcher value="de" onChange={vi.fn()} />)).toThrow(
+      /no `locales` given/,
+    );
+  });
+
+  it('throws naming the missing piece when there is no current locale', () => {
+    expect(() => render(<LocaleSwitcher locales={locales} onChange={vi.fn()} />)).toThrow(
+      /no `value` given/,
+    );
+  });
+
+  it('throws naming the missing piece when nothing can receive the change', () => {
+    // A LocaleProvider without onLocaleChange is a read-only source; a switcher
+    // under it needs its own onChange.
+    expect(() =>
+      render(
+        <LocaleProvider locale="de" locales={locales}>
+          <LocaleSwitcher />
+        </LocaleProvider>,
+      ),
+    ).toThrow(/no `onChange` given/);
   });
 });

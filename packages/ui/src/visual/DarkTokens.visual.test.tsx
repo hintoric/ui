@@ -13,8 +13,9 @@ import { ListItemButton } from '../components/ListItemButton';
 import { Switch } from '../components/Switch';
 import { Select } from '../components/Select';
 import { Button } from '../components/Button';
-import { renderJoyDark, renderHintoricDark } from './darkMode';
-import { settleTransitions } from './helpers';
+import { render } from '@testing-library/react';
+import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy';
+import { setColorScheme } from './helpers';
 
 type Variant = 'solid' | 'soft' | 'outlined' | 'plain';
 type Color = 'primary' | 'neutral' | 'danger' | 'success' | 'warning';
@@ -99,9 +100,9 @@ describe('dark mode token parity with @mui/joy', () => {
         it(`${testCase.name} ${variant}/${color} matches Joy in dark mode`, async () => {
           const joyId = `joy-${testCase.name}-${variant}-${color}`;
           const oursId = `ours-${testCase.name}-${variant}-${color}`;
-          renderJoyDark(testCase.joy(variant, color, joyId));
-          renderHintoricDark(testCase.ours(variant, color, oursId));
-          await settleTransitions();
+          render(<JoyCssVarsProvider defaultMode="dark">{testCase.joy(variant, color, joyId)}</JoyCssVarsProvider>);
+          render(testCase.ours(variant, color, oursId));
+          await setColorScheme('dark');
 
           const joyStyle = getComputedStyle(page.getByTestId(joyId).element());
           const oursStyle = getComputedStyle(page.getByTestId(oursId).element());
@@ -115,19 +116,19 @@ describe('dark mode token parity with @mui/joy', () => {
   }
 
   it('Switch matches Joy in dark mode, unchecked and checked', async () => {
-    renderJoyDark(
-      <>
+    render(
+      <JoyCssVarsProvider defaultMode="dark">
         <JoySwitch data-testid="joy-switch-off" />
         <JoySwitch data-testid="joy-switch-on" checked />
-      </>,
+      </JoyCssVarsProvider>,
     );
-    renderHintoricDark(
+    render(
       <>
         <Switch data-testid="ours-switch-off" />
         <Switch data-testid="ours-switch-on" checked />
       </>,
     );
-    await settleTransitions();
+    await setColorScheme('dark');
 
     for (const state of ['off', 'on']) {
       // Joy paints the track, a child of its root; ours paints BaseSwitch.Root
@@ -143,9 +144,13 @@ describe('dark mode token parity with @mui/joy', () => {
   });
 
   it('Select matches Joy in dark mode', async () => {
-    renderJoyDark(<JoySelect data-testid="joy-select" placeholder="Pick" />);
-    renderHintoricDark(<Select data-testid="ours-select" placeholder="Pick" />);
-    await settleTransitions();
+    render(
+      <JoyCssVarsProvider defaultMode="dark">
+        <JoySelect data-testid="joy-select" placeholder="Pick" />
+      </JoyCssVarsProvider>,
+    );
+    render(<Select data-testid="ours-select" placeholder="Pick" />);
+    await setColorScheme('dark');
 
     const joyStyle = getComputedStyle(page.getByTestId('joy-select').element());
     const oursStyle = getComputedStyle(page.getByTestId('ours-select').element());
@@ -156,7 +161,7 @@ describe('dark mode token parity with @mui/joy', () => {
   });
 
   it('renders a readable grid of every dark variant for human review', async () => {
-    renderHintoricDark(
+    render(
       <div
         data-testid="dark-grid"
         style={{
@@ -180,8 +185,8 @@ describe('dark mode token parity with @mui/joy', () => {
         )}
       </div>,
     );
-    await settleTransitions();
+    await setColorScheme('dark');
 
-    await expect(page.getByTestId('dark-grid')).toMatchScreenshot('dark-tokens-button-grid');
+    await expect(page.getByTestId('dark-grid')).toMatchScreenshot('dark-tokens-button-grid-dark');
   });
 });

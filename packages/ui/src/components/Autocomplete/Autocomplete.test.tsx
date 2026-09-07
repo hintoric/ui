@@ -5,6 +5,9 @@ import { Autocomplete } from './Autocomplete';
 
 const OPTIONS = ['Alpha', 'Beta', 'Gamma'];
 
+import { z } from 'zod';
+import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
+
 describe('Autocomplete', () => {
   it('renders a text input with a placeholder', () => {
     render(<Autocomplete options={OPTIONS} placeholder="Choose one" />);
@@ -45,5 +48,28 @@ describe('Autocomplete', () => {
   it('defaults to outlined/neutral/md', () => {
     render(<Autocomplete options={OPTIONS} data-testid="root-input" />);
     expect(screen.getByTestId('root-input')).toHaveClass('min-w-0', 'flex-1');
+  });
+});
+
+describe('Autocomplete field matrix', () => {
+  runFieldMatrix({
+    name: 'stadt',
+    render: (props) => <Autocomplete {...props} options={['Berlin', 'Hamburg']} />,
+    schema: z.object({ stadt: z.enum(['Berlin', 'Hamburg'], { message: 'Stadt wählen' }) }),
+    message: 'Stadt wählen',
+    validDefaults: { stadt: 'Berlin' },
+    invalidDefaults: {},
+    expectInitialValue: () => {
+      expect(screen.getByLabelText(MATRIX_LABEL)).toHaveValue('Berlin');
+    },
+    edit: async () => {
+      await userEvent.click(screen.getByLabelText(MATRIX_LABEL));
+      await userEvent.click(await screen.findByRole('option', { name: 'Hamburg' }));
+    },
+    expectedAfterEdit: { stadt: 'Hamburg' },
+    control: () => screen.getByLabelText(MATRIX_LABEL),
+    // Combobox.Root renders a div, so that is the unwrapped root.
+    standaloneRootTag: 'DIV',
+    renderStandalone: () => <Autocomplete aria-label="frei" name="stadt" options={['Berlin']} />,
   });
 });

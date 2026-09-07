@@ -3,15 +3,19 @@ import {
   Box,
   Button,
   Card,
+  ColorSchemeMenu,
   ColorSchemeProvider,
+  ColorSchemeSwitch,
+  ColorSchemeToggle,
   IconButton,
   Input,
+  LocaleProvider,
   LocaleSwitcher,
+  RelativeTime,
   Sheet,
   Stack,
   Textarea,
   Typography,
-  useColorScheme,
   type JoyColor,
   type JoyVariant,
 } from '@hintoric/ui';
@@ -19,34 +23,26 @@ import {
 const VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
 
+const LOCALES = [
+  { value: 'de', label: 'Deutsch' },
+  { value: 'en', label: 'English' },
+];
+
+// Module scope, not a useMemo: reading the clock during render is impure, and
+// this only has to be a fixed point in the past for the demo.
+const THREE_DAYS_AGO = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+
 function LocaleDemo() {
   const [locale, setLocale] = React.useState('de');
   return (
-    <Stack direction="row" spacing={2}>
-      <LocaleSwitcher
-        locales={[
-          { value: 'de', label: 'Deutsch' },
-          { value: 'en', label: 'English' },
-        ]}
-        value={locale}
-        onChange={setLocale}
-        aria-label="Sprache wählen"
-      />
-      <Typography level="body-sm">gewählt: {locale}</Typography>
-    </Stack>
-  );
-}
-
-function ColorSchemeToggle() {
-  const { mode, setMode } = useColorScheme();
-  return (
-    <Button
-      variant="outlined"
-      color="neutral"
-      onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-    >
-      Switch to {mode === 'light' ? 'dark' : 'light'} mode
-    </Button>
+    <LocaleProvider locale={locale} onLocaleChange={setLocale} locales={LOCALES}>
+      <Stack direction="row" spacing={2}>
+        <LocaleSwitcher aria-label="Sprache wählen" />
+        <Typography level="body-sm">
+          gewählt: {locale} · <RelativeTime date={THREE_DAYS_AGO} />
+        </Typography>
+      </Stack>
+    </LocaleProvider>
   );
 }
 
@@ -146,8 +142,10 @@ export function App() {
         <Stack spacing={4}>
           <Stack direction="row" spacing={2}>
             <Typography level="h1">@hintoric/ui playground</Typography>
+            <ColorSchemeMenu />
             <ColorSchemeToggle />
-        <LocaleDemo />
+            <ColorSchemeSwitch />
+            <LocaleDemo />
           </Stack>
           <ButtonShowcase />
           <IconButtonShowcase />

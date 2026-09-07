@@ -102,3 +102,47 @@ describe('Input visual parity with @mui/joy', () => {
     }
   }
 });
+
+// Error-state pass over the same variant×colour matrix. Written out inline
+// rather than through a helper because Task 6b turns exactly this block into
+// the shared helper the other eight fields use, and it can only be shown to be
+// equivalent if this one exists first.
+describe('Input error-state parity with @mui/joy', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} in error state matches Joy UI in ${scheme}`, async () => {
+          await setColorScheme(scheme);
+          const { container: joyContainer } = render(
+            <div data-testid={`joy-err-${variant}-${color}`}>
+              <JoyCssVarsProvider defaultMode={scheme}>
+                <JoyInput error variant={variant} color={color} placeholder={color} />
+              </JoyCssVarsProvider>
+            </div>,
+          );
+          const { container: hintoricContainer } = render(
+            <div data-testid={`hintoric-err-${variant}-${color}`}>
+              <ColorSchemeProvider defaultMode={scheme}>
+                <HintoricInput error variant={variant} color={color} placeholder={color} />
+              </ColorSchemeProvider>
+            </div>,
+          );
+          await settleTransitions();
+
+          const joyWrapper = joyContainer.querySelector('input')!.parentElement as HTMLElement;
+          const hintoricWrapper = hintoricContainer.querySelector('input')!.parentElement as HTMLElement;
+          const joyStyle = getComputedStyle(joyWrapper);
+          const hintoricStyle = getComputedStyle(hintoricWrapper);
+
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
+          expect(lastShadowLayer(hintoricStyle.boxShadow)).toBe(lastShadowLayer(joyStyle.boxShadow));
+
+          await expect(page.getByTestId(`joy-err-${variant}-${color}`)).toMatchScreenshot(`input-error-${variant}-${color}-joy-${scheme}`);
+          await expect(page.getByTestId(`hintoric-err-${variant}-${color}`)).toMatchScreenshot(`input-error-${variant}-${color}-hintoric-${scheme}`);
+        });
+      }
+    }
+  }
+});

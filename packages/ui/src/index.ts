@@ -7,6 +7,9 @@ export type {
   ResolvedColorScheme,
 } from './theme/ColorSchemeProvider';
 
+export { LocaleProvider, useLocale } from './theme/LocaleProvider';
+export type { LocaleContextValue, LocaleOption, LocaleProviderProps } from './theme/LocaleProvider';
+
 export { DateTimeProvider, useDateTimeDefaults } from './theme/DateTimeProvider';
 export type { DateTimeContextValue, DateTimeProviderProps, HourCycle } from './theme/DateTimeProvider';
 
@@ -21,6 +24,12 @@ export type {
 
 export { Box } from './components/Box';
 export type { BoxProps } from './components/Box';
+
+export { HintoricLogo } from './components/HintoricLogo';
+export type { HintoricLogoProps } from './components/HintoricLogo';
+
+export { HintoricIcon } from './components/HintoricIcon';
+export type { HintoricIconProps } from './components/HintoricIcon';
 
 export { Stack } from './components/Stack';
 export type { StackProps, StackSpacing } from './components/Stack';
@@ -80,7 +89,9 @@ export { AvatarGroup } from './components/AvatarGroup';
 export type { AvatarGroupProps } from './components/AvatarGroup';
 
 export { LocaleSwitcher } from './components/LocaleSwitcher';
-export type { LocaleOption, LocaleSwitcherProps } from './components/LocaleSwitcher';
+export type { LocaleSwitcherProps } from './components/LocaleSwitcher';
+export { ConfirmationDialog } from './components/ConfirmationDialog';
+export type { ConfirmationDialogProps } from './components/ConfirmationDialog';
 
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';
@@ -90,6 +101,12 @@ export type { FormControlProps, FormControlContextValue } from './components/For
 
 export { FormLabel } from './components/FormLabel';
 export type { FormLabelProps } from './components/FormLabel';
+
+export { Form } from './components/Form';
+export type { FormProps, OwnedFormProps, ProvidedFormProps } from './components/Form';
+
+export { FormField } from './components/FormField';
+export type { FormFieldProps, FormFieldRenderArgs } from './components/FormField';
 
 export { FormHelperText } from './components/FormHelperText';
 export type { FormHelperTextProps } from './components/FormHelperText';
@@ -271,5 +288,23 @@ export type { StepButtonProps } from './components/StepButton';
 
 export { StepIndicator } from './components/StepIndicator';
 export type { StepIndicatorProps } from './components/StepIndicator';
+
+export { ColorSchemeToggle } from './components/ColorSchemeToggle';
+export type { ColorSchemeToggleProps } from './components/ColorSchemeToggle';
+
+export { ColorSchemeMenuItems } from './components/ColorSchemeMenuItems';
+export type { ColorSchemeMenuItemsProps } from './components/ColorSchemeMenuItems';
+
+export { ColorSchemeMenu } from './components/ColorSchemeMenu';
+export type { ColorSchemeMenuProps } from './components/ColorSchemeMenu';
+
+export { ColorSchemeToggleGroup } from './components/ColorSchemeToggleGroup';
+export type { ColorSchemeToggleGroupProps } from './components/ColorSchemeToggleGroup';
+
+export { ColorSchemeSwitch } from './components/ColorSchemeSwitch';
+export type { ColorSchemeSwitchProps } from './components/ColorSchemeSwitch';
+
+export { ColorSchemeSelect } from './components/ColorSchemeSelect';
+export type { ColorSchemeSelectProps } from './components/ColorSchemeSelect';
 
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

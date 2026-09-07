@@ -46,6 +46,7 @@ export const NAV: NavGroup[] = [
       { to: '/slider', label: 'Slider' },
       { to: '/toggle-button-group', label: 'ToggleButtonGroup' },
       { to: '/form-control', label: 'FormControl' },
+      { to: '/forms', label: 'Forms' },
     ],
   },
   {
@@ -90,10 +91,21 @@ export const NAV: NavGroup[] = [
     // whole job (pick a language) out of several components, where everything
     // above is one part you assemble yourself.
     title: 'Blocks',
-    links: [{ to: '/locale-switcher', label: 'LocaleSwitcher' }],
+    links: [
+      { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
+      { to: '/locale-switcher', label: 'LocaleSwitcher' },
+    ],
   },
   {
     title: 'Utils',
-    links: [{ to: '/color-scheme-provider', label: 'ColorSchemeProvider' }],
+    links: [
+      { to: '/color-scheme-provider', label: 'ColorSchemeProvider' },
+      { to: '/color-scheme-menu', label: 'ColorSchemeMenu' },
+      { to: '/color-scheme-toggle', label: 'ColorSchemeToggle' },
+      { to: '/color-scheme-toggle-group', label: 'ColorSchemeToggleGroup' },
+      { to: '/color-scheme-switch', label: 'ColorSchemeSwitch' },
+      { to: '/color-scheme-select', label: 'ColorSchemeSelect' },
+      { to: '/locale-provider', label: 'LocaleProvider' },
+    ],
   },
 ];

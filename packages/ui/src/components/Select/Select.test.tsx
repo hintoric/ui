@@ -4,6 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { Select } from './Select';
 import { Option } from '../Option';
 
+import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
+import { z } from 'zod';
+
 describe('Select', () => {
   it('renders a placeholder when no value is selected', () => {
     render(
@@ -58,5 +61,38 @@ describe('Select', () => {
       </Select>,
     );
     expect(screen.getByTestId('trigger')).toHaveClass('text-neutral-outlined-color', 'min-h-9');
+  });
+});
+
+describe('Select field matrix', () => {
+  runFieldMatrix({
+    name: 'rolle',
+    render: (props) => (
+      <Select {...props} placeholder="—">
+        <Option value="admin">Admin</Option>
+        <Option value="leser">Leser</Option>
+      </Select>
+    ),
+    schema: z.object({ rolle: z.enum(['admin', 'leser'], { message: 'Rolle wählen' }) }),
+    message: 'Rolle wählen',
+    validDefaults: { rolle: 'leser' },
+    invalidDefaults: {},
+    expectInitialValue: () => {
+      expect(screen.getByLabelText(MATRIX_LABEL)).toHaveTextContent('Leser');
+    },
+    edit: async () => {
+      await userEvent.click(screen.getByLabelText(MATRIX_LABEL));
+      // The listbox lives in a Portal, so it needs to be awaited into
+      // existence rather than queried synchronously.
+      await userEvent.click(await screen.findByRole('option', { name: 'Admin' }));
+    },
+    expectedAfterEdit: { rolle: 'admin' },
+    control: () => screen.getByLabelText(MATRIX_LABEL),
+    standaloneRootTag: 'BUTTON',
+    renderStandalone: () => (
+      <Select aria-label="frei" name="rolle">
+        <Option value="admin">Admin</Option>
+      </Select>
+    ),
   });
 });

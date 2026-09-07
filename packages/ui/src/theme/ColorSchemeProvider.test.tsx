@@ -187,4 +187,38 @@ describe('ColorSchemeProvider', () => {
 
     expect(screen.getByTestId('mode')).toHaveTextContent('light');
   });
+
+  it('mirrors the resolved scheme onto <html> so portals inherit it', () => {
+    render(
+      <ColorSchemeProvider defaultMode="dark">
+        <Consumer />
+      </ColorSchemeProvider>,
+    );
+    // Base UI portals mount onto document.body, a sibling of the provider's
+    // own wrapper div — without this, every popup stays light in a dark app.
+    expect(document.documentElement).toHaveAttribute('data-color-scheme', 'dark');
+  });
+
+  it('updates <html> when the mode changes', async () => {
+    render(
+      <ColorSchemeProvider defaultMode="light">
+        <Consumer />
+      </ColorSchemeProvider>,
+    );
+    expect(document.documentElement).toHaveAttribute('data-color-scheme', 'light');
+
+    await userEvent.click(screen.getByRole('button', { name: 'go dark' }));
+
+    expect(document.documentElement).toHaveAttribute('data-color-scheme', 'dark');
+  });
+
+  it('leaves <html> as it found it when unmounted', () => {
+    const { unmount } = render(
+      <ColorSchemeProvider defaultMode="dark">
+        <Consumer />
+      </ColorSchemeProvider>,
+    );
+    unmount();
+    expect(document.documentElement).not.toHaveAttribute('data-color-scheme');
+  });
 });

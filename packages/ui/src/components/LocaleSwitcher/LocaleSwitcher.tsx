@@ -5,6 +5,7 @@ import { Dropdown } from '../Dropdown';
 import { Menu } from '../Menu';
 import { MenuButton } from '../MenuButton';
 import { MenuItem } from '../MenuItem';
+import { useLocaleContext } from '../../theme/LocaleProvider';
 import type { LocaleOption, LocaleSwitcherProps } from './types';
 
 type FlagComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>;
@@ -51,9 +52,9 @@ function Flag({ locale, size }: { locale: LocaleOption; size: 'sm' | 'md' | 'lg'
  * header corner.
  */
 export function LocaleSwitcher({
-  locales,
-  value,
-  onChange,
+  locales: localesProp,
+  value: valueProp,
+  onChange: onChangeProp,
   variant = 'outlined',
   color = 'neutral',
   size = 'sm',
@@ -61,6 +62,34 @@ export function LocaleSwitcher({
   ...buttonProps
 }: LocaleSwitcherProps) {
   const [open, setOpen] = React.useState(false);
+  const context = useLocaleContext();
+
+  // Props win over the context, so the switcher stays usable standalone --
+  // the docs page puts several independent ones on the same screen.
+  const locales = localesProp ?? context?.locales;
+  const value = valueProp ?? context?.locale;
+  const onChange = onChangeProp ?? context?.setLocale;
+
+  // An empty button over an empty menu is the silent wrong answer; name the
+  // missing piece instead.
+  if (!locales) {
+    throw new Error(
+      'LocaleSwitcher: no `locales` given and no LocaleProvider supplies them. ' +
+        'Pass a `locales` prop, or set `locales` on LocaleProvider.',
+    );
+  }
+  if (value === undefined) {
+    throw new Error(
+      'LocaleSwitcher: no `value` given and no LocaleProvider to read the current locale from. ' +
+        'Pass a `value` prop, or wrap this in a LocaleProvider.',
+    );
+  }
+  if (!onChange) {
+    throw new Error(
+      'LocaleSwitcher: no `onChange` given and no LocaleProvider supplies `onLocaleChange`. ' +
+        'Pass an `onChange` prop, or set `onLocaleChange` on LocaleProvider.',
+    );
+  }
 
   // A browser can report a language the application does not offer. Showing
   // the raw value beats rendering an empty button.

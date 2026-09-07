@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, Radio as JoyRadio } from '@mui/joy';
+import { CssVarsProvider as JoyCssVarsProvider, FormControl as JoyFormControl, Radio as JoyRadio } from '@mui/joy';
 import { Radio as HintoricRadio } from '../components/Radio';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { describeErrorParity, parkPointer } from './errorParity';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -103,6 +105,62 @@ describe('Radio visual parity with @mui/joy', () => {
       hintoricEl.blur();
 
       expect(hintoricOutline).toBe(joyOutline);
+    });
+  }
+});
+
+describeErrorParity({
+  slug: 'radio',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyFormControl error>
+      <JoyRadio variant={variant} color={color} label="x" />
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricFormControl error>
+      <HintoricRadio variant={variant} color={color} label="x" />
+    </HintoricFormControl>
+  ),
+  // Joy hides the real <input> and paints a separate box; ours carries the
+  // role on the visible element itself. Same target, different DOM.
+  joyElement: (container) => container.querySelector('.MuiRadio-radio') as HTMLElement,
+  element: (container) => container.querySelector('[role="radio"]') as HTMLElement,
+});
+
+describe('Radio error state with no explicit colour', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    it(`turns danger like Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      await parkPointer('radio-nocolor');
+      const { container: joyContainer } = render(
+        <div data-testid="joy-radio-danger">
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyFormControl error>
+              <JoyRadio label="x" />
+            </JoyFormControl>
+          </JoyCssVarsProvider>
+        </div>,
+      );
+      const { container: hintoricContainer } = render(
+        <div data-testid="hintoric-radio-danger">
+          <HintoricFormControl error>
+            <HintoricRadio label="x" />
+          </HintoricFormControl>
+        </div>,
+      );
+      await settleTransitions();
+
+      const joy = getComputedStyle(joyContainer.querySelector('.MuiRadio-radio') as HTMLElement);
+      const hintoric = getComputedStyle(
+        hintoricContainer.querySelector('[role="radio"]') as HTMLElement,
+      );
+      expect(hintoric.backgroundColor).toBe(joy.backgroundColor);
+      expect(hintoric.borderColor).toBe(joy.borderColor);
+
+      await expect(page.getByTestId('joy-radio-danger')).toMatchScreenshot(`radio-error-nocolor-joy-${scheme}`);
+      await expect(page.getByTestId('hintoric-radio-danger')).toMatchScreenshot(`radio-error-nocolor-hintoric-${scheme}`);
     });
   }
 });

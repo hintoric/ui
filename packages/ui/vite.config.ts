@@ -41,12 +41,22 @@ export default defineConfig({
       // consumer, including the ones that never render a LocaleSwitcher.
       // Left external, it stays a normal dependency and drops out
       // entirely for anyone who tree-shakes LocaleSwitcher away.
+      // react-hook-form and zod are peerDependencies and MUST be external.
+      // This list is exact-specifier matched, so an omission silently bundles
+      // a second copy — and a second react-hook-form module instance makes
+      // useFormContext() return null in the consumer's app, which takes
+      // behaviour away without throwing anything. zod is here because
+      // @hookform/resolvers/zod imports it; the resolver itself stays bundled,
+      // since its version is coupled to both and consumers shouldn't have to
+      // track that.
       external: [
         'react',
         'react/jsx-runtime',
         'react/jsx-dev-runtime',
         'react-dom',
         'country-flag-icons/react/1x1',
+        'react-hook-form',
+        'zod',
       ],
       output: {
         assetFileNames: (asset) => (asset.names?.[0]?.endsWith('.css') ? 'style.css' : '[name][extname]'),

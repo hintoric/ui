@@ -41,6 +41,49 @@ export const INTERACTIVE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, stri
 // state (e.g. ListItemButton), which Joy UI implements as a permanently-
 // applied `${variant}Active` style, not a color/variant switch. Confirmed
 // against @mui/joy's ListItemButton.js source.
+/**
+ * Just the disabled text colour, without the `disabled:` prefix — for an
+ * element that has to carry that colour unconditionally rather than only while
+ * `:disabled` matches.
+ *
+ * Button's loading indicator is the case: the root turns `text-transparent!`
+ * while loading (to hide the label the way Joy does), and an indicator drawn in
+ * `currentColor` would inherit that transparency and vanish. Joy re-colours its
+ * own indicator for exactly the same reason, with
+ * `theme.variants[variant + 'Disabled'][color].color` — a loading button is
+ * always disabled, so the disabled colour is the right one.
+ */
+export const DISABLED_TEXT_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'text-primary-solid-disabled-color',
+    neutral: 'text-neutral-solid-disabled-color',
+    danger: 'text-danger-solid-disabled-color',
+    success: 'text-success-solid-disabled-color',
+    warning: 'text-warning-solid-disabled-color',
+  },
+  soft: {
+    primary: 'text-primary-soft-disabled-color',
+    neutral: 'text-neutral-soft-disabled-color',
+    danger: 'text-danger-soft-disabled-color',
+    success: 'text-success-soft-disabled-color',
+    warning: 'text-warning-soft-disabled-color',
+  },
+  outlined: {
+    primary: 'text-primary-outlined-disabled-color',
+    neutral: 'text-neutral-outlined-disabled-color',
+    danger: 'text-danger-outlined-disabled-color',
+    success: 'text-success-outlined-disabled-color',
+    warning: 'text-warning-outlined-disabled-color',
+  },
+  plain: {
+    primary: 'text-primary-plain-disabled-color',
+    neutral: 'text-neutral-plain-disabled-color',
+    danger: 'text-danger-plain-disabled-color',
+    success: 'text-success-plain-disabled-color',
+    warning: 'text-warning-plain-disabled-color',
+  },
+};
+
 export const ACTIVE_BG_CLASS: Record<JoyVariant, Record<JoyColor, string>> = {
   solid: {
     primary: 'bg-primary-solid-active-bg',
