@@ -50,3 +50,45 @@ export function lastShadowLayers(boxShadow: string, n: number): string {
   layers.push(current.trim());
   return layers.slice(-n).join(', ');
 }
+
+export const COLOR_SCHEMES = ['light', 'dark'] as const;
+export type ColorScheme = (typeof COLOR_SCHEMES)[number];
+
+/**
+ * Puts the whole document into `mode`.
+ *
+ * On <html>, deliberately, rather than on a wrapper element: Menu, Modal,
+ * Drawer, Tooltip, Snackbar, Select and Autocomplete render their popup into a
+ * portal on <body>, which no wrapper contains. A wrapper scope leaves those
+ * popups light inside a dark test, silently — see darkMode.tsx, which takes
+ * the wrapper approach for a different job and documents the same caveat.
+ *
+ * Both attributes are set because the two token systems use different ones:
+ * ours reads `[data-color-scheme]` (theme.css), Joy's generated stylesheet
+ * reads `[data-joy-color-scheme]`.
+ *
+ * Awaits settleTransitions(): `transition-colors` is on every interactive
+ * component, so a getComputedStyle() immediately after the flip reads a value
+ * mid-transition rather than the final one.
+ */
+export async function setColorScheme(mode: ColorScheme): Promise<void> {
+  document.documentElement.setAttribute('data-color-scheme', mode);
+  document.documentElement.setAttribute('data-joy-color-scheme', mode);
+
+  /*
+   * Dark mode needs a painted page background, or a screenshot of any
+   * transparent element (`plain`/`outlined` variants) is dark text on a white
+   * page and no human can review it.
+   *
+   * Light mode must NOT get one, and this asymmetry is deliberate. The 1248
+   * existing light baselines were taken over a *transparent* page, and
+   * "transparent" is not "white" for anything semi-transparent composited on
+   * top of it: painting the body white shifted ModalOverflow's scrim from
+   * rgb(58,58,58) to rgb(110,110,110) and changed 93% of that baseline's
+   * pixels. Discovered by the no-modified-light-baseline gate, which is why
+   * that gate exists.
+   */
+  document.body.style.background = mode === 'dark' ? 'var(--color-canvas)' : '';
+
+  await settleTransitions();
+}

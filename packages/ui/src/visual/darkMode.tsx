@@ -19,6 +19,15 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
  *
  * Portalled content (Menu, Select's listbox) mounts outside these wrappers and
  * therefore does NOT inherit them — for those, drive the real provider instead.
+ *
+ * Two mechanisms therefore coexist, on purpose:
+ *
+ * - These wrapper scopes, for tests that show a light and a dark element
+ *   together in one document (DarkTokens' grid). `defaultMode="dark"` cannot
+ *   do that — it writes onto the shared <html>.
+ * - `setColorScheme()` in helpers.ts, which is document-level and is what the
+ *   per-component suite uses, because that suite must cover portalled
+ *   components and a wrapper cannot reach them.
  */
 export function renderJoyLight(node: React.ReactNode): void {
   render(
