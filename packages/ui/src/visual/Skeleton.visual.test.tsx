@@ -3,28 +3,36 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Skeleton as JoySkeleton } from '@mui/joy';
 import { Skeleton as HintoricSkeleton } from '../components/Skeleton';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 const VARIANTS = ['text', 'circular', 'rectangular'] as const;
 
 // No color/variant (in the Joy-color sense) axis — tests its actual
 // supported states (shape variants), per CLAUDE.md's allowance.
 describe('Skeleton visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    it(`variant=${variant} matches Joy UI's computed shape`, async () => {
-      render(
-        <JoyCssVarsProvider>
-          <JoySkeleton data-testid={`joy-${variant}`} variant={variant} width={80} height={40} />
-        </JoyCssVarsProvider>,
-      );
-      render(<HintoricSkeleton data-testid={`hintoric-${variant}`} variant={variant} width={80} height={40} />);
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`variant=${variant} matches Joy UI's computed shape in ${scheme}`, async () => {
+        await setColorScheme(scheme);
 
-      const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}`).element());
-      const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}`).element());
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoySkeleton data-testid={`joy-${variant}`} variant={variant} width={80} height={40} />
+          </JoyCssVarsProvider>,
+        );
+        render(<HintoricSkeleton data-testid={`hintoric-${variant}`} variant={variant} width={80} height={40} />);
 
-      expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+        const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}`).element());
+        const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}`).element());
 
-      await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy-light`);
-      await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric-light`);
-    });
+        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+        expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+        expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+        expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+
+        await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric-${scheme}`);
+      });
+    }
   }
 });

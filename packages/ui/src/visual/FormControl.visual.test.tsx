@@ -5,31 +5,39 @@ import { CssVarsProvider as JoyCssVarsProvider, FormControl as JoyFormControl, F
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 import { FormLabel as HintoricFormLabel } from '../components/FormLabel';
 import { Input as HintoricInput } from '../components/Input';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 describe('FormControl visual parity with @mui/joy', () => {
-  it("matches Joy UI's flex layout", async () => {
-    render(
-      <JoyCssVarsProvider>
-        <JoyFormControl data-testid="joy">
-          <JoyFormLabel>Email</JoyFormLabel>
-          <JoyInput placeholder="you@example.com" />
-        </JoyFormControl>
-      </JoyCssVarsProvider>,
-    );
-    render(
-      <HintoricFormControl data-testid="hintoric">
-        <HintoricFormLabel>Email</HintoricFormLabel>
-        <HintoricInput placeholder="you@example.com" />
-      </HintoricFormControl>,
-    );
+  for (const scheme of COLOR_SCHEMES) {
+    it(`matches Joy UI's flex layout in ${scheme}`, async () => {
+      await setColorScheme(scheme);
 
-    const joyStyle = getComputedStyle(page.getByTestId('joy').element());
-    const hintoricStyle = getComputedStyle(page.getByTestId('hintoric').element());
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyFormControl data-testid="joy">
+            <JoyFormLabel>Email</JoyFormLabel>
+            <JoyInput placeholder="you@example.com" />
+          </JoyFormControl>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <HintoricFormControl data-testid="hintoric">
+          <HintoricFormLabel>Email</HintoricFormLabel>
+          <HintoricInput placeholder="you@example.com" />
+        </HintoricFormControl>,
+      );
 
-    expect(hintoricStyle.display).toBe(joyStyle.display);
-    expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
+      const joyStyle = getComputedStyle(page.getByTestId('joy').element());
+      const hintoricStyle = getComputedStyle(page.getByTestId('hintoric').element());
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('formcontrol-joy-light');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formcontrol-hintoric-light');
-  });
+      expect(hintoricStyle.display).toBe(joyStyle.display);
+      expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
+      expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+      expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+      expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+
+      await expect(page.getByTestId('joy')).toMatchScreenshot(`formcontrol-joy-${scheme}`);
+      await expect(page.getByTestId('hintoric')).toMatchScreenshot(`formcontrol-hintoric-${scheme}`);
+    });
+  }
 });

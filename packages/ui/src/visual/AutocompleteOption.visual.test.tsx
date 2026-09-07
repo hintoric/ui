@@ -8,6 +8,7 @@ import {
   AutocompleteOption as JoyAutocompleteOption,
 } from '@mui/joy';
 import { AutocompleteOption as HintoricAutocompleteOption } from '../components/AutocompleteOption';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -16,106 +17,114 @@ const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 // auto-highlights the first matching item, so (mirroring Option's own visual
 // test) a genuine "resting" comparison looks at the SECOND option instead.
 describe('AutocompleteOption visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    for (const color of COLORS) {
-      it(`${variant}/${color} resting state matches Joy UI's computed styles`, async () => {
-        render(
-          <JoyCssVarsProvider>
-            <JoyAutocomplete
-              open
-              options={['Alpha', 'Beta']}
-              renderOption={(props, option) => (
-                <JoyAutocompleteOption
-                  {...props}
-                  key={option}
-                  variant={variant}
-                  color={color}
-                  data-testid={option === 'Beta' ? `joy-${variant}-${color}` : undefined}
-                >
-                  {option}
-                </JoyAutocompleteOption>
-              )}
-            />
-          </JoyCssVarsProvider>,
-        );
-        render(
-          <Combobox.Root items={['Alpha', 'Beta']} open>
-            <Combobox.Input />
-            <Combobox.Portal>
-              <Combobox.Positioner>
-                <Combobox.Popup className="min-w-[200px]">
-                  <Combobox.List>
-                    {(item: string) => (
-                      <HintoricAutocompleteOption
-                        key={item}
-                        value={item}
-                        variant={variant}
-                        color={color}
-                        data-testid={item === 'Beta' ? `hintoric-${variant}-${color}` : undefined}
-                      >
-                        {item}
-                      </HintoricAutocompleteOption>
-                    )}
-                  </Combobox.List>
-                </Combobox.Popup>
-              </Combobox.Positioner>
-            </Combobox.Portal>
-          </Combobox.Root>,
-        );
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} resting state matches Joy UI's computed styles in ${scheme}`, async () => {
+          await setColorScheme(scheme);
 
-        const joyOption = page.getByTestId(`joy-${variant}-${color}`);
-        const hintoricOption = page.getByTestId(`hintoric-${variant}-${color}`);
-
-        const joyStyle = getComputedStyle(joyOption.element());
-        const hintoricStyle = getComputedStyle(hintoricOption.element());
-
-        expect(hintoricStyle.color).toBe(joyStyle.color);
-        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-
-        await expect(joyOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-joy-light`);
-        await expect(hintoricOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-hintoric-light`);
-      });
-    }
-  }
-
-  it('selected option gets the variant Active background + medium font-weight', async () => {
-    render(
-      <JoyCssVarsProvider>
-        <JoyAutocomplete
-          open
-          value="Alpha"
-          options={['Alpha']}
-          renderOption={(props, option) => (
-            <JoyAutocompleteOption {...props} key={option} data-testid="joy-selected">
-              {option}
-            </JoyAutocompleteOption>
-          )}
-        />
-      </JoyCssVarsProvider>,
-    );
-    render(
-      <Combobox.Root items={['Alpha']} value="Alpha" open>
-        <Combobox.Input />
-        <Combobox.Portal>
-          <Combobox.Positioner>
-            <Combobox.Popup className="min-w-[200px]">
-              <Combobox.List>
-                {(item: string) => (
-                  <HintoricAutocompleteOption key={item} value={item} data-testid="hintoric-selected">
-                    {item}
-                  </HintoricAutocompleteOption>
+          render(
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyAutocomplete
+                open
+                options={['Alpha', 'Beta']}
+                renderOption={(props, option) => (
+                  <JoyAutocompleteOption
+                    {...props}
+                    key={option}
+                    variant={variant}
+                    color={color}
+                    data-testid={option === 'Beta' ? `joy-${variant}-${color}` : undefined}
+                  >
+                    {option}
+                  </JoyAutocompleteOption>
                 )}
-              </Combobox.List>
-            </Combobox.Popup>
-          </Combobox.Positioner>
-        </Combobox.Portal>
-      </Combobox.Root>,
-    );
+              />
+            </JoyCssVarsProvider>,
+          );
+          render(
+            <Combobox.Root items={['Alpha', 'Beta']} open>
+              <Combobox.Input />
+              <Combobox.Portal>
+                <Combobox.Positioner>
+                  <Combobox.Popup className="min-w-[200px]">
+                    <Combobox.List>
+                      {(item: string) => (
+                        <HintoricAutocompleteOption
+                          key={item}
+                          value={item}
+                          variant={variant}
+                          color={color}
+                          data-testid={item === 'Beta' ? `hintoric-${variant}-${color}` : undefined}
+                        >
+                          {item}
+                        </HintoricAutocompleteOption>
+                      )}
+                    </Combobox.List>
+                  </Combobox.Popup>
+                </Combobox.Positioner>
+              </Combobox.Portal>
+            </Combobox.Root>,
+          );
 
-    const joyStyle = getComputedStyle(page.getByTestId('joy-selected').element());
-    const hintoricStyle = getComputedStyle(page.getByTestId('hintoric-selected').element());
+          const joyOption = page.getByTestId(`joy-${variant}-${color}`);
+          const hintoricOption = page.getByTestId(`hintoric-${variant}-${color}`);
 
-    expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-    expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
-  });
+          const joyStyle = getComputedStyle(joyOption.element());
+          const hintoricStyle = getComputedStyle(hintoricOption.element());
+
+          expect(hintoricStyle.color).toBe(joyStyle.color);
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+
+          await expect(joyOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-joy-${scheme}`);
+          await expect(hintoricOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-hintoric-${scheme}`);
+        });
+      }
+    }
+
+    it(`selected option gets the variant Active background + medium font-weight in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyAutocomplete
+            open
+            value="Alpha"
+            options={['Alpha']}
+            renderOption={(props, option) => (
+              <JoyAutocompleteOption {...props} key={option} data-testid="joy-selected">
+                {option}
+              </JoyAutocompleteOption>
+            )}
+          />
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <Combobox.Root items={['Alpha']} value="Alpha" open>
+          <Combobox.Input />
+          <Combobox.Portal>
+            <Combobox.Positioner>
+              <Combobox.Popup className="min-w-[200px]">
+                <Combobox.List>
+                  {(item: string) => (
+                    <HintoricAutocompleteOption key={item} value={item} data-testid="hintoric-selected">
+                      {item}
+                    </HintoricAutocompleteOption>
+                  )}
+                </Combobox.List>
+              </Combobox.Popup>
+            </Combobox.Positioner>
+          </Combobox.Portal>
+        </Combobox.Root>,
+      );
+
+      const joyStyle = getComputedStyle(page.getByTestId('joy-selected').element());
+      const hintoricStyle = getComputedStyle(page.getByTestId('hintoric-selected').element());
+
+      expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+      expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+    });
+  }
 });

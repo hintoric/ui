@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Avatar as JoyAvatar } from '@mui/joy';
 import { Avatar as HintoricAvatar } from '../components/Avatar';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -11,92 +12,102 @@ const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 // Avatar is non-interactive — no focus state to cover, just the variant x
 // color x size matrix, plus the image-fallback path.
 describe('Avatar visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    for (const color of COLORS) {
-      it(`${variant}/${color} matches Joy UI's computed styles`, async () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} matches Joy UI's computed styles in ${scheme}`, async () => {
+          await setColorScheme(scheme);
+
+          render(
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyAvatar data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
+                JW
+              </JoyAvatar>
+            </JoyCssVarsProvider>,
+          );
+          render(
+            <ColorSchemeProvider defaultMode={scheme}>
+              <HintoricAvatar data-testid={`hintoric-${variant}-${color}`} variant={variant} color={color}>
+                JW
+              </HintoricAvatar>
+            </ColorSchemeProvider>,
+          );
+
+          const joyLocator = page.getByTestId(`joy-${variant}-${color}`);
+          const hintoricLocator = page.getByTestId(`hintoric-${variant}-${color}`);
+
+          const joyStyle = getComputedStyle(joyLocator.element());
+          const hintoricStyle = getComputedStyle(hintoricLocator.element());
+
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.color).toBe(joyStyle.color);
+          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
+          expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+          expect(hintoricStyle.width).toBe(joyStyle.width);
+          expect(hintoricStyle.height).toBe(joyStyle.height);
+          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+
+          await expect(joyLocator).toMatchScreenshot(`avatar-${variant}-${color}-joy-${scheme}`);
+          await expect(hintoricLocator).toMatchScreenshot(`avatar-${variant}-${color}-hintoric-${scheme}`);
+        });
+      }
+    }
+
+    for (const size of ['sm', 'md', 'lg'] as const) {
+      it(`size=${size} matches Joy UI's computed dimensions in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
         render(
-          <JoyCssVarsProvider>
-            <JoyAvatar data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyAvatar data-testid={`joy-size-${size}`} size={size}>
               JW
             </JoyAvatar>
           </JoyCssVarsProvider>,
         );
         render(
-          <ColorSchemeProvider>
-            <HintoricAvatar data-testid={`hintoric-${variant}-${color}`} variant={variant} color={color}>
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricAvatar data-testid={`hintoric-size-${size}`} size={size}>
               JW
             </HintoricAvatar>
           </ColorSchemeProvider>,
         );
 
-        const joyLocator = page.getByTestId(`joy-${variant}-${color}`);
-        const hintoricLocator = page.getByTestId(`hintoric-${variant}-${color}`);
+        const joyStyle = getComputedStyle(page.getByTestId(`joy-size-${size}`).element());
+        const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-size-${size}`).element());
 
-        const joyStyle = getComputedStyle(joyLocator.element());
-        const hintoricStyle = getComputedStyle(hintoricLocator.element());
-
-        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-        expect(hintoricStyle.color).toBe(joyStyle.color);
-        expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
-        expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
-        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
-
-        await expect(joyLocator).toMatchScreenshot(`avatar-${variant}-${color}-joy-light`);
-        await expect(hintoricLocator).toMatchScreenshot(`avatar-${variant}-${color}-hintoric-light`);
       });
     }
-  }
 
-  for (const size of ['sm', 'md', 'lg'] as const) {
-    it(`size=${size} matches Joy UI's computed dimensions`, async () => {
+    it(`renders an image that fills the circle, matching Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      const src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7';
       render(
-        <JoyCssVarsProvider>
-          <JoyAvatar data-testid={`joy-size-${size}`} size={size}>
-            JW
-          </JoyAvatar>
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyAvatar data-testid="joy-img" src={src} alt="avatar" />
         </JoyCssVarsProvider>,
       );
       render(
-        <ColorSchemeProvider>
-          <HintoricAvatar data-testid={`hintoric-size-${size}`} size={size}>
-            JW
-          </HintoricAvatar>
+        <ColorSchemeProvider defaultMode={scheme}>
+          <HintoricAvatar data-testid="hintoric-img" src={src} alt="avatar" />
         </ColorSchemeProvider>,
       );
 
-      const joyStyle = getComputedStyle(page.getByTestId(`joy-size-${size}`).element());
-      const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-size-${size}`).element());
+      const joyImg = page.getByTestId('joy-img').element().querySelector('img') as HTMLImageElement;
+      const hintoricImg = page.getByTestId('hintoric-img').element().querySelector('img') as HTMLImageElement;
+
+      const joyStyle = getComputedStyle(joyImg);
+      const hintoricStyle = getComputedStyle(hintoricImg);
 
       expect(hintoricStyle.width).toBe(joyStyle.width);
       expect(hintoricStyle.height).toBe(joyStyle.height);
-      expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+      expect(hintoricStyle.objectFit).toBe(joyStyle.objectFit);
     });
   }
-
-  it('renders an image that fills the circle, matching Joy UI', async () => {
-    const src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7';
-    render(
-      <JoyCssVarsProvider>
-        <JoyAvatar data-testid="joy-img" src={src} alt="avatar" />
-      </JoyCssVarsProvider>,
-    );
-    render(
-      <ColorSchemeProvider>
-        <HintoricAvatar data-testid="hintoric-img" src={src} alt="avatar" />
-      </ColorSchemeProvider>,
-    );
-
-    const joyImg = page.getByTestId('joy-img').element().querySelector('img') as HTMLImageElement;
-    const hintoricImg = page.getByTestId('hintoric-img').element().querySelector('img') as HTMLImageElement;
-
-    const joyStyle = getComputedStyle(joyImg);
-    const hintoricStyle = getComputedStyle(hintoricImg);
-
-    expect(hintoricStyle.width).toBe(joyStyle.width);
-    expect(hintoricStyle.height).toBe(joyStyle.height);
-    expect(hintoricStyle.objectFit).toBe(joyStyle.objectFit);
-  });
 });

@@ -92,3 +92,29 @@ export async function setColorScheme(mode: ColorScheme): Promise<void> {
 
   await settleTransitions();
 }
+
+/**
+ * Joy expresses line-height as a unitless ratio, so its computed value carries
+ * the ratio's rounding: `lineHeight.sm` is 1.42858, and 1.42858 × 14px is
+ * 20.00012px, which the browser reports as `20.0001px`. A Tailwind class that
+ * states the same design intent lands on a clean `20px`.
+ *
+ * That 0.0001px is not a divergence anyone can see or should chase, so
+ * line-height is the one property compared with a tolerance rather than by
+ * string equality. Everything else in this suite stays exact — a loose
+ * comparison is how real divergences hide.
+ */
+export function expectSameLineHeight(ours: string, joy: string): void {
+  const a = parseFloat(ours);
+  const b = parseFloat(joy);
+  if (Number.isNaN(a) || Number.isNaN(b)) {
+    // `normal` and other keywords have no numeric value: compare as given.
+    if (ours !== joy) {
+      throw new Error(`line-height mismatch: ours ${ours}, Joy ${joy}`);
+    }
+    return;
+  }
+  if (Math.abs(a - b) > 0.01) {
+    throw new Error(`line-height mismatch: ours ${ours}, Joy ${joy}`);
+  }
+}

@@ -3,6 +3,7 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Tooltip as JoyTooltip } from '@mui/joy';
 import { Tooltip as HintoricTooltip } from '../components/Tooltip';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -18,34 +19,41 @@ const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 // review only per CLAUDE.md — the computed-style assertions below are the
 // actual pass/fail signal, so they stay.
 describe('Tooltip visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    for (const color of COLORS) {
-      it(`${variant}/${color} matches Joy UI's computed styles`, async () => {
-        render(
-          <JoyCssVarsProvider>
-            <JoyTooltip title={color} variant={variant} color={color} open>
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} matches Joy UI's computed styles in ${scheme}`, async () => {
+          await setColorScheme(scheme);
+
+          render(
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyTooltip title={color} variant={variant} color={color} open>
+                <button>trigger</button>
+              </JoyTooltip>
+            </JoyCssVarsProvider>,
+          );
+          render(
+            <HintoricTooltip title={color} variant={variant} color={color} defaultOpen>
               <button>trigger</button>
-            </JoyTooltip>
-          </JoyCssVarsProvider>,
-        );
-        render(
-          <HintoricTooltip title={color} variant={variant} color={color} defaultOpen>
-            <button>trigger</button>
-          </HintoricTooltip>,
-        );
+            </HintoricTooltip>,
+          );
 
-        const joyPopupLocator = page.getByText(color).nth(0);
-        const hintoricPopupLocator = page.getByText(color).nth(1);
+          const joyPopupLocator = page.getByText(color).nth(0);
+          const hintoricPopupLocator = page.getByText(color).nth(1);
 
-        const joyStyle = getComputedStyle(joyPopupLocator.element().closest('[role="tooltip"]') ?? joyPopupLocator.element());
-        const hintoricStyle = getComputedStyle(
-          hintoricPopupLocator.element().closest('[role="tooltip"]') ?? hintoricPopupLocator.element(),
-        );
+          const joyStyle = getComputedStyle(joyPopupLocator.element().closest('[role="tooltip"]') ?? joyPopupLocator.element());
+          const hintoricStyle = getComputedStyle(
+            hintoricPopupLocator.element().closest('[role="tooltip"]') ?? hintoricPopupLocator.element(),
+          );
 
-        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-        expect(hintoricStyle.color).toBe(joyStyle.color);
-        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
-      });
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.color).toBe(joyStyle.color);
+          expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+        });
+      }
     }
   }
 });
