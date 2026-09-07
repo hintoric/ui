@@ -41,6 +41,10 @@ describe('Card visual parity with @mui/joy', () => {
         expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(hintoricStyle.padding).toBe(joyStyle.padding);
+        // Joy's Card is `position: relative` (Card.js) — CardCover's
+        // `absolute inset-0` layer anchors to it, so this is load-bearing,
+        // not cosmetic: without it the cover escapes to the viewport.
+        expect(hintoricStyle.position).toBe(joyStyle.position);
 
         await expect(joyLocator).toMatchScreenshot(`card-${variant}-${color}-joy`);
         await expect(hintoricLocator).toMatchScreenshot(`card-${variant}-${color}-hintoric`);

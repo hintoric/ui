@@ -11,11 +11,15 @@
     "directory": "packages/ui"
   },
   "bugs": "https://github.com/hintoric/ui/issues",
-  "sideEffects": ["**/*.css"],
+  "sideEffects": [
+    "**/*.css"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -35,30 +39,31 @@
     "@tanstack/react-table": "^9.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "country-flag-icons": "^1.6.20",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@typescript/typescript6": "^6.0.2",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/joy": "5.0.0-beta.52",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
+    "@typescript/typescript6": "^6.0.2",
     "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/browser-playwright": "^4.1.11",
     "jsdom": "^30.0.1",
+    "playwright": "^1.62.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-dts": "^5.1.0",
-    "vitest": "^4.1.11",
-    "@vitest/browser-playwright": "^4.1.11",
-    "playwright": "^1.62.1",
-    "@mui/joy": "5.0.0-beta.52",
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1"
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "build": "vite build",

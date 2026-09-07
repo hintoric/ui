@@ -12,6 +12,18 @@ const INDICATOR_SIZE_CLASS = {
   lg: 'text-2xl',
 } as const;
 
+// Joy spaces Select's slots with `--Select-gap` (0.5rem) margins on each slot
+// rather than a flex gap on the root, and pulls the indicator back toward the
+// edge by `--Select-paddingInline / -4` (sm 8px -> -2px, md 12px -> -3px,
+// lg 16px -> -4px). An endDecorator immediately before the indicator halves
+// the gap between them (Joy's `.endDecorator + &` rule). Confirmed against
+// @mui/joy's Select.js source (SelectStartDecorator/EndDecorator/Indicator).
+const INDICATOR_PULL_CLASS = {
+  sm: '-me-0.5',
+  md: '-me-[3px]',
+  lg: '-me-1',
+} as const;
+
 // Joy UI's Select listbox: boxShadow.md, radius.sm, background.popup surface
 // fallback (a slightly different surface token than Sheet/Card's plain
 // `surface`), min-width: max-content so options aren't clipped narrower than
@@ -22,8 +34,16 @@ const INDICATOR_SIZE_CLASS = {
 // the trigger's width (its `equalWidth` modifier) — a floating-ui-level
 // enhancement this wrapper doesn't reproduce; `min-width: max-content` alone
 // still gives correct, non-clipped listbox sizing.
+// Padding is 6px (0.375rem), not 4px: Joy's listbox inherits its List's own
+// `--List-padding` rather than anything Select.js sets, so the value only
+// shows up by measuring the real rendered package.
+//
+// The text colour is part of the surface, not an inherited default: Joy's
+// listbox defaults to the outlined/neutral variant, whose `color` is
+// neutral-700 (#32383E). Without it the popup inherits the UA's black,
+// which is a visibly different, heavier grey.
 const LISTBOX_CLASS =
-  'z-50 max-h-[44vh] min-w-[max-content] overflow-auto rounded-sm bg-surface-popup p-1 font-body shadow-[var(--shadow-md)] outline-none';
+  'z-50 max-h-[44vh] min-w-[max-content] overflow-auto rounded-sm bg-surface-popup p-1.5 font-body text-neutral-outlined-color shadow-[var(--shadow-md)] outline-none';
 
 function SelectComponent<Value = string>(
   {
@@ -95,15 +115,24 @@ function SelectComponent<Value = string>(
         className={cx(selectVariants({ variant, color, size }), className)}
         {...ariaProps}
       >
-        {startDecorator && <span className="inline-flex items-center text-ink-icon">{startDecorator}</span>}
+        {startDecorator && <span className="me-2 inline-flex items-center text-ink-icon">{startDecorator}</span>}
         <BaseSelect.Value
           placeholder={placeholder}
           className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-left data-[placeholder]:opacity-[0.64]"
         >
           {renderValue}
         </BaseSelect.Value>
-        {endDecorator && <span className="inline-flex items-center text-ink-icon">{endDecorator}</span>}
-        <span className={cx('inline-flex items-center', INDICATOR_SIZE_CLASS[size])}>{indicator ?? <UnfoldIcon />}</span>
+        {endDecorator && <span className="ms-2 inline-flex items-center text-ink-icon">{endDecorator}</span>}
+        <span
+          className={cx(
+            'inline-flex items-center',
+            endDecorator ? 'ms-1' : 'ms-2',
+            INDICATOR_PULL_CLASS[size],
+            INDICATOR_SIZE_CLASS[size],
+          )}
+        >
+          {indicator ?? <UnfoldIcon />}
+        </span>
       </BaseSelect.Trigger>
       <BaseSelect.Portal>
         <BaseSelect.Positioner side="bottom" align="start" sideOffset={4} className="z-50 outline-none">

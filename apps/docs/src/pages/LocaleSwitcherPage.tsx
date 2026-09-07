@@ -4,15 +4,25 @@ import { Demo, Code } from '../components/Demo';
 import { PropsTable } from '../components/PropsTable';
 
 const LOCALES = [
-  { value: 'de', label: 'Deutsch' },
+  { value: 'de-DE', label: 'Deutsch' },
+  { value: 'en-US', label: 'English' },
+  { value: 'fr-FR', label: 'Français' },
+];
+
+// A mix on purpose: one tag that carries its own country, one that has none to
+// carry, and one that needs to be told.
+const MIXED_LOCALES = [
+  { value: 'de-DE', label: 'Deutsch' },
   { value: 'en', label: 'English' },
-  { value: 'fr', label: 'Français' },
+  { value: 'pt', label: 'Português', region: 'PT' },
 ];
 
 export function LocaleSwitcherPage() {
-  const [basic, setBasic] = useState('de');
-  const [sizes, setSizes] = useState('en');
+  const [basic, setBasic] = useState('de-DE');
+  const [sizes, setSizes] = useState('en-GB');
   const [unknown, setUnknown] = useState('pt');
+  const [mixed, setMixed] = useState('de-DE');
+  const [noFlags, setNoFlags] = useState('de-DE');
 
   return (
     <>
@@ -30,12 +40,12 @@ export function LocaleSwitcherPage() {
           aria-label="Choose language"
         />
       </Demo>
-      <Code>{`const [locale, setLocale] = useState('de');
+      <Code>{`const [locale, setLocale] = useState('de-DE');
 
 <LocaleSwitcher
   locales={[
-    { value: 'de', label: 'Deutsch' },
-    { value: 'en', label: 'English' },
+    { value: 'de-DE', label: 'Deutsch' },
+    { value: 'en-US', label: 'English' },
   ]}
   value={locale}
   onChange={setLocale}
@@ -65,6 +75,43 @@ export function LocaleSwitcherPage() {
         </div>
       </Demo>
 
+      <h2>Flags</h2>
+      <p>
+        A flag needs a country, and a language is not one. <code>de-DE</code> carries its country
+        in the tag itself and gets a flag from it; a bare <code>en</code> has none to carry — and
+        deliberately so, since English belongs to no single country — and gets none. Where a tag
+        has no region but you still want a flag, name it with <code>region</code>.
+      </p>
+      <Demo>
+        <LocaleSwitcher locales={MIXED_LOCALES} value={mixed} onChange={setMixed} aria-label="Language" />
+      </Demo>
+      <Code>{`<LocaleSwitcher
+  locales={[
+    { value: 'de-DE', label: 'Deutsch' },          // flag from the region subtag
+    { value: 'en', label: 'English' },             // no country, no flag
+    { value: 'pt', label: 'Português', region: 'PT' }, // country named explicitly
+  ]}
+  value={locale}
+  onChange={setLocale}
+/>`}</Code>
+      <p>
+        The flags are SVGs from <code>country-flag-icons</code>, not emoji — Windows renders emoji
+        flags as a pair of letters. The package stays external rather than bundled, so it only
+        reaches applications that actually render a switcher.
+      </p>
+
+      <h2>Turning flags off</h2>
+      <Demo>
+        <LocaleSwitcher
+          locales={LOCALES}
+          value={noFlags}
+          onChange={setNoFlags}
+          flags={false}
+          aria-label="Language, no flags"
+        />
+      </Demo>
+      <Code>{`<LocaleSwitcher locales={LOCALES} value={locale} onChange={setLocale} flags={false} />`}</Code>
+
       <h2>A value you do not offer</h2>
       <p>
         A browser can report a language the application does not have. Rather than render an empty
@@ -80,7 +127,8 @@ export function LocaleSwitcherPage() {
           {
             name: 'locales',
             type: 'readonly LocaleOption[]',
-            description: 'The languages on offer. Each carries a value and a label.',
+            description:
+              'The languages on offer. Each carries a value, a label and optionally a region for its flag.',
           },
           {
             name: 'value',
@@ -96,8 +144,8 @@ export function LocaleSwitcherPage() {
           {
             name: 'variant',
             type: "'solid' | 'soft' | 'outlined' | 'plain'",
-            default: "'plain'",
-            description: 'Borderless by default, since the usual home is a header corner.',
+            default: "'outlined'",
+            description: 'Bordered by default, so the control reads as a control.',
           },
           {
             name: 'color',
@@ -110,6 +158,19 @@ export function LocaleSwitcherPage() {
             type: "'sm' | 'md' | 'lg'",
             default: "'sm'",
             description: 'Passed through to the button and the menu.',
+          },
+          {
+            name: 'flags',
+            type: 'boolean',
+            default: 'true',
+            description:
+              'Show a country flag beside each label, where a country can be determined. false drops them everywhere.',
+          },
+          {
+            name: '…button props',
+            type: "React.ComponentProps<'button'>",
+            description:
+              'Anything else — className, data attributes, event handlers — is forwarded to the trigger button.',
           },
           {
             name: 'aria-label',

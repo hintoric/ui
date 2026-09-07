@@ -35,7 +35,19 @@ export default defineConfig({
       // implementation detail), so there's no reason to also require them to
       // install it as a peer — bundle it fully instead, like every other
       // dependency here.
-      external: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-dom'],
+      // country-flag-icons IS external, unlike Base UI: it is a plain ESM
+      // barrel of SVG components with no CJS fallback to trip over, and
+      // bundling it would add ~229 kB minified (~52 kB gzipped) to every
+      // consumer, including the ones that never render a LocaleSwitcher.
+      // Left external, it stays a normal dependency and drops out
+      // entirely for anyone who tree-shakes LocaleSwitcher away.
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        'country-flag-icons/react/1x1',
+      ],
       output: {
         assetFileNames: (asset) => (asset.names?.[0]?.endsWith('.css') ? 'style.css' : '[name][extname]'),
       },

@@ -307,10 +307,24 @@ export const INPUT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
 // Same inset-ring formula as INPUT_FOCUS_RING_CLASSES, but Select's trigger IS
 // the real interactive `<button>` (Base UI's Select.Trigger), so it can use
 // `:focus-visible` directly instead of needing `:focus-within` on a wrapper.
+// Unlike Input's ring, Select's is the SAME colour for every `color` — this
+// is a real @mui/joy quirk, not a simplification. Select.js first derives
+// `--Select-focusedHighlight` from the palette the way Input does, then a
+// `&:not([data-inverted-colors="false"])` block (which matches in all normal
+// usage, i.e. outside a colour-inversion context) overwrites it with a flat
+// `palette.focusVisible`. Input's version of that same block keeps the
+// per-colour value via a `var(--_Input-focusedHighlight, focusVisible)`
+// fallback; Select's has no such fallback, so the palette-derived value is
+// simply never read. Verified against the real package: a `color="danger"`
+// Select focuses to primary-500, not danger-500.
+//
+// Kept as a per-colour record so the cva `color` variant keeps its shape.
+const SELECT_FOCUS_RING = 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-primary-500)]';
+
 export const SELECT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
-  primary: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
-  neutral: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
-  danger: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-danger-500)]',
-  success: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-success-500)]',
-  warning: 'focus-visible:shadow-[inset_0_0_0_2px_var(--color-warning-500)]',
+  primary: SELECT_FOCUS_RING,
+  neutral: SELECT_FOCUS_RING,
+  danger: SELECT_FOCUS_RING,
+  success: SELECT_FOCUS_RING,
+  warning: SELECT_FOCUS_RING,
 };

@@ -20,7 +20,12 @@ describe('elapsedTime + getRelativeTimeUnit (calendar-aware rounding)', () => {
 
   function unitFor(targetIso: string) {
     const duration = elapsedTime(new Date(targetIso), 'second', now);
-    return getRelativeTimeUnit(duration);
+    // `relativeTo` has to be pinned here too, not just on elapsedTime:
+    // getRelativeTimeUnit rounds through roundToSingleUnit, whose own
+    // `relativeTo` defaults to Date.now(). Leaving it out measured the
+    // duration against a fixed reference but rounded it against the real
+    // calendar, so month-boundary cases drifted as actual time passed.
+    return getRelativeTimeUnit(duration, { relativeTo: now });
   }
 
   it('rounds sub-minute durations to seconds', () => {
