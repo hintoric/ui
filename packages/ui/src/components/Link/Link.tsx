@@ -15,15 +15,19 @@ const UNDERLINE_CLASS = {
 
 // Plain (no variant) Link uses the raw palette color at full opacity, not the
 // "plain" variant's own color token — Joy UI's own StyledLinkRoot computes it
-// directly from `theme.vars.palette[color].mainChannel`, which is the same
-// numeric channel our own `-500` color step is built from. Confirmed against
-// @mui/joy's Link.js source.
+// directly from `theme.vars.palette[color].mainChannel` (Link.js:120).
+//
+// Corrected 2026-09-07: this used to read `-500` on the reasoning that `-500`
+// *is* the main channel. That holds only in light mode. Joy remaps the main
+// channel to step 400 in dark (extendTheme.js:393-403), so a hardcoded `-500`
+// kept its light colour on a dark page — every colour, every dark render.
+// `--color-*-main` carries that remap; see the note beside it in theme.css.
 const PLAIN_COLOR_CLASS = {
-  primary: 'text-primary-500',
-  neutral: 'text-neutral-500',
-  danger: 'text-danger-500',
-  success: 'text-success-500',
-  warning: 'text-warning-500',
+  primary: 'text-primary-main',
+  neutral: 'text-neutral-main',
+  danger: 'text-danger-main',
+  success: 'text-success-main',
+  warning: 'text-warning-main',
 } as const;
 
 export const Link = React.forwardRef<HTMLElement, LinkProps>(function Link(
