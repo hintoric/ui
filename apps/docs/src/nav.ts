@@ -86,10 +86,14 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    // Composed, opinionated pieces rather than primitives: a Block solves a
+    // whole job (pick a language) out of several components, where everything
+    // above is one part you assemble yourself.
+    title: 'Blocks',
+    links: [{ to: '/locale-switcher', label: 'LocaleSwitcher' }],
+  },
+  {
     title: 'Utils',
-    links: [
-      { to: '/color-scheme-provider', label: 'ColorSchemeProvider' },
-      { to: '/locale-switcher', label: 'LocaleSwitcher' },
-    ],
+    links: [{ to: '/color-scheme-provider', label: 'ColorSchemeProvider' }],
   },
 ];

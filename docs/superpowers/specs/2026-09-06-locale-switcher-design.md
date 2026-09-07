@@ -109,3 +109,71 @@ Serverprofil sind Entscheidungen, die eine Darstellungskomponente nicht treffen 
 Fertig, wenn `pnpm test` und `pnpm test:visual` grün sind, die drei Baseline-Screenshots unter
 `__screenshots__/` liegen und angesehen wurden, und die Playground-App den Umschalter mit zwei
 Sprachen zeigt.
+
+---
+
+## Addendum, 2026-09-06: flags, a border by default, and pass-through props
+
+Three changes after the first version shipped.
+
+**The default variant is now `outlined`, not `plain`.** The original reasoning
+— the usual home is a header corner, where a border is noise — held for that
+one placement and nowhere else. A control that renders as bare text does not
+read as a control. `variant="plain"` still gives the old look for headers that
+want it.
+
+**Unrecognised props reach the trigger button.** `LocaleSwitcherProps` now
+extends `React.ComponentPropsWithoutRef<'button'>` and spreads the rest onto
+`MenuButton`, so `className`, `data-*` attributes and event handlers work. The
+previous closed prop list meant callers could not label, style or target the
+trigger at all beyond `aria-label`.
+
+**Country flags, on by default.** Rendered from `country-flag-icons`, opt out
+with `flags={false}`.
+
+### Why the 1x1 set and a circular mask
+
+The flags are round. The square `1x1` set takes a circular mask cleanly, where
+the `3x2` set would have to be cropped first or render as an ellipse. The 1x1
+SVGs carry a genuinely square viewBox (`US.svg` is `59.85 0 342 342`, cropped
+from the 513-wide original), so `size-*` plus `rounded-full` is enough — no
+wrapper element and no `object-fit` needed. Sizing uses `size-*` rather than a
+bare height so width and height stay locked: a round flag that is off-square
+reads as a bug, not a style.
+
+### Why a dependency and not emoji
+
+Unicode regional-indicator flags (🇩🇪) need no dependency and no bundle, but
+Windows renders them as a two-letter pair rather than a flag — on the platform
+where most users would see them, they do not work. `@mui/icons-material` was
+considered and does not apply: it ships Material symbols, not country flags.
+
+### Why it is external rather than bundled
+
+`country-flag-icons`' React set is 5.3 MB on disk, which is misleading: built
+and minified it is **229 kB (52 kB gzipped)** for every country. Still enough
+to matter against a 613 kB library, and it would be paid by every consumer
+including those that never render a switcher.
+
+Unlike Base UI — bundled deliberately, because its deep subpath imports carry a
+CJS `require('react')` fallback that throws in a browser ESM context — this is
+a plain ESM barrel of SVG components with nothing to trip over. So
+`country-flag-icons/react/1x1` is listed in Rollup's `external`. It stays a
+normal `dependencies` entry, our `dist` is unchanged (613.79 kB, +0.5 kB), and
+it drops out entirely for anyone who tree-shakes `LocaleSwitcher` away.
+
+### Which locales get a flag
+
+A flag needs a country, and a language is not one. The country comes from
+`LocaleOption.region` when given, otherwise from the tag's own region subtag:
+only a two-letter uppercase subtag counts, so `de-DE` resolves to `DE` while
+`zh-Hant`'s four-letter script subtag is correctly ignored.
+
+A locale with no determinable country simply gets no flag. This is the right
+outcome rather than a gap to fill: `en` deliberately belongs to no single
+country, and picking one for it would be a political statement the component
+has no business making. Callers who want a flag there can say which with
+`region`.
+
+The flags are `aria-hidden`: the label beside each one already names the
+language, so announcing both would just repeat it.
