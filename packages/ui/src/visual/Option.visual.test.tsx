@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Select as JoySelect, Option as JoyOption } from '@mui/joy';
 import { Select as HintoricSelect } from '../components/Select';
 import { Option as HintoricOption } from '../components/Option';
+import { settleTransitions } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -39,12 +40,27 @@ describe('Option visual parity with @mui/joy', () => {
           </HintoricSelect>,
         );
 
+        // The listbox takes its width from the positioner's measurement, which
+        // lands in a layout effect — reading a rect in the same tick as
+        // render() sees the popup at its pre-measurement content width.
+        await settleTransitions();
+
         const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}-${color}`).element());
         const hintoricEl = page.getByTestId(`hintoric-${variant}-${color}`).element();
         const hintoricStyle = getComputedStyle(hintoricEl);
 
         expect(hintoricStyle.color).toBe(joyStyle.color);
         expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+
+        // An option fills its listbox, so its box is only correct if the
+        // listbox's own is. These two caught nothing while the listbox popup
+        // collapsed to its content width — the committed baselines recorded a
+        // 55px-wide option against Joy's 332px one for months, because nothing
+        // asserted the box and nobody compared the PNGs.
+        const joyRect = page.getByTestId(`joy-${variant}-${color}`).element().getBoundingClientRect();
+        const hintoricRect = hintoricEl.getBoundingClientRect();
+        expect(Math.round(hintoricRect.width)).toBe(Math.round(joyRect.width));
+        expect(hintoricStyle.minHeight).toBe(joyStyle.minHeight);
 
         await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-joy`);
         await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-hintoric`);

@@ -41,20 +41,34 @@ const INDICATOR_PULL_CLASS = {
 // their own content. Confirmed against @mui/joy's Select.js source
 // (`SelectListbox`).
 //
-// Scope note: Joy's Popper additionally force-matches the listbox width to
-// the trigger's width (its `equalWidth` modifier) — a floating-ui-level
-// enhancement this wrapper doesn't reproduce; `min-width: max-content` alone
-// still gives correct, non-clipped listbox sizing.
-// Padding is 6px (0.375rem), not 4px: Joy's listbox inherits its List's own
-// `--List-padding` rather than anything Select.js sets, so the value only
-// shows up by measuring the real rendered package.
+// Width is two rules working together, and both are needed. Joy's Popper
+// carries an `equalWidth` modifier that writes `width: <trigger width>px`
+// onto the popup inline; the listbox's own `min-width: max-content` then
+// beats that width in the cascade. Net effect: the listbox matches the
+// trigger, and only grows past it when an option is wider than the trigger.
+// We get the trigger's measurement from Base UI's `--anchor-width`, which
+// its Positioner sets and the Popup inherits. `min-width: max-content` alone
+// was not enough — it collapsed the popup to its content (a 400px Select
+// opened a 79px menu).
 //
-// The text colour is part of the surface, not an inherited default: Joy's
-// listbox defaults to the outlined/neutral variant, whose `color` is
-// neutral-700 (#32383E). Without it the popup inherits the UA's black,
-// which is a visibly different, heavier grey.
+// The listbox is outlined/neutral, so it carries that variant's 1px border as
+// well as its `color` (neutral-700, #32383E). Both are part of the surface,
+// not inherited defaults: without the colour the popup falls back to the UA's
+// black, a visibly heavier grey, and without the border the popup's content
+// box is 2px wider than Joy's.
 const LISTBOX_CLASS =
-  'z-50 max-h-[44vh] min-w-[max-content] overflow-auto rounded-sm bg-surface-popup p-1.5 font-body text-neutral-outlined-color shadow-[var(--shadow-md)] outline-none';
+  'z-50 max-h-[44vh] w-[var(--anchor-width)] min-w-[max-content] overflow-auto rounded-sm border border-neutral-outlined-border bg-surface-popup px-0 font-body text-neutral-outlined-color shadow-[var(--shadow-md)] outline-none';
+
+// The listbox pads vertically only. Joy never sets `--List-padding` on it, so
+// its List's `paddingInline: var(--List-padding)` resolves to nothing (0) and
+// `paddingBlock: var(--List-padding, var(--ListDivider-gap))` falls through to
+// the size-scaled divider gap. Measured on the real package: sm 4px, md 6px,
+// lg 8px, horizontal 0 at every size.
+const LISTBOX_PADDING_CLASS = {
+  sm: 'py-1',
+  md: 'py-1.5',
+  lg: 'py-2',
+} as const;
 
 function SelectBaseComponent<Value = string>(
   {
@@ -156,7 +170,7 @@ function SelectBaseComponent<Value = string>(
       </BaseSelect.Trigger>
       <BaseSelect.Portal>
         <BaseSelect.Positioner side="bottom" align="start" sideOffset={4} className="z-50 outline-none">
-          <BaseSelect.Popup className={LISTBOX_CLASS}>
+          <BaseSelect.Popup className={cx(LISTBOX_CLASS, LISTBOX_PADDING_CLASS[size])}>
             <BaseSelect.List>{children}</BaseSelect.List>
           </BaseSelect.Popup>
         </BaseSelect.Positioner>

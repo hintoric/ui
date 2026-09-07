@@ -13,6 +13,7 @@ import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
+const SIZES = ['sm', 'md', 'lg'] as const;
 
 // A fixed-width parent for every case: Joy's SelectRoot is a block-level flex
 // container that fills its parent's inline size, so `width` is only a
@@ -314,6 +315,157 @@ describe('Select visual parity with @mui/joy', () => {
     expect(hintoricStyle.paddingTop).toBe(joyStyle.paddingTop);
     expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
     expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
+  });
+
+  // The listbox's horizontal box model is what decides how wide the options
+  // inside it come out, and it is not symmetric with the vertical one: Joy
+  // pads block-only and draws the outlined variant's border. Asserted per
+  // size because only the block padding scales (sm 4px, md 6px, lg 8px) —
+  // a md-only check passed while sm and lg were both wrong.
+  for (const size of SIZES) {
+    it(`open listbox ${size} box model matches Joy UI`, async () => {
+      render(
+        <JoyCssVarsProvider>
+          <div style={BOX}>
+            <JoySelect
+              size={size}
+              value="a"
+              defaultListboxOpen
+              slotProps={{ listbox: { 'data-testid': `joy-listbox-${size}` } }}
+            >
+              <JoyOption value="a">Alpha</JoyOption>
+            </JoySelect>
+          </div>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <ColorSchemeProvider>
+          <div style={BOX}>
+            <HintoricSelect size={size} value="a" defaultListboxOpen>
+              <HintoricOption data-testid={`hintoric-option-${size}`} value="a">Alpha</HintoricOption>
+            </HintoricSelect>
+          </div>
+        </ColorSchemeProvider>,
+      );
+
+      await settleTransitions();
+
+      const joyListbox = document.querySelector(`[data-testid="joy-listbox-${size}"]`) as HTMLElement;
+      const joyOption = joyListbox.querySelector('[role="option"]') as HTMLElement;
+      const triggers = [...document.querySelectorAll('[role="combobox"]')] as HTMLElement[];
+      const trigger = triggers[triggers.length - 1];
+      const listId = trigger.getAttribute('aria-controls') as string;
+      const hintoricPopup = document.getElementById(listId)?.parentElement as HTMLElement;
+      const hintoricOption = document.querySelector(`[data-testid="hintoric-option-${size}"]`) as HTMLElement;
+
+      const joyStyle = getComputedStyle(joyListbox);
+      const hintoricStyle = getComputedStyle(hintoricPopup);
+
+      expect(hintoricStyle.paddingTop).toBe(joyStyle.paddingTop);
+      expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
+      expect(hintoricStyle.paddingLeft).toBe(joyStyle.paddingLeft);
+      expect(hintoricStyle.paddingRight).toBe(joyStyle.paddingRight);
+      expect(hintoricStyle.borderLeftWidth).toBe(joyStyle.borderLeftWidth);
+      expect(hintoricStyle.borderLeftColor).toBe(joyStyle.borderLeftColor);
+
+      // The payoff of the two rules above: an option ends up exactly as wide
+      // as Joy's, which is what the naked eye actually compares.
+      expect(Math.round(hintoricOption.getBoundingClientRect().width)).toBe(
+        Math.round(joyOption.getBoundingClientRect().width),
+      );
+
+      await expect.element(joyListbox).toMatchScreenshot(`select-listbox-${size}-joy`);
+      await expect.element(hintoricPopup).toMatchScreenshot(`select-listbox-${size}-hintoric`);
+    });
+  }
+
+  // Joy's Popper carries an `equalWidth` modifier that writes
+  // `width: <trigger width>px` onto the popup inline, on top of the listbox's
+  // own `min-width: max-content`. min-width beats width in the cascade, so the
+  // net rule is: the listbox is exactly as wide as the trigger, and only grows
+  // past it when an option's own content is wider. Both halves need covering —
+  // asserting only the narrow-content case would pass on a popup that always
+  // shrank to its content, which is exactly the bug this test was added for.
+  it('open listbox is as wide as the trigger, like Joy UI', async () => {
+    render(
+      <JoyCssVarsProvider>
+        <div style={BOX}>
+          <JoySelect value="a" defaultListboxOpen slotProps={{ listbox: { 'data-testid': 'joy-listbox-width' } }}>
+            <JoyOption value="a">Alpha</JoyOption>
+            <JoyOption value="b">Beta</JoyOption>
+          </JoySelect>
+        </div>
+      </JoyCssVarsProvider>,
+    );
+    render(
+      <ColorSchemeProvider>
+        <div style={BOX}>
+          <HintoricSelect value="a" defaultListboxOpen>
+            <HintoricOption value="a">Alpha</HintoricOption>
+            <HintoricOption value="b">Beta</HintoricOption>
+          </HintoricSelect>
+        </div>
+      </ColorSchemeProvider>,
+    );
+
+    await settleTransitions();
+
+    const joyListbox = document.querySelector('[data-testid="joy-listbox-width"]') as HTMLElement;
+    const triggers = [...document.querySelectorAll('[role="combobox"]')] as HTMLElement[];
+    const trigger = triggers[triggers.length - 1];
+    const listId = trigger.getAttribute('aria-controls') as string;
+    const hintoricPopup = document.getElementById(listId)?.parentElement as HTMLElement;
+
+    // Rounded: Joy writes a sub-pixel `${rects.reference.width}px` while ours
+    // comes from a CSS var carrying the same measurement through a different
+    // rounding path.
+    expect(Math.round(hintoricPopup.getBoundingClientRect().width)).toBe(
+      Math.round(trigger.getBoundingClientRect().width),
+    );
+    expect(Math.round(hintoricPopup.getBoundingClientRect().width)).toBe(
+      Math.round(joyListbox.getBoundingClientRect().width),
+    );
+
+    await expect.element(joyListbox).toMatchScreenshot('select-listbox-equalwidth-joy');
+    await expect.element(hintoricPopup).toMatchScreenshot('select-listbox-equalwidth-hintoric');
+  });
+
+  it('open listbox still grows past the trigger for wider options, like Joy UI', async () => {
+    const NARROW: React.CSSProperties = { width: 120 };
+    const LONG = 'An option label far wider than the trigger';
+    render(
+      <JoyCssVarsProvider>
+        <div style={NARROW}>
+          <JoySelect value="a" defaultListboxOpen slotProps={{ listbox: { 'data-testid': 'joy-listbox-wide' } }}>
+            <JoyOption value="a">{LONG}</JoyOption>
+          </JoySelect>
+        </div>
+      </JoyCssVarsProvider>,
+    );
+    render(
+      <ColorSchemeProvider>
+        <div style={NARROW}>
+          <HintoricSelect value="a" defaultListboxOpen>
+            <HintoricOption value="a">{LONG}</HintoricOption>
+          </HintoricSelect>
+        </div>
+      </ColorSchemeProvider>,
+    );
+
+    await settleTransitions();
+
+    const joyListbox = document.querySelector('[data-testid="joy-listbox-wide"]') as HTMLElement;
+    const triggers = [...document.querySelectorAll('[role="combobox"]')] as HTMLElement[];
+    const trigger = triggers[triggers.length - 1];
+    const listId = trigger.getAttribute('aria-controls') as string;
+    const hintoricPopup = document.getElementById(listId)?.parentElement as HTMLElement;
+
+    const popupWidth = hintoricPopup.getBoundingClientRect().width;
+    expect(popupWidth).toBeGreaterThan(trigger.getBoundingClientRect().width);
+    expect(Math.round(popupWidth)).toBe(Math.round(joyListbox.getBoundingClientRect().width));
+
+    await expect.element(joyListbox).toMatchScreenshot('select-listbox-maxcontent-joy');
+    await expect.element(hintoricPopup).toMatchScreenshot('select-listbox-maxcontent-hintoric');
   });
 });
 
