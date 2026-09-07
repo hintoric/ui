@@ -7,6 +7,9 @@ export type {
   ResolvedColorScheme,
 } from './theme/ColorSchemeProvider';
 
+export { LocaleProvider, useLocale } from './theme/LocaleProvider';
+export type { LocaleContextValue, LocaleOption, LocaleProviderProps } from './theme/LocaleProvider';
+
 export { DateTimeProvider, useDateTimeDefaults } from './theme/DateTimeProvider';
 export type { DateTimeContextValue, DateTimeProviderProps, HourCycle } from './theme/DateTimeProvider';
 
@@ -80,7 +83,7 @@ export { AvatarGroup } from './components/AvatarGroup';
 export type { AvatarGroupProps } from './components/AvatarGroup';
 
 export { LocaleSwitcher } from './components/LocaleSwitcher';
-export type { LocaleOption, LocaleSwitcherProps } from './components/LocaleSwitcher';
+export type { LocaleSwitcherProps } from './components/LocaleSwitcher';
 export { ConfirmationDialog } from './components/ConfirmationDialog';
 export type { ConfirmationDialogProps } from './components/ConfirmationDialog';
 

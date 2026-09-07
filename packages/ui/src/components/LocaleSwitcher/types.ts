@@ -1,19 +1,10 @@
 import type * as React from 'react';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
+// Defined next to the provider that also needs it: `theme/` does not depend on
+// `components/`, the same direction in which `HourCycle` already lives.
+import type { LocaleOption } from '../../theme/LocaleProvider';
 
-export interface LocaleOption {
-  /** The value handed back to `onChange`. A BCP 47 tag in practice, but not enforced. */
-  value: string;
-  /** What the user reads. The caller decides whether that is "Deutsch", "German" or "DE". */
-  label: React.ReactNode;
-  /**
-   * ISO 3166-1 alpha-2 country code for the flag, e.g. `AT`. Only needed when
-   * the flag should not follow the tag's own region subtag — `de-DE` already
-   * resolves to `DE` on its own, but a region-less `de` has nothing to derive
-   * from, and `en` deliberately belongs to no single country.
-   */
-  region?: string;
-}
+export type { LocaleOption };
 
 export interface LocaleSwitcherProps
   extends Omit<React.ComponentPropsWithoutRef<'button'>, 'color' | 'onChange' | 'value'> {
