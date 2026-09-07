@@ -45,20 +45,34 @@ hartkodiertes „No options", weil das die ältere, gerade nicht wiederholenswer
 
 ## API
 
-Neu auf `Autocomplete` (generisch nützlich, nicht `AddressAutofill`-spezifisch):
+Neu auf `Autocomplete` — und zwar **exakt die drei Props, die das echte `@mui/joy`s `Autocomplete`
+dafür schon hat** (`AutocompleteProps.d.ts`: `loading`, `loadingText` default `'Loading…'`,
+`noOptionsText` default `'No options'`, mit derselben Regel: „`loadingText` ersetzt Vorschläge nur,
+wenn keine da sind" — exakt das hier gewollte Stale-while-revalidate-Verhalten, unabhängig
+entdeckt und beim Nachschlagen im echten Paket bestätigt). Kein eigener Name, keine eigene Regel:
 
 ```ts
 // Ergänzung zu AutocompleteProps<Value>:
-/** Zeigt einen Spinner in der Empty-Slot-Fläche statt „No options". @default false */
+/** Zeigt `loadingText` in der Empty-Slot-Fläche, aber nur, wenn `options` leer ist. @default false */
 loading?: boolean;
-/** Ersetzt „No options", wenn die Liste leer ist und nicht geladen wird. */
-emptyContent?: React.ReactNode;
+/** Text/Node in der Empty-Slot-Fläche, während `loading` und `options` leer sind. @default 'Loading…' */
+loadingText?: React.ReactNode;
+/** Text/Node in der Empty-Slot-Fläche, wenn `options` leer ist und nicht geladen wird. @default 'No options' */
+noOptionsText?: React.ReactNode;
+```
+
+Eine vierte Ergänzung hat **kein** Joy-Gegenstück, weil Joy nicht auf Base UIs `Combobox` sitzt —
+Joys eigene Entsprechung dafür ist `filterOptions`, mit einer ganz anderen Signatur
+(`(options, state) => options`, nicht Base UIs Prädikat), deshalb eigener Name statt falscher
+Anlehnung:
+
+```ts
 /**
  * Reicht an `Combobox.Root` durch. `null` schaltet Base UIs eigene
  * Client-Filterung von `options` gegen den Eingabetext ab — nötig für jede
  * Nutzung mit einer bereits serverseitig gefilterten Ergebnisliste (siehe
- * Addendum unten). @default undefined (Base UIs eingebauter Filter, heutiges
- * Verhalten für alle bestehenden, statisch befüllten `Autocomplete`s).
+ * unten). @default undefined (Base UIs eingebauter Filter, heutiges Verhalten
+ * für alle bestehenden, statisch befüllten `Autocomplete`s).
  */
 filter?: null | ((itemValue: Value, query: string, itemToString?: (itemValue: Value) => string) => boolean);
 ```
@@ -119,18 +133,25 @@ Am Aufrufort:
 </Form>
 ```
 
-### Warum `Autocomplete` zwei neue, generische Props bekommt statt eines eigenen Unterbaus
+### Warum `Autocomplete` neue, generische Props bekommt statt eines eigenen Unterbaus
 
 `AddressAutofill` braucht einen Lade- und einen Fehlerzustand in der Listbox, die `Autocomplete`
 heute nicht kennt. Die Alternative — ein zweiter, eigener Aufbau direkt auf `Combobox` von Base UI,
 wie `Autocomplete.tsx` ihn hat — würde dieselbe Tastatur-Navigation, Formularbindung und
 `FieldShell`-Verdrahtung ein zweites Mal herstellen, mit dem Risiko, dass beide Stellen später
-auseinanderlaufen. Zwei neue, generische Props auf dem vorhandenen Primitiv sind für jede künftige
-asynchron befüllte `Autocomplete`-Nutzung brauchbar, nicht nur für diesen Block.
+auseinanderlaufen. Die neuen Props auf dem vorhandenen Primitiv sind für jede künftige asynchron
+befüllte `Autocomplete`-Nutzung brauchbar, nicht nur für diesen Block — und weil drei der vier
+Joys eigene Namen/Vorgaben tragen, ist die Erweiterung selbst schon die verglichene Übernahme, nicht
+nur eine Vorstufe dazu.
 
 ### Anfrage-Logik
 
-Unterhalb von `minQueryLength`: keine Anfrage, `emptyContent` zeigt `belowMinLengthContent`.
+`AddressAutofill` bildet seine vier Zustände auf `Autocomplete`s drei Text-Slots ab: `belowMinLength`,
+Fehler und „keine Treffer" landen alle in `noOptionsText` (welcher der drei Texte, entscheidet
+`AddressAutofill`s eigener Zustand — `Autocomplete` kennt nur „leer, nicht ladend"), der Ladezustand
+in `loading`/`loadingText`.
+
+Unterhalb von `minQueryLength`: keine Anfrage, `noOptionsText` zeigt `belowMinLengthContent`.
 
 **Die innere `<Autocomplete>` bekommt kein `name`.** `Autocomplete` bindet sich selbst an
 react-hook-form, sobald `name` gesetzt ist *und* ein `FormProvider` existiert (`AutocompleteRootComponent`
@@ -148,9 +169,9 @@ bricht sie per `AbortController` ab, statt auf eine veraltete Antwort zu warten,
 überschreiben könnte.
 
 **Bestehende Treffer bleiben sichtbar, während eine neue Anfrage lädt** (kein Leeren-vor-Neuladen) —
-`loading` steuert nur, ob der *leere* Slot einen Spinner statt `loadingContent`/`belowMinLengthContent`
-zeigt; solange die letzte Trefferliste nicht leer ist, rendert `Combobox.List` sie unverändert weiter,
-und ein Flackern bei jedem Tastenanschlag entfällt.
+exakt Joys eigene Regel für `loading`/`loadingText`: der Ladetext ersetzt Vorschläge nur, wenn
+`options` leer ist. Solange die letzte Trefferliste nicht leer ist, rendert `Combobox.List` sie
+unverändert weiter, und ein Flackern bei jedem Tastenanschlag entfällt.
 
 Ein abgelehntes `fetch` (Netzwerk, Nicht-2xx) leert die Trefferliste und zeigt `errorContent` — kein
 Retry (siehe oben).
@@ -165,7 +186,8 @@ AddressAutofill
     inputValue={query} onInputChange={setQuery}
     onChange={(v) => field.onChange(v)}      // via useBoundField(name, valueAdapter, …), kein optionaler Zweig
     loading={isLoading}
-    emptyContent={/* je nach Zustand: belowMinLength → loading → error → noResults */}
+    loadingText={loadingContent}
+    noOptionsText={/* je nach Zustand: belowMinLength → error → noResults */}
     filter={null}                            // kein Client-Refiltern serverseitiger Treffer
     getOptionLabel, variant, color, size, label, helperText, error, disabled, placeholder
 ```
@@ -187,8 +209,11 @@ was diese Komposition falsch machen könnte:
   mit dem vorhandenen `CircularProgress`.
 - Fokus-Ring-Zustand, identisch zu `Autocomplete`s eigenem Test.
 
-Die beiden neuen `Autocomplete`-Props (`loading`, `emptyContent`) bekommen ihre eigenen Fälle in
-`Autocomplete.visual.test.tsx`, nicht in einer Kopie hier.
+Die drei Joy-Namen (`loading`, `loadingText`, `noOptionsText`) bekommen dagegen die volle
+Seite-an-Seite-Prüfung gegen echtes `@mui/joy` in `Autocomplete.visual.test.tsx` — anders als
+`AddressAutofill` selbst hat `Autocomplete` hier ein reales Gegenstück, und die Übernahme lohnt
+sich, genauso geprüft zu werden wie jeder andere Prop. `filter` (kein Joy-Gegenstück, siehe API)
+bekommt dort nur einen jsdom-Funktionstest, keinen visuellen.
 
 ## Tests in jsdom
 
@@ -217,7 +242,7 @@ Die beiden neuen `Autocomplete`-Props (`loading`, `emptyContent`) bekommen ihre 
   siehe `FormsPage.tsx`/`Input.test.tsx`) neben dem Feld anzeigt, damit man das echte, von der
   Hintoric-API zurückgegebene Objekt beim Tippen sieht.
 - "Zustände" (falls deterministisch erzwingbar: sehr kurze Eingabe, Tippfehler ohne Treffer).
-- `<PropsTable>` für `AddressAutofillProps` sowie die beiden neuen `Autocomplete`-Props.
+- `<PropsTable>` für `AddressAutofillProps` sowie die vier neuen `Autocomplete`-Props.
 - Eintrag in `nav.ts` (Gruppe `Inputs`) und Route in `App.tsx`, nach dem `Autocomplete`-Muster.
 - Da die Doku-App gegen `@hintoric/ui`s gebautes `dist/` läuft (kein Alias auf `src/`): `pnpm build`
   vor jedem Doku-Vorschau-Lauf, solange an der Komponente gearbeitet wird.
@@ -237,5 +262,5 @@ Block nutzt ausschließlich `/api/autocomplete`; die Unterscheidung ist `Address
 Fertig, wenn `pnpm test` und `pnpm test:visual` grün sind, die Baseline-Screenshots unter
 `__screenshots__/` liegen und angesehen wurden, `pnpm typecheck` und `pnpm lint` grün sind, die
 Doku-Seite unter *Inputs* erreichbar ist und im Browser gegen die echte API funktioniert (nicht nur
-gemockt), und ein Changeset (minor, für `AddressAutofill` sowie `Autocomplete`s zwei neue Props)
+gemockt), und ein Changeset (minor, für `AddressAutofill` sowie `Autocomplete`s vier neue Props)
 liegt.
