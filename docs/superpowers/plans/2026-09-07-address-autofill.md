@@ -480,18 +480,23 @@ git commit -m "Add AddressAutofill types and the addressApi fetch wrapper"
 - Create: `packages/ui/src/components/AddressAutofill/useAddressSuggestions.ts`
 - Test: `packages/ui/src/components/AddressAutofill/useAddressSuggestions.test.ts`
 
+**Note on `waitFor`:** with `vi.useFakeTimers()` active, `@testing-library/react`'s `waitFor`
+deadlocks — it polls via a real `setInterval`, which fake timers freeze too, and the test times out
+at 5000ms instead of failing or passing. Every assertion below therefore uses `vi.waitFor` (from
+`vitest`, timer-aware) instead, and `waitFor` is dropped from the `@testing-library/react` import.
+
 **Interfaces:**
 - Consumes: `fetchAddressSuggestions` from `./addressApi` (Task 3), `AddressSuggestion` from `./types` (Task 3).
 - Produces: `useAddressSuggestions(query: string, opts: { minQueryLength: number; debounceMs: number;
   limit: number }): { suggestions: AddressSuggestion[]; isLoading: boolean; hasError: boolean }`.
   Task 5 imports this hook.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```ts
 // packages/ui/src/components/AddressAutofill/useAddressSuggestions.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useAddressSuggestions } from './useAddressSuggestions';
 import { fetchAddressSuggestions } from './addressApi';
 import type { AddressSuggestion } from './types';
@@ -539,7 +544,7 @@ describe('useAddressSuggestions', () => {
     await vi.advanceTimersByTimeAsync(200);
     expect(mockedFetch).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
+    await vi.waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
     expect(mockedFetch).toHaveBeenCalledTimes(1);
     expect(mockedFetch).toHaveBeenCalledWith('acke', expect.objectContaining({ limit: 10 }));
   });
@@ -551,9 +556,9 @@ describe('useAddressSuggestions', () => {
       initialProps: { query: 'acke' },
     });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
+    await vi.waitFor(() => expect(result.current.isLoading).toBe(true));
     resolveFetch([BERLIN]);
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    await vi.waitFor(() => expect(result.current.isLoading).toBe(false));
   });
 
   it('keeps existing suggestions visible while a new query is loading', async () => {
@@ -562,12 +567,12 @@ describe('useAddressSuggestions', () => {
       initialProps: { query: 'acke' },
     });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
+    await vi.waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
 
     mockedFetch.mockReturnValue(new Promise(() => {})); // never resolves in this test
     rerender({ query: 'ackerx' });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
+    await vi.waitFor(() => expect(result.current.isLoading).toBe(true));
     expect(result.current.suggestions).toEqual([BERLIN]);
   });
 
@@ -604,7 +609,7 @@ describe('useAddressSuggestions', () => {
     await vi.advanceTimersByTimeAsync(300);
     rerender({ query: 'ackers' });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.suggestions).toEqual(FRESH));
+    await vi.waitFor(() => expect(result.current.suggestions).toEqual(FRESH));
 
     resolveStale(STALE); // the superseded request finally resolves
     await Promise.resolve();
@@ -617,24 +622,24 @@ describe('useAddressSuggestions', () => {
       initialProps: { query: 'acke' },
     });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
+    await vi.waitFor(() => expect(result.current.suggestions).toEqual([BERLIN]));
 
     mockedFetch.mockRejectedValueOnce(new Error('network down'));
     rerender({ query: 'ackers' });
     await vi.advanceTimersByTimeAsync(300);
-    await waitFor(() => expect(result.current.hasError).toBe(true));
+    await vi.waitFor(() => expect(result.current.hasError).toBe(true));
     expect(result.current.suggestions).toEqual([]);
     expect(result.current.isLoading).toBe(false);
   });
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `pnpm --filter @hintoric/ui test -- useAddressSuggestions.test.ts`
 Expected: FAIL with "Cannot find module './useAddressSuggestions'".
 
-- [ ] **Step 3: Write `useAddressSuggestions.ts`**
+- [x] **Step 3: Write `useAddressSuggestions.ts`**
 
 ```ts
 import * as React from 'react';
@@ -703,12 +708,12 @@ export function useAddressSuggestions(
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `pnpm --filter @hintoric/ui test -- useAddressSuggestions.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add packages/ui/src/components/AddressAutofill/useAddressSuggestions.ts packages/ui/src/components/AddressAutofill/useAddressSuggestions.test.ts
