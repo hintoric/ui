@@ -144,12 +144,6 @@ field (last field before the closing `}`):
 
 - [ ] **Step 4: Implement in `Autocomplete.tsx`**
 
-Add the import (next to the existing `AutocompleteOption` import):
-
-```ts
-import { CircularProgress } from '../CircularProgress';
-```
-
 Change the `AutocompleteBaseComponent` destructuring (currently ends `disableClearable = false,
 className, ...props`) to:
 
@@ -184,15 +178,13 @@ text-ink-tertiary">No options</Combobox.Empty>`) with:
 
 ```tsx
           <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">
-            {loading ? (
-              <span className="flex justify-center py-1">
-                <CircularProgress size="sm" />
-              </span>
-            ) : (
-              noOptionsText
-            )}
+            {loading ? loadingText : noOptionsText}
           </Combobox.Empty>
 ```
+
+(No spinner — real `@mui/joy` Autocomplete's own `loading` state is plain text too, per
+`Autocomplete.js`: `AutocompleteLoading` just renders `loadingText`. Adding an icon here would be an
+unrequested embellishment on top of the thing this task is explicitly mirroring.)
 
 (No changes needed in `AutocompleteFieldComponent`/`BoundAutocompleteComponent`/
 `AutocompleteRootComponent` — all four new props flow through their existing generic
@@ -232,13 +224,13 @@ Append to `packages/ui/src/visual/Autocomplete.visual.test.tsx`, inside the exis
 (after the `'disabled input matches Joy UI'` test):
 
 ```tsx
-  it('loading (with no options) matches Joy UI', async () => {
+  it('loadingText (with no options) matches Joy UI', async () => {
     render(
       <JoyCssVarsProvider>
-        <JoyAutocomplete options={[]} loading data-testid="joy-loading" />
+        <JoyAutocomplete options={[]} loading loadingText="Searching…" data-testid="joy-loading" />
       </JoyCssVarsProvider>,
     );
-    render(<HintoricAutocomplete options={[]} loading data-testid="hintoric-loading" />);
+    render(<HintoricAutocomplete options={[]} loading loadingText="Searching…" data-testid="hintoric-loading" />);
 
     // Neither library exposes a declarative "force the popup open" prop for
     // this (Joy's own `open` is internal-Popper-only, per its
@@ -250,10 +242,9 @@ Append to `packages/ui/src/visual/Autocomplete.visual.test.tsx`, inside the exis
     await userEvent.click(page.getByTestId('hintoric-loading').element());
 
     const joyLoading = document.querySelector('.MuiAutocomplete-loading') as HTMLElement;
-    // Combobox.Empty renders a <div> (Base UI's own doc comment confirms
-    // this); the spinner sits inside an extra centering <span>, so the
-    // nearest ancestor <div> of the progressbar IS that Empty container.
-    const hintoricLoading = screen.getByRole('progressbar').closest('div') as HTMLElement;
+    // "Searching…" is a direct text child of Combobox.Empty's own <div> —
+    // findByText returns that div itself (same reasoning as noOptionsText below).
+    const hintoricLoading = await screen.findByText('Searching…');
 
     expect(getComputedStyle(hintoricLoading).color).toBe(getComputedStyle(joyLoading).color);
 
@@ -306,8 +297,8 @@ four new screenshot names — this is expected per this repo's convention.
 
 Run: `pnpm --filter @hintoric/ui test:visual -- Autocomplete.visual.test.tsx`
 Expected: PASS. Open the four new PNGs under
-`packages/ui/src/visual/__screenshots__/Autocomplete.visual.test.tsx/` and confirm the loading
-spinner and empty text actually render and look right before trusting them.
+`packages/ui/src/visual/__screenshots__/Autocomplete.visual.test.tsx/` and confirm the loading and
+empty text actually render and look right before trusting them.
 
 - [ ] **Step 4: Commit**
 

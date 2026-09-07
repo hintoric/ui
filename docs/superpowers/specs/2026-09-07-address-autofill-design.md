@@ -205,8 +205,8 @@ was diese Komposition falsch machen könnte:
 - Pro Variante × Farbe × Größe: `getComputedStyle`-Gleichheit von `AddressAutofill`s Eingabefläche
   mit einem daneben gerenderten `<Autocomplete>` derselben Kombination.
 - Die vier Zustände (`belowMinLength`/`loading`/`noResults`/`error`) als Screenshots über
-  `toMatchScreenshot()`, plus `getComputedStyle`-Gleichheit von `Autocomplete`s neuem Lade-Spinner
-  mit dem vorhandenen `CircularProgress`.
+  `toMatchScreenshot()`. Kein eigener Lade-Spinner — Joys eigener `loading`-Zustand ist reiner Text
+  (`AutocompleteLoading` rendert nur `loadingText`), und `Autocomplete` übernimmt das unverändert.
 - Fokus-Ring-Zustand, identisch zu `Autocomplete`s eigenem Test.
 
 Die drei Joy-Namen (`loading`, `loadingText`, `noOptionsText`) bekommen dagegen die volle

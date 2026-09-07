@@ -32,4 +32,25 @@ export interface AutocompleteProps<Value = string>
   name?: string;
   /** Hides the built-in clear ("x") button. @default false */
   disableClearable?: boolean;
+  /**
+   * Shows `loadingText` in the empty-state slot instead of `noOptionsText`,
+   * but only while `options` is empty — matches `@mui/joy`'s own
+   * `Autocomplete` `loading` prop exactly, including that rule.
+   * @default false
+   */
+  loading?: boolean;
+  /** Shown in the empty-state slot while `loading` is true and `options` is empty. @default 'Loading…' */
+  loadingText?: React.ReactNode;
+  /** Shown in the empty-state slot when `options` is empty and not loading. @default 'No options' */
+  noOptionsText?: React.ReactNode;
+  /**
+   * Passed straight to Base UI's `Combobox.Root`. Pass `null` to disable Base
+   * UI's own client-side filtering of `options` against the input text —
+   * required whenever `options` already reflects a server-filtered result set
+   * for the current query (a debounced remote search), since otherwise Base
+   * UI's default text-match filter can hide valid results whose label
+   * doesn't literally contain what's currently typed.
+   * @default undefined (Base UI's built-in filter)
+   */
+  filter?: null | ((itemValue: Value, query: string, itemToString?: (itemValue: Value) => string) => boolean);
 }

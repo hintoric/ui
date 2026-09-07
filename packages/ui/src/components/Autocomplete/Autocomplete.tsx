@@ -42,6 +42,10 @@ function AutocompleteBaseComponent<Value = string>(
     inputValue,
     onInputChange,
     disableClearable = false,
+    loading = false,
+    loadingText = 'Loading…',
+    noOptionsText = 'No options',
+    filter,
     className,
     ...props
   }: AutocompleteProps<Value>,
@@ -62,6 +66,7 @@ function AutocompleteBaseComponent<Value = string>(
       inputValue={inputValue}
       onInputValueChange={onInputChange}
       disabled={disabled}
+      filter={filter}
     >
       <Combobox.InputGroup className={cx(autocompleteVariants({ variant, color: effectiveColor, size }), className)}>
         {startDecorator && <span className="inline-flex items-center text-ink-icon">{startDecorator}</span>}
@@ -84,7 +89,9 @@ function AutocompleteBaseComponent<Value = string>(
       <Combobox.Portal>
         <Combobox.Positioner side="bottom" align="start" sideOffset={4} className="z-50 outline-none">
           <Combobox.Popup className={LISTBOX_CLASS}>
-            <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">No options</Combobox.Empty>
+            <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">
+              {loading ? loadingText : noOptionsText}
+            </Combobox.Empty>
             <Combobox.List>
               {(item: Value) => (
                 <AutocompleteOption key={getOptionLabel(item)} value={item}>
