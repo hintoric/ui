@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { Switch } from '../Switch';
 import { useColorScheme } from '../../theme/ColorSchemeProvider';
 import { ICON_SIZE_CLASS } from '../../internal/colorScheme';

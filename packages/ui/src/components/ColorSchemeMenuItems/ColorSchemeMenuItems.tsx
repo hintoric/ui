@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { MenuItem } from '../MenuItem';
 import { useColorScheme } from '../../theme/ColorSchemeProvider';
 import {

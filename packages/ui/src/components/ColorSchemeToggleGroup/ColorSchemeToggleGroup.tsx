@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { Button } from '../Button';
 import { ToggleButtonGroup } from '../ToggleButtonGroup';
 import { useColorScheme } from '../../theme/ColorSchemeProvider';

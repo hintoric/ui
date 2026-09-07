@@ -3,7 +3,10 @@ import {
   Box,
   Button,
   Card,
+  ColorSchemeMenu,
   ColorSchemeProvider,
+  ColorSchemeSwitch,
+  ColorSchemeToggle,
   IconButton,
   Input,
   LocaleProvider,
@@ -13,7 +16,6 @@ import {
   Stack,
   Textarea,
   Typography,
-  useColorScheme,
   type JoyColor,
   type JoyVariant,
 } from '@hintoric/ui';
@@ -41,19 +43,6 @@ function LocaleDemo() {
         </Typography>
       </Stack>
     </LocaleProvider>
-  );
-}
-
-function ColorSchemeToggle() {
-  const { mode, setMode } = useColorScheme();
-  return (
-    <Button
-      variant="outlined"
-      color="neutral"
-      onClick={() => setMode(mode === 'light' ? 'dark' : 'light')}
-    >
-      Switch to {mode === 'light' ? 'dark' : 'light'} mode
-    </Button>
   );
 }
 
@@ -153,7 +142,9 @@ export function App() {
         <Stack spacing={4}>
           <Stack direction="row" spacing={2}>
             <Typography level="h1">@hintoric/ui playground</Typography>
+            <ColorSchemeMenu />
             <ColorSchemeToggle />
+            <ColorSchemeSwitch />
             <LocaleDemo />
           </Stack>
           <ButtonShowcase />

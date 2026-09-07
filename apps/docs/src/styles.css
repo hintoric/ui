@@ -100,11 +100,14 @@ a {
 }
 
 /*
- * ColorSchemeProvider sets data-color-scheme on a <div> *inside* body, not on
- * body/html itself — dark-mode CSS variable overrides only cascade to
- * descendants of that div. body's own color/background must stay on an
- * element inside it (.docs-shell) or they'd be stuck resolving against the
- * light-mode :root values forever, regardless of the toggle.
+ * ColorSchemeProvider sets data-color-scheme on a <div> *inside* body (and
+ * mirrors it onto <html> in an effect, so portalled popups inherit it too).
+ * The attribute carries the *resolved* scheme — 'light' or 'dark', never
+ * 'system' — because theme.css only defines tokens for those two.
+ *
+ * body's own color/background must stay on an element inside the div
+ * (.docs-shell) or they'd be stuck resolving against the light-mode :root
+ * values forever, regardless of the switcher.
  */
 .docs-shell {
   display: flex;

@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import { Select } from '../Select';
 import { Option } from '../Option';
 import { useColorScheme } from '../../theme/ColorSchemeProvider';
