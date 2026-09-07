@@ -53,6 +53,14 @@ Neu auf `Autocomplete` (generisch nützlich, nicht `AddressAutofill`-spezifisch)
 loading?: boolean;
 /** Ersetzt „No options", wenn die Liste leer ist und nicht geladen wird. */
 emptyContent?: React.ReactNode;
+/**
+ * Reicht an `Combobox.Root` durch. `null` schaltet Base UIs eigene
+ * Client-Filterung von `options` gegen den Eingabetext ab — nötig für jede
+ * Nutzung mit einer bereits serverseitig gefilterten Ergebnisliste (siehe
+ * Addendum unten). @default undefined (Base UIs eingebauter Filter, heutiges
+ * Verhalten für alle bestehenden, statisch befüllten `Autocomplete`s).
+ */
+filter?: null | ((itemValue: Value, query: string, itemToString?: (itemValue: Value) => string) => boolean);
 ```
 
 `AddressAutofill` selbst:
@@ -124,6 +132,16 @@ asynchron befüllte `Autocomplete`-Nutzung brauchbar, nicht nur für diesen Bloc
 
 Unterhalb von `minQueryLength`: keine Anfrage, `emptyContent` zeigt `belowMinLengthContent`.
 
+**Die innere `<Autocomplete>` bekommt kein `name`.** `Autocomplete` bindet sich selbst an
+react-hook-form, sobald `name` gesetzt ist *und* ein `FormProvider` existiert (`AutocompleteRootComponent`
+in `Autocomplete.tsx`) — würde `AddressAutofill` seinen eigenen `name` durchreichen, verbänden sich
+zwei unabhängige `useController`-Aufrufe mit demselben Feldnamen, einer mit `AddressSuggestion`-Objekten,
+einer mit was auch immer `Autocomplete`s eigener Adapter daraus macht. `AddressAutofill` ruft
+`useBoundField(name, valueAdapter, …)` **selbst**, genau einmal, und reicht das Ergebnis (`value`,
+`onChange`, Fehlerzustand) als kontrolliertes Paar an die *namenlose* `<Autocomplete value onChange
+label helperText error .../>` durch — die rendert dann ihren eigenen, unverbundenen `AutocompleteField`-Pfad
+und trägt trotzdem `FieldShell`, Variant-Styling und Tastaturnavigation bei.
+
 Ab `minQueryLength`, nach `debounceMs` Ruhe seit dem letzten Tastenanschlag: eine Anfrage an
 `GET /api/autocomplete?q=<Text>&limit=<limit>`. Eine neue Eingabe während eine Anfrage noch fliegt
 bricht sie per `AbortController` ab, statt auf eine veraltete Antwort zu warten, die eine neuere
@@ -148,6 +166,7 @@ AddressAutofill
     onChange={(v) => field.onChange(v)}      // via useBoundField(name, valueAdapter, …), kein optionaler Zweig
     loading={isLoading}
     emptyContent={/* je nach Zustand: belowMinLength → loading → error → noResults */}
+    filter={null}                            // kein Client-Refiltern serverseitiger Treffer
     getOptionLabel, variant, color, size, label, helperText, error, disabled, placeholder
 ```
 
