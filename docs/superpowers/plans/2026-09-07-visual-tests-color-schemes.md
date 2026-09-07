@@ -146,6 +146,65 @@ noted here because it would otherwise look like defining a failure away.
 - `Menu`'s Joy reference images contain a sliver of our component (see the
   Task 3 notes).
 
+**Tasks 12-17 — the new files found more than the retrofits did.** Writing a
+component's first test is a better oracle than retrofitting an existing one,
+because it forces a decision about what to compare. Findings:
+
+- **`Tab`'s selected state.** `Tab.tsx` stated that Joy gives a selected tab no
+  background, "confirmed against @mui/joy's Tab.js". Joy's Tab is
+  `styled(StyledListItemButton)` and the selected background comes from that
+  base — a selected solid/primary tab renders `#12467B` in Joy against our
+  `#0B6BCB`. Reading one source file is not confirmation.
+- **The Stepper family's typography lives on `Stepper`.** Joy applies
+  `theme.typography['title-{size}']` there and `StepIndicator` inherits it.
+  Worse, an earlier pass had "fixed" StepIndicator against Joy's indicator
+  rendered *bare*, where Joy inherits the page's 400/16px because no Stepper
+  is above it. That comparison reflects no real usage and produced the wrong
+  fix, which this pass undid. **Compose against the real parent or the oracle
+  lies.**
+- **`List` padded all four sides** where Joy pads only the block axis, so rows
+  never spanned their list (312px against Joy's 320px). `MenuList` had the
+  same shape of error. `Menu` did not — Joy's Menu really is 4px all round, so
+  the three are not interchangeable.
+- **`ListItem` and `RelativeTime` inherited the page's black**, invisible on a
+  dark surface. RelativeTime's dark baselines were 103-byte solid black
+  rectangles, which is how it was noticed.
+- **`AccordionSummary` had no focus ring** and fell back to the browser's 1px
+  outline against Joy's 2px.
+
+Test-design lessons, all of which cost a wrong turn first:
+
+- **`display` is not comparable when the internals differ.** Joy's `Stack`
+  spaces children with margins where ours uses `gap` (Joy reports `normal`
+  against our `16px` for identical output); Joy's `Step` is a grid where ours
+  is flex. Compare the *achieved* layout — child positions and sizes — as
+  Grid's test already did.
+- **A mechanical assertion can be wrong for one file.** The transform added
+  font comparisons everywhere, including `Switch`, whose test deliberately
+  matches Joy's `.MuiSwitch-track` against our root — a mapping chosen for
+  geometry. Across it, a correct 16px root reads as a divergence from a 14px
+  track. Ten "failures" that were the test's fault, not the component's.
+- **A component fix can make a screenshot time-dependent.** `Tab`'s selected
+  background animates in through `transition-colors`, so `Tabs`' screenshots
+  raced it — 1073 pixels of drift between runs until the test settled first.
+- **`settleTransitions`' fixed 200ms is a guess.** `settleUntilStable` polls
+  until a value stops changing; use it wherever a state change is asserted
+  under load.
+
+**Still open:**
+
+- `Select`'s `disabled` background in dark for `outlined` and `plain`: ours
+  settles on neutral-800 where Joy renders neutral-900. Ruled out by
+  measurement: not a transition race, and not the class map (which specifies
+  `bg-surface`, i.e. Joy's value). The actual source was not found — the note
+  in the test says so rather than guessing.
+- `Container.visual.test.tsx` takes no screenshots and has no documented
+  reason, unlike `Tooltip`. Predates this work.
+- `Menu`'s Joy reference images contain a sliver of our component.
+- `Stepper.visual.test.tsx` still renders `StepIndicator` bare. It is not
+  wrong, but `StepIndicator.visual.test.tsx` now covers the same ground
+  composed, which is the stronger oracle.
+
 ## Global Constraints
 
 - Work in the worktree `/Users/johanneswaigel/git/hintoric/ui/.worktrees/visual-tests-color-schemes` on branch `visual-tests-color-schemes`. Other sessions commit in the main checkout; never `cd` there.
@@ -924,13 +983,13 @@ For each portalled popup, assert once that the popup itself resolved dark tokens
 **Interfaces:**
 - Consumes: `COLOR_SCHEMES`, `setColorScheme` from `./helpers`; the pattern from Task 4.
 
-- [ ] **Step 1: Apply Task 4's pattern to DataGrid and RelativeTime**
+- [x] **Step 1: Apply Task 4's pattern to DataGrid and RelativeTime**
 
 Both are Flavour B with real painted surfaces: scheme loop around the screenshot tests, plus the "reads colour-scheme tokens" assertion.
 
 `DataGrid` covers hover by asserting the presence of the `group-hover:` class rather than driving a pointer (noted in the audit as a known heuristic false positive). Leave that approach alone; it needs no scheme variant, since a class list does not change with the scheme.
 
-- [ ] **Step 2: Apply the layout-only exception to Grid**
+- [x] **Step 2: Apply the layout-only exception to Grid**
 
 `Grid` paints nothing, so the "must differ" assertion is unsatisfiable. Assert the inverse instead:
 
@@ -958,11 +1017,11 @@ Both are Flavour B with real painted surfaces: scheme loop around the screenshot
   });
 ```
 
-- [ ] **Step 3: Run twice, review the new dark PNGs, confirm no light PNG moved**
+- [x] **Step 3: Run twice, review the new dark PNGs, confirm no light PNG moved**
 
 Run: `pnpm test:visual "DataGrid|Grid|RelativeTime"` — first run fails on missing baselines, second passes. **Human review step** for the new PNGs.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/ui/src/visual/DataGrid.visual.test.tsx packages/ui/src/visual/Grid.visual.test.tsx packages/ui/src/visual/RelativeTime.visual.test.tsx packages/ui/src/visual/__screenshots__
@@ -991,7 +1050,7 @@ Per task: write the file, run twice, review the new PNGs, confirm no existing ba
 
 ### Task 17: Final verification and handoff
 
-- [ ] **Step 1: Full suite, both configs**
+- [x] **Step 1: Full suite, both configs**
 
 ```bash
 pnpm test
@@ -1000,7 +1059,7 @@ pnpm test:visual
 
 Expected: both green.
 
-- [ ] **Step 2: Confirm no light baseline changed across the whole branch**
+- [x] **Step 2: Confirm no light baseline changed across the whole branch**
 
 ```bash
 git diff --stat main...HEAD -- '*-light-chromium-darwin.png' | tail -1
@@ -1008,7 +1067,7 @@ git diff --stat main...HEAD -- '*-light-chromium-darwin.png' | tail -1
 
 Expected: renames only, zero content modifications. Any modified light baseline is a regression introduced somewhere in Tasks 1–16 and must be explained before the branch is offered for merge.
 
-- [ ] **Step 3: Count the result**
+- [x] **Step 3: Count the result**
 
 ```bash
 find src/visual/__screenshots__ -name '*-light-chromium-darwin.png' | wc -l
@@ -1017,7 +1076,7 @@ find src/visual/__screenshots__ -name '*-dark-chromium-darwin.png' | wc -l
 
 Report both numbers. They will not be equal — `Tooltip` takes no screenshots, and some tests are single-scheme by design — but a large gap means a file was missed.
 
-- [ ] **Step 4: Verify every component is covered**
+- [x] **Step 4: Verify every component is covered**
 
 ```bash
 for c in src/components/*/; do n=$(basename "$c"); [ -f "src/visual/$n.visual.test.tsx" ] || echo "MISSING: $n"; done
@@ -1031,17 +1090,17 @@ for f in src/visual/*.visual.test.tsx; do grep -q 'COLOR_SCHEMES' "$f" || echo "
 
 Expected: only `DarkTokens`, `DarkVariant`, `DarkModeHarness` and `ColorSchemeHelper`, which are scheme-aware by construction.
 
-- [ ] **Step 5: Typecheck and lint**
+- [x] **Step 5: Typecheck and lint**
 
 From the repo root: `pnpm typecheck` and `pnpm lint`. Expected: both clean.
 
-- [ ] **Step 6: Report the divergences found**
+- [x] **Step 6: Report the divergences found**
 
 The point of the exercise. Collect every dark-mode divergence Tasks 6–16 surfaced between our tokens and real Joy, and write them up as addenda in the style CLAUDE.md prescribes — "verify against the real package before changing a token, and document what you found the same way those addenda do". Each entry: which token, what Joy renders, what we rendered, and what the fix was.
 
 If nothing diverged, say so explicitly. That would be a genuinely surprising result for 345 lines of reverse-engineered tokens, and worth stating rather than leaving implied.
 
-- [ ] **Step 7: Hand off**
+- [x] **Step 7: Hand off**
 
 Use `superpowers:finishing-a-development-branch`. Note in the handoff:
 
