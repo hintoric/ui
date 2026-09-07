@@ -27,7 +27,10 @@ export const StepIndicator = React.forwardRef<HTMLDivElement, StepIndicatorProps
     <div
       ref={ref}
       className={cx(
-        'inline-flex shrink-0 items-center justify-center rounded-[50%] font-body text-sm font-medium',
+        // Deliberately no font-weight: Joy's StepIndicator.js sets none, so it
+        // inherits 400. Ours used to force `font-medium`, rendering 500 where Joy
+        // renders 400 (measured 2026-09-07).
+        'inline-flex shrink-0 items-center justify-center rounded-[50%] font-body text-base/[1.5]',
         SIZE_CLASS[size],
         STATIC_COLOR_CLASSES[variant][color],
         className,

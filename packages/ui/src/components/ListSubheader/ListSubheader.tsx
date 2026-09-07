@@ -11,7 +11,7 @@ export const ListSubheader = React.forwardRef<HTMLDivElement, ListSubheaderProps
   return (
     <div
       ref={ref}
-      className={cx('flex min-h-9 items-center gap-2.5 px-3 font-body text-xs font-medium text-ink-tertiary', className)}
+      className={cx('flex min-h-9 items-center gap-2.5 px-3 font-body text-xs/[1.5] font-medium text-ink-tertiary', className)}
       {...props}
     />
   );

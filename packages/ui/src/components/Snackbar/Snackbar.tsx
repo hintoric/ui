@@ -6,9 +6,9 @@ import { SURFACE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { SnackbarProps } from './types';
 
 const SIZE_CLASS = {
-  sm: 'gap-2 p-3 text-xs',
-  md: 'gap-2.5 p-4 text-sm',
-  lg: 'gap-3.5 p-5 text-base',
+  sm: 'gap-2 p-3 text-xs/[1.5]',
+  md: 'gap-2.5 p-4 text-sm/[1.5]',
+  lg: 'gap-3.5 p-5 text-base/[1.5]',
 } as const;
 
 // `--Snackbar-inset` (the gap between the snackbar and the viewport edge)

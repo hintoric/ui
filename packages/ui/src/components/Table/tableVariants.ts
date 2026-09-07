@@ -6,9 +6,9 @@ import type { TableBorderAxis } from './types';
 // @mui/joy's Table.js source. Tailwind's default scale hits every px value
 // here exactly, so no arbitrary values are needed.
 export const TABLE_SIZE_CLASS = {
-  sm: '[&_th]:h-8 [&_td]:h-8 [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs',
-  md: '[&_th]:h-10 [&_td]:h-10 [&_th]:px-2 [&_td]:px-2 [&_th]:py-1.5 [&_td]:py-1.5 text-sm',
-  lg: '[&_th]:h-12 [&_td]:h-12 [&_th]:px-3 [&_td]:px-3 [&_th]:py-2 [&_td]:py-2 text-base',
+  sm: '[&_th]:h-8 [&_td]:h-8 [&_th]:px-1 [&_td]:px-1 [&_th]:py-1 [&_td]:py-1 text-xs/[1.5]',
+  md: '[&_th]:h-10 [&_td]:h-10 [&_th]:px-2 [&_td]:px-2 [&_th]:py-1.5 [&_td]:py-1.5 text-sm/[1.5]',
+  lg: '[&_th]:h-12 [&_td]:h-12 [&_th]:px-3 [&_td]:px-3 [&_th]:py-2 [&_td]:py-2 text-base/[1.5]',
 } as const;
 
 // Head cells always get a surface fill, fontWeight.lg (600 — Tailwind's

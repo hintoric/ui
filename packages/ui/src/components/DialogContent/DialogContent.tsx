@@ -12,7 +12,7 @@ export const DialogContent = React.forwardRef<HTMLParagraphElement, DialogConten
   return (
     <BaseDialog.Description
       ref={ref}
-      className={cx('overflow-auto font-body text-sm text-ink-tertiary', className)}
+      className={cx('overflow-auto font-body text-base/[1.5] text-ink-tertiary', className)}
       {...props}
     />
   );

@@ -13,7 +13,7 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 // sizes, used when badgeContent is empty, aren't supported in this v1).
 // Confirmed against @mui/joy's Badge.js source.
 export const badgeDotVariants = cva(
-  'absolute top-0 right-0 z-10 box-border flex min-w-max -translate-y-1/2 translate-x-1/2 items-center justify-center font-body font-medium leading-none shadow-[0_0_0_2px_var(--color-surface)]',
+  'absolute top-0 right-0 z-10 box-border flex min-w-max -translate-y-1/2 translate-x-1/2 items-center justify-center font-body font-medium shadow-[0_0_0_2px_var(--color-surface)]',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },
@@ -22,9 +22,9 @@ export const badgeDotVariants = cva(
       // `rounded-full` (`calc(infinity * 1px)`, a huge literal number) — same
       // lesson as Avatar/Chip. Confirmed against @mui/joy's Badge.js source.
       size: {
-        sm: 'min-h-4 rounded-[1rem] px-1 text-xs',
-        md: 'min-h-5 rounded-[1.25rem] px-1.5 text-sm',
-        lg: 'min-h-6 rounded-[1.5rem] px-2 text-base',
+        sm: 'min-h-4 rounded-[1rem] px-1 text-xs/[1.5]',
+        md: 'min-h-5 rounded-[1.25rem] px-1.5 text-sm/[1.5]',
+        lg: 'min-h-6 rounded-[1.5rem] px-2 text-base/[1.5]',
       },
       invisible: {
         true: 'scale-0',

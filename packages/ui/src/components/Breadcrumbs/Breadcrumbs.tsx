@@ -7,9 +7,9 @@ import type { BreadcrumbsProps } from './types';
 // Alert/Badge, which shift the mapping down one step (sm->body-xs). Confirmed
 // against @mui/joy's Breadcrumbs.js source.
 const SIZE_CLASS = {
-  sm: 'gap-1 p-2 text-sm',
-  md: 'gap-1.5 p-3 text-base',
-  lg: 'gap-2 p-4 text-lg',
+  sm: 'gap-1 p-2 text-sm/[1.5]',
+  md: 'gap-1.5 p-3 text-base/[1.5]',
+  lg: 'gap-2 p-4 text-lg/[1.5]',
 } as const;
 
 export const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(function Breadcrumbs(
