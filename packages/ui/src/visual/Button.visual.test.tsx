@@ -96,35 +96,26 @@ describe('Button visual parity with @mui/joy', () => {
   }
 
   /**
-   * Button's typography diverges from Joy at every size. Found 2026-09-07 by
-   * the sizing assertion below, which is what P2 of the coverage audit was
-   * for: nothing in 852 green tests compared a font property, so this went
-   * unnoticed despite being the library's most-used component.
-   *
-   * Measured against real @mui/joy 5.0.0-beta.52:
+   * Button's typography diverged from Joy at every size until 2026-09-07,
+   * when the sizing assertion below found it — which is what P2 of the
+   * coverage audit was for. Nothing in 852 green tests compared a font
+   * property, so this survived in the library's most-used component:
    *
    *   size | fontSize joy/ours | fontWeight joy/ours | lineHeight joy/ours
    *   sm   | 14px / 14px  ok   | 600 / 500           | 21px / 20px
    *   md   | 14px / 16px       | 600 / 500           | 21px / 24px
    *   lg   | 16px / 18px       | 600 / 500           | 24px / 28px
    *
-   * `minHeight` and the horizontal padding were reverse-engineered correctly;
-   * only the type scale was not. Joy's Button.js takes fontSize from
-   * `fontSize.sm` for both sm and md and `fontSize.md` for lg, and fontWeight
-   * from `fontWeight.lg` (600) throughout. Ours sets `font-medium` globally
-   * and `text-sm`/`text-base`/`text-lg` per size (buttonVariants.ts:13-21).
+   * `minHeight` and the horizontal padding had been reverse-engineered
+   * correctly; only the type scale had not. Fixed in buttonVariants.ts, whose
+   * comment records what Joy actually does and why Button is the one component
+   * that uses `fontWeight.lg`.
    *
-   * `it.fails()` rather than `it.skip()` on purpose: this asserts the
-   * divergence is still present, so the suite stays green while the bug is
-   * known AND turns red the moment somebody fixes the component — at which
-   * point drop the `.fails` and this comment. A skip would let the fix land
-   * unnoticed and the assertion rot.
-   *
-   * No colour-scheme loop: font metrics do not depend on the scheme, and the
-   * probe confirmed identical values in light and dark.
+   * No colour-scheme loop: font metrics do not depend on the scheme, measured
+   * identical in light and dark.
    */
   for (const size of ['sm', 'md', 'lg'] as const) {
-    it.fails(`matches Joy UI's type scale at size=${size}`, async () => {
+    it(`matches Joy UI's type scale at size=${size}`, async () => {
       await setColorScheme('light');
 
       render(
@@ -157,14 +148,13 @@ describe('Button visual parity with @mui/joy', () => {
    * diverged on fill-versus-shrink. One case per component prevents the whole
    * class from recurring.
    *
-   * `it.fails()` here is a consequence of the type-scale divergence above, not
-   * an independent bug: Button is shrink-to-fit in both libraries and its
-   * `display` matches, so the 71.08px-vs-67.66px width gap is the wider,
-   * lighter text. Fixing the type scale should make this pass — drop both
-   * `.fails` together.
+   * This is the assertion that found the type-scale divergence: Button is
+   * shrink-to-fit in both libraries and its `display` always matched, so the
+   * 71.08px-vs-67.66px width gap it reported was entirely the wider, heavier
+   * text. It passes now that the type scale does.
    */
   for (const scheme of COLOR_SCHEMES) {
-    it.fails(`fills the same share of a fixed-width parent as Joy UI in ${scheme}`, async () => {
+    it(`fills the same share of a fixed-width parent as Joy UI in ${scheme}`, async () => {
       await setColorScheme(scheme);
 
       render(
