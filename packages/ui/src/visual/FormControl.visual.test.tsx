@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, FormControl as JoyFormControl, FormLabel as JoyFormLabel, Input as JoyInput } from '@mui/joy';
+import {
+  CssVarsProvider as JoyCssVarsProvider,
+  FormControl as JoyFormControl,
+  FormLabel as JoyFormLabel,
+  Input as JoyInput,
+} from '@mui/joy';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 import { FormLabel as HintoricFormLabel } from '../components/FormLabel';
 import { Input as HintoricInput } from '../components/Input';
@@ -32,4 +37,5 @@ describe('FormControl visual parity with @mui/joy', () => {
     await expect(page.getByTestId('joy')).toMatchScreenshot('formcontrol-joy');
     await expect(page.getByTestId('hintoric')).toMatchScreenshot('formcontrol-hintoric');
   });
+
 });

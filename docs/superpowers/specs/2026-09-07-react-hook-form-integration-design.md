@@ -464,3 +464,39 @@ begründen.
 neues zu erzeugen. Für diese Spec nicht gebraucht — `<Form>` nimmt das vollständige
 `UseFormReturn`, was einfacher ist —, aber es ist der unterstützte Weg, falls später doch einmal
 eine Instanz durchgereicht werden muss.
+
+## Addendum, 2026-09-07: drei Funde aus Task 5
+
+### `FormLabel` musste mit, nicht nur `FormHelperText`
+
+Die Spec nannte nur den Helper-Text. Joys `FormControl` setzt im `disabled`-Fall aber **beide**
+Variablen — `--FormLabel-color` und `--FormHelperText-color` — auf die Farbe von
+`theme.variants.plainDisabled` (aufgelöst `palette-neutral-400`, identisch mit unserem bestehenden
+Token `--color-neutral-plain-disabled-color`). Ohne das Label bliebe die `disabled`-Komposition
+sichtbar falsch, und Task 11 prüft genau diese Label-Farbe gegen Joy. Also mit erledigt.
+
+Wichtig dabei, ebenfalls aus der Quelle: Joy färbt das Label im **Fehlerfall nicht** um. Nur der
+Helper-Text trägt Danger. Ein rotes Label wäre eine Erfindung gewesen.
+
+### `disabled` schlägt `error`
+
+In Joys Style-Objekt steht `&.error` vor `&.disabled`, beide als Klassenselektoren mit gleicher
+Spezifität — die spätere Regel gewinnt. Ein Feld, das gleichzeitig gesperrt und fehlerhaft ist,
+zeigt also die gedämpfte, nicht die rote Helper-Farbe. Nachgeprüft und im Visual-Test als eigener
+Zustand `error-and-disabled` festgenagelt, weil es aus dem Code sonst niemand ablesen kann.
+
+### `FormControl` spaced anders als Joy — bei `md` folgenlos
+
+Eine neue Assertion auf `rowGap` deckte auf, dass unser `FormControl` ein anderes Layout-Modell
+benutzt: wir setzen einen Flex-Gap (`gap-1.5`, 6px), Joy lässt `rowGap: normal` und spaced über
+Margins auf den Slots (`--FormLabel-margin`, `--FormHelperText-margin`).
+
+Bei der Standardgröße ist das folgenlos — Joys `md`-Werte sind `0.375rem` unter dem Label und
+`0.375rem` über dem Helper, also dieselben 6px, die unser Gap erzeugt. Auseinander laufen würde es
+bei `sm` (4px) und `lg` (8px), und dieser Fall kann hier nicht eintreten, weil unser `FormControl`
+überhaupt keine `size`-Achse hat. Der Visual-Test vergleicht deshalb nicht den Mechanismus, sondern
+den gerenderten Abstand zwischen den Slots.
+
+**Offen bleibt:** `FormControl` fehlt Joys `size`-Prop. Solange das so ist, ist der Gap-Ansatz
+korrekt und einfacher. Kommt die Größe dazu, muss auf Joys Margin-Modell umgestellt werden — ein
+Gap kann pro Slot keine unterschiedlichen Abstände.
