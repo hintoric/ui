@@ -10,6 +10,23 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-07-visual-tests-color-schemes-design.md`
 
+## Discovered during implementation
+
+**Task 1 — the page background must be dark-only, not scheme-aware.** The plan
+originally set `document.body.style.background = 'var(--color-canvas)'`
+unconditionally in `setup.ts`, reasoning that `--color-canvas` is white in
+light mode so light baselines could not change. That reasoning was wrong:
+"transparent" is not "white" underneath anything semi-transparent. The 1248
+existing baselines were taken over a transparent page, and painting the body
+white shifted `ModalOverflow`'s scrim from `rgb(58,58,58)` to `rgb(110,110,110)`
+— 93% of that baseline's pixels. The background is therefore painted by
+`setColorScheme` for dark only and cleared for light. Caught by the
+no-modified-light-baseline gate on its first use.
+
+**Filter syntax.** Passing the pattern after a `--` separator does *not*
+filter — it runs all 67 files. Pass it directly: `pnpm test:visual Button`.
+Every `Run:` line below has been corrected.
+
 ## Global Constraints
 
 - Work in the worktree `/Users/johanneswaigel/git/hintoric/ui/.worktrees/visual-tests-color-schemes` on branch `visual-tests-color-schemes`. Other sessions commit in the main checkout; never `cd` there.
@@ -37,7 +54,7 @@
 - Consumes: nothing.
 - Produces: `COLOR_SCHEMES: readonly ['light','dark']`, `type ColorScheme = 'light'|'dark'`, `setColorScheme(mode: ColorScheme): Promise<void>` — all from `./helpers`. Every later task imports these.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `packages/ui/src/visual/ColorSchemeHelper.visual.test.tsx`:
 
@@ -116,12 +133,12 @@ describe('setColorScheme', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
-Run: `pnpm test:visual -- ColorSchemeHelper`
+Run: `pnpm test:visual ColorSchemeHelper`
 Expected: FAIL — `setColorScheme` and `COLOR_SCHEMES` are not exported from `./helpers`.
 
-- [ ] **Step 3: Add the helper**
+- [x] **Step 3: Add the helper**
 
 Append to `packages/ui/src/visual/helpers.ts`:
 
@@ -153,7 +170,7 @@ export async function setColorScheme(mode: ColorScheme): Promise<void> {
 }
 ```
 
-- [ ] **Step 4: Make the page background follow the scheme**
+- [x] **Step 4: Make the page background follow the scheme**
 
 Replace `packages/ui/src/visual/setup.ts` with:
 
@@ -196,14 +213,14 @@ afterEach(() => {
 document.body.style.background = 'var(--color-canvas)';
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
-Run: `pnpm test:visual -- ColorSchemeHelper`
+Run: `pnpm test:visual ColorSchemeHelper`
 Expected: PASS, 4 tests.
 
 If the portal test fails on the `rgb(0, 0, 0)` expectation, read the actual value before changing the assertion: `--color-canvas` is `--color-common-black` in dark mode (theme.css:331), but `Menu` may use `--color-surface-popup`. Assert whichever token `Menu` actually reads, and say which in a comment — do not weaken the assertion to "not the light value".
 
-- [ ] **Step 6: Document the division of labour in darkMode.tsx**
+- [x] **Step 6: Document the division of labour in darkMode.tsx**
 
 Insert into the existing block comment at the top of `packages/ui/src/visual/darkMode.tsx`, after the "Portalled content" paragraph:
 
@@ -218,12 +235,12 @@ Insert into the existing block comment at the top of `packages/ui/src/visual/dar
  *   components and a wrapper cannot reach them.
 ```
 
-- [ ] **Step 7: Verify nothing else moved**
+- [x] **Step 7: Verify nothing else moved**
 
 Run: `pnpm test:visual`
 Expected: all files pass. Then `git status --short` — expected: only the four files of this task, and **no** modified PNGs.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add packages/ui/src/visual/helpers.ts packages/ui/src/visual/setup.ts packages/ui/src/visual/darkMode.tsx packages/ui/src/visual/ColorSchemeHelper.visual.test.tsx
@@ -487,12 +504,12 @@ Append inside the `describe`, once — not per cell. `Button` is not a fill-widt
 
 - [ ] **Step 4: Run to create the dark baselines**
 
-Run: `pnpm test:visual -- Button`
+Run: `pnpm test:visual Button`
 Expected: FAIL with "no existing reference screenshot found" for the 20 new `-dark` ids. This is the documented first-run behaviour.
 
 - [ ] **Step 5: Rerun to confirm they pass**
 
-Run: `pnpm test:visual -- Button`
+Run: `pnpm test:visual Button`
 Expected: PASS.
 
 - [ ] **Step 6: Look at the new baselines**
@@ -616,7 +633,7 @@ Append inside the `describe`:
 
 - [ ] **Step 3: Run to verify it fails, then passes**
 
-Run: `pnpm test:visual -- LocaleSwitcher`
+Run: `pnpm test:visual LocaleSwitcher`
 Expected on the first run: FAIL with "no existing reference screenshot found" for the `-dark` ids.
 
 Rerun. Expected: PASS.
@@ -723,7 +740,7 @@ Each batch is one task with the same six steps. **Apply the pattern from Task 3,
 Per-batch steps, identical in each of Tasks 6–11:
 
 - [ ] **Step 1: Retrofit each file in the batch**
-- [ ] **Step 2: Run `pnpm test:visual -- <Batch pattern>` — expect first-run baseline failures**
+- [ ] **Step 2: Run `pnpm test:visual <Batch pattern>` — expect first-run baseline failures**
 - [ ] **Step 3: Rerun — expect PASS**
 - [ ] **Step 4: Report the new dark PNGs and stop for human review**
 - [ ] **Step 5: Confirm `git status` shows zero modified `*-light-*.png`**
@@ -823,7 +840,7 @@ Both are Flavour B with real painted surfaces: scheme loop around the screenshot
 
 - [ ] **Step 3: Run twice, review the new dark PNGs, confirm no light PNG moved**
 
-Run: `pnpm test:visual -- "DataGrid|Grid|RelativeTime"` — first run fails on missing baselines, second passes. **Human review step** for the new PNGs.
+Run: `pnpm test:visual "DataGrid|Grid|RelativeTime"` — first run fails on missing baselines, second passes. **Human review step** for the new PNGs.
 
 - [ ] **Step 4: Commit**
 
