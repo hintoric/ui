@@ -148,8 +148,9 @@ export function RelativeTimePage() {
 
       <h2>Locale and time zone</h2>
       <p>
-        Values come from <code>DateTimeProvider</code>, falling back to the runtime default. Props
-        on the component override both — useful for a single date that must be shown in a fixed
+        Values come from <code>DateTimeProvider</code>. The language falls back one step further,
+        to a <a href="/locale-provider">LocaleProvider</a> and then to the runtime default. Props on
+        the component override all of them — useful for a single date that must be shown in a fixed
         zone.
       </p>
       <Demo>

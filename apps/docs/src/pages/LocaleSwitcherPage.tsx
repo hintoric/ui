@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LocaleSwitcher } from '@hintoric/ui';
+import { LocaleProvider, LocaleSwitcher } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { PropsTable } from '../components/PropsTable';
 
@@ -18,6 +18,7 @@ const MIXED_LOCALES = [
 ];
 
 export function LocaleSwitcherPage() {
+  const [provided, setProvided] = useState('de-DE');
   const [basic, setBasic] = useState('de-DE');
   const [sizes, setSizes] = useState('en-GB');
   const [unknown, setUnknown] = useState('pt');
@@ -31,7 +32,22 @@ export function LocaleSwitcherPage() {
         A compact control for the display language, sized for a header corner.
       </p>
 
-      <h2>Basic usage</h2>
+      <h2>Inside a LocaleProvider</h2>
+      <p>
+        With a <code>LocaleProvider</code> above it, the switcher needs no props — it takes the
+        current language and the offered ones from there, and reports the change back to it. See{' '}
+        <a href="/locale-provider">LocaleProvider</a>.
+      </p>
+      <Demo>
+        <LocaleProvider locale={provided} onLocaleChange={setProvided} locales={LOCALES}>
+          <LocaleSwitcher aria-label="Choose language" />
+        </LocaleProvider>
+      </Demo>
+      <Code>{`<LocaleProvider locale={locale} onLocaleChange={setLocale} locales={LOCALES}>
+  <LocaleSwitcher />
+</LocaleProvider>`}</Code>
+
+      <h2>Without a provider</h2>
       <Demo>
         <LocaleSwitcher
           locales={LOCALES}

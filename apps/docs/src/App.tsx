@@ -49,6 +49,7 @@ import { MenuPage } from './pages/MenuPage';
 import { StepperPage } from './pages/StepperPage';
 import { AccordionPage } from './pages/AccordionPage';
 import { ColorSchemeProviderPage } from './pages/ColorSchemeProviderPage';
+import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 
@@ -112,6 +113,7 @@ export function App() {
             <Route path="/accordion" element={<AccordionPage />} />
 
             <Route path="/color-scheme-provider" element={<ColorSchemeProviderPage />} />
+            <Route path="/locale-provider" element={<LocaleProviderPage />} />
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
           </Route>
