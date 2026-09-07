@@ -4,8 +4,23 @@
     {
       "name": "docs",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "docs", "dev"],
+      "runtimeArgs": [
+        "--filter",
+        "docs",
+        "dev"
+      ],
       "port": 5173,
+      "autoPort": true
+    },
+    {
+      "name": "playground",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "playground",
+        "dev"
+      ],
+      "port": 5174,
       "autoPort": true
     }
   ]

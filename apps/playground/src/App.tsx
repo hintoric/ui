@@ -6,7 +6,9 @@ import {
   ColorSchemeProvider,
   IconButton,
   Input,
+  LocaleProvider,
   LocaleSwitcher,
+  RelativeTime,
   Sheet,
   Stack,
   Textarea,
@@ -19,21 +21,23 @@ import {
 const VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
 
+const LOCALES = [
+  { value: 'de', label: 'Deutsch' },
+  { value: 'en', label: 'English' },
+];
+
 function LocaleDemo() {
   const [locale, setLocale] = React.useState('de');
+  const threeDaysAgo = React.useMemo(() => new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), []);
   return (
-    <Stack direction="row" spacing={2}>
-      <LocaleSwitcher
-        locales={[
-          { value: 'de', label: 'Deutsch' },
-          { value: 'en', label: 'English' },
-        ]}
-        value={locale}
-        onChange={setLocale}
-        aria-label="Sprache wählen"
-      />
-      <Typography level="body-sm">gewählt: {locale}</Typography>
-    </Stack>
+    <LocaleProvider locale={locale} onLocaleChange={setLocale} locales={LOCALES}>
+      <Stack direction="row" spacing={2}>
+        <LocaleSwitcher aria-label="Sprache wählen" />
+        <Typography level="body-sm">
+          gewählt: {locale} · <RelativeTime date={threeDaysAgo} />
+        </Typography>
+      </Stack>
+    </LocaleProvider>
   );
 }
 
@@ -147,7 +151,7 @@ export function App() {
           <Stack direction="row" spacing={2}>
             <Typography level="h1">@hintoric/ui playground</Typography>
             <ColorSchemeToggle />
-        <LocaleDemo />
+            <LocaleDemo />
           </Stack>
           <ButtonShowcase />
           <IconButtonShowcase />
