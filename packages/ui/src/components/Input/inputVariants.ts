@@ -24,10 +24,15 @@ export const inputVariants = cva('inline-flex items-center gap-2 rounded-sm font
     // which is a deliberate simplification of Joy UI's separate `::before`
     // focus overlay (kept as one plain box-shadow instead of layering two).
     color: INPUT_FOCUS_RING_CLASSES,
+    // --input-padding-inline mirrors the px-* value in rem so the native
+    // input's :-webkit-autofill override (see Input.tsx) can bleed its
+    // background to the pill's edge instead of stopping at the input's own
+    // zero padding (verified against @mui/joy's StyledInputHtml, which does
+    // the same with its --Input-paddingInline var).
     size: {
-      sm: 'min-h-8 px-2 text-sm',
-      md: 'min-h-9 px-3 text-base',
-      lg: 'min-h-11 px-4 text-lg',
+      sm: 'min-h-8 px-2 text-sm [--input-padding-inline:0.5rem]',
+      md: 'min-h-9 px-3 text-base [--input-padding-inline:0.75rem]',
+      lg: 'min-h-11 px-4 text-lg [--input-padding-inline:1rem]',
     },
   },
   compoundVariants,
