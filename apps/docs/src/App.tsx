@@ -58,6 +58,7 @@ import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
+import { MapImagePage } from './pages/MapImagePage';
 
 export function App() {
   return (
@@ -128,6 +129,7 @@ export function App() {
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
             <Route path="/forms" element={<FormsPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
+            <Route path="/map-image" element={<MapImagePage />} />
           </Route>
         </Routes>
       </BrowserRouter>
