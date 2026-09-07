@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Form } from '../Form';
+import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
 import { Input } from './Input';
 
 describe('Input', () => {
@@ -193,5 +194,30 @@ describe('Input outside a Form', () => {
     render(<Input name="x" label="Titel" helperText="Hinweis" />);
     expect(screen.getByLabelText('Titel')).toBeInTheDocument();
     expect(screen.getByText('Hinweis')).toBeInTheDocument();
+  });
+});
+
+// Deliberately duplicates the hand-written blocks above: the helper has to be
+// shown equivalent on a field that is already known to work, before the other
+// eight fields lean on it.
+describe('Input field matrix', () => {
+  runFieldMatrix({
+    name: 'email',
+    render: (props) => <Input {...props} />,
+    schema: z.object({ email: z.string().email('keine E-Mail') }),
+    message: 'keine E-Mail',
+    validDefaults: { email: 'start@b.de' },
+    invalidDefaults: { email: 'nope' },
+    expectInitialValue: () => {
+      expect(screen.getByLabelText(MATRIX_LABEL)).toHaveValue('start@b.de');
+    },
+    edit: async () => {
+      await userEvent.clear(screen.getByLabelText(MATRIX_LABEL));
+      await userEvent.type(screen.getByLabelText(MATRIX_LABEL), 'x@y.de');
+    },
+    expectedAfterEdit: { email: 'x@y.de' },
+    control: () => screen.getByLabelText(MATRIX_LABEL),
+    standaloneRootTag: 'SPAN',
+    renderStandalone: () => <Input aria-label="frei" name="email" />,
   });
 });
