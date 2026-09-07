@@ -12,7 +12,7 @@ import { Dropdown as HintoricDropdown } from '../components/Dropdown';
 import { MenuButton as HintoricMenuButton } from '../components/MenuButton';
 import { Menu as HintoricMenu } from '../components/Menu';
 import { MenuItem as HintoricMenuItem } from '../components/MenuItem';
-import { COLOR_SCHEMES, lastShadowLayers, setColorScheme } from './helpers';
+import { COLOR_SCHEMES, lastShadowLayers, setColorScheme, settleTransitions } from './helpers';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -24,7 +24,14 @@ describe('Menu visual parity with @mui/joy', () => {
         it(`${variant}/${color} matches Joy UI's computed styles in ${scheme}`, async () => {
           await setColorScheme(scheme);
 
-          render(
+          // Rendered one at a time, not side by side. Both popups portal to
+          // <body> and are positioned against their own trigger, so with both
+          // mounted they overlap — and an element screenshot captures the real
+          // page, so each one's image picked up a sliver of the other. That is
+          // why twenty of Joy's reference images changed when only our Button
+          // changed (2026-09-07). Joy is the oracle; its baselines must not
+          // contain our pixels.
+          const joyRender = render(
             <JoyCssVarsProvider defaultMode={scheme}>
               <JoyDropdown open>
                 <JoyMenuButton>Open</JoyMenuButton>
@@ -34,6 +41,25 @@ describe('Menu visual parity with @mui/joy', () => {
               </JoyDropdown>
             </JoyCssVarsProvider>,
           );
+
+          const joyLocator = page.getByTestId(`joy-${variant}-${color}`);
+          const joyComputed = getComputedStyle(joyLocator.element());
+          const joyStyle = {
+            backgroundColor: joyComputed.backgroundColor,
+            color: joyComputed.color,
+            borderRadius: joyComputed.borderRadius,
+            boxShadow: joyComputed.boxShadow,
+            fontSize: joyComputed.fontSize,
+            fontWeight: joyComputed.fontWeight,
+            lineHeight: joyComputed.lineHeight,
+          };
+          // Base UI's popup animates on open, so a capture taken straight
+          // after mount races it — 107 pixels of drift between runs,
+          // measured 2026-09-07, repeatably and on solid variants first.
+          await settleTransitions();
+          await expect(joyLocator).toMatchScreenshot(`menu-${variant}-${color}-joy-${scheme}`);
+          joyRender.unmount();
+
           render(
             <HintoricDropdown open>
               <HintoricMenuButton>Open</HintoricMenuButton>
@@ -43,19 +69,21 @@ describe('Menu visual parity with @mui/joy', () => {
             </HintoricDropdown>,
           );
 
-          const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}-${color}`).element());
-          const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}-${color}`).element());
+          const hintoricLocator = page.getByTestId(`hintoric-${variant}-${color}`);
+          const hintoricStyle = getComputedStyle(hintoricLocator.element());
 
           expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
           expect(hintoricStyle.color).toBe(joyStyle.color);
           expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+          expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(
+            lastShadowLayers(joyStyle.boxShadow, 2),
+          );
           expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
           expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
           expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
-          expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
 
-          await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-joy-${scheme}`);
-          await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-hintoric-${scheme}`);
+          await settleTransitions();
+          await expect(hintoricLocator).toMatchScreenshot(`menu-${variant}-${color}-hintoric-${scheme}`);
         });
       }
     }

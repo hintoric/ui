@@ -191,19 +191,42 @@ Test-design lessons, all of which cost a wrong turn first:
   until a value stops changing; use it wherever a state change is asserted
   under load.
 
-**Still open:**
+**Closing the last four — and what `Select` actually was.**
 
-- `Select`'s `disabled` background in dark for `outlined` and `plain`: ours
-  settles on neutral-800 where Joy renders neutral-900. Ruled out by
-  measurement: not a transition race, and not the class map (which specifies
-  `bg-surface`, i.e. Joy's value). The actual source was not found — the note
-  in the test says so rather than guessing.
-- `Container.visual.test.tsx` takes no screenshots and has no documented
-  reason, unlike `Tooltip`. Predates this work.
-- `Menu`'s Joy reference images contain a sliver of our component.
-- `Stepper.visual.test.tsx` still renders `StepIndicator` bare. It is not
-  wrong, but `StepIndicator.visual.test.tsx` now covers the same ground
-  composed, which is the stronger oracle.
+The `Select` divergence was not a token and not a race. `:hover` matches a
+disabled `<button>` in Chrome, and our disabled controls left
+`pointer-events: auto` where Joy sets `none`. So a disabled `outlined`/`plain`
+Select repainted itself with its hover background — `--color-neutral-*-hover-bg`
+is neutral-800 in dark, exactly the wrong value — whenever the pointer happened
+to rest on it. That is why it was intermittent: it depended on where the
+previous test left the mouse.
+
+Three layers had to be measured in turn, each hidden behind the one before:
+`pointer-events` (`auto` vs `none`), then `cursor` (`not-allowed` vs Joy's
+`default`), then the background. Fixed on `Button`, `IconButton`, `ChipDelete`,
+`ListItemButton` and `Select`. A first attempt guarded the background instead
+(`disabled:bg-surface`); once `pointer-events` was right that became dead code
+and was removed — one mechanism, the same one Joy uses.
+
+Worth keeping: **the assertion that found it is `pointer-events`, not a forced
+hover.** `user.hover()` on Joy's disabled button refuses outright with "element
+has pointer-events: none", which is the answer rather than an obstacle.
+
+The other three:
+
+- `Container` now takes screenshots. It had none and no documented exemption —
+  a dull picture is not an exempt one.
+- `Menu` renders the two popups **sequentially** (render Joy, capture, unmount,
+  then ours). Both portal to `<body>` and overlapped, so each one's image
+  carried 2-4 pixels of the other; Joy's baselines are now clean. Both captures
+  also settle first — Base UI's popup animates on open, worth 107 pixels of
+  drift per run.
+- `Stepper`'s bare `StepIndicator` raster is gone, along with its 80 orphaned
+  baselines. `StepIndicator.visual.test.tsx` covers the same ground composed,
+  and the bare version was the misleading oracle that produced a wrong fix.
+
+**Nothing is left open.** 84 files, 2047 visual tests, 399 unit tests,
+typecheck and lint clean; 1616 light and 1616 dark baselines.
 
 ## Global Constraints
 

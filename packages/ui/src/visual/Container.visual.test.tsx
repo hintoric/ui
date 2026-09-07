@@ -33,6 +33,21 @@ describe('Container visual parity with @mui/joy', () => {
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
         expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+        expect(hintoricStyle.paddingLeft).toBe(joyStyle.paddingLeft);
+        expect(hintoricStyle.paddingRight).toBe(joyStyle.paddingRight);
+
+        // This file had no screenshots at all until 2026-09-07, which is a
+        // straight violation of rule 4 — Tooltip is the only component with a
+        // documented exemption, and Container is not it. A max-width container
+        // makes a dull picture, which is presumably why they were skipped, but
+        // "dull" is not "exempt": the gutters and the centring show up here and
+        // nowhere else.
+        await expect(page.getByTestId(`joy-${maxWidth}`)).toMatchScreenshot(
+          `container-${maxWidth}-joy-${scheme}`,
+        );
+        await expect(page.getByTestId(`hintoric-${maxWidth}`)).toMatchScreenshot(
+          `container-${maxWidth}-hintoric-${scheme}`,
+        );
       });
     }
 

@@ -14,47 +14,16 @@ import { StepIndicator as HintoricStepIndicator } from '../components/StepIndica
 import { StepButton as HintoricStepButton } from '../components/StepButton';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
-const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
-const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
 describe('Stepper visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
-    for (const variant of VARIANTS) {
-      for (const color of COLORS) {
-        it(`StepIndicator ${variant}/${color} matches Joy UI's computed styles in ${scheme}`, async () => {
-          await setColorScheme(scheme);
-
-          render(
-            <JoyCssVarsProvider defaultMode={scheme}>
-              <JoyStepIndicator variant={variant} color={color} data-testid={`joy-${variant}-${color}`}>
-                1
-              </JoyStepIndicator>
-            </JoyCssVarsProvider>,
-          );
-          render(
-            <HintoricStepIndicator variant={variant} color={color} data-testid={`hintoric-${variant}-${color}`}>
-              1
-            </HintoricStepIndicator>,
-          );
-
-          const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}-${color}`).element());
-          const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}-${color}`).element());
-
-          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-          expect(hintoricStyle.color).toBe(joyStyle.color);
-          expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
-          expect(hintoricStyle.width).toBe(joyStyle.width);
-          expect(hintoricStyle.height).toBe(joyStyle.height);
-          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
-          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
-          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
-
-          await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-joy-${scheme}`);
-          await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-hintoric-${scheme}`);
-        });
-      }
-    }
-
+    // The bare StepIndicator raster that used to live here has moved to
+    // StepIndicator.visual.test.tsx, which composes it inside a real Stepper
+    // and Step. Rendering it bare was not merely redundant, it was a
+    // misleading oracle: with no Stepper above it, Joy's indicator inherits
+    // the page's defaults, and comparing against that produced a wrong fix on
+    // 2026-09-07 (a hardcoded 16px) that had to be undone. This file keeps
+    // what is genuinely Stepper's own: its sizes and the full composition.
     for (const size of ['sm', 'md', 'lg'] as const) {
       it(`size=${size} matches Joy UI's computed StepIndicator dimensions in ${scheme}`, async () => {
         await setColorScheme(scheme);
