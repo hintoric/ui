@@ -24,6 +24,13 @@ export interface ErrorParityConfig {
   renderHintoric: (args: { variant?: JoyVariant; color: JoyColor }) => React.ReactElement;
   /** Picks the element whose computed styles carry the look. */
   element: (container: HTMLElement) => HTMLElement;
+  /**
+   * Override for the Joy side when its DOM shape differs from ours — Joy's
+   * Textarea wraps the control in a styled root, for instance, while ours is
+   * a bare <textarea>. Each side's "visible box" is then a different element,
+   * and comparing the same selector on both would compare the wrong things.
+   */
+  joyElement?: (container: HTMLElement) => HTMLElement;
   /** Extra property comparisons beyond the shared four. */
   assertStyles?: (hintoric: CSSStyleDeclaration, joy: CSSStyleDeclaration) => void;
 }
@@ -60,7 +67,7 @@ export function describeErrorParity(config: ErrorParityConfig): void {
           );
           await settleTransitions();
 
-          const joyStyle = getComputedStyle(config.element(joyContainer));
+          const joyStyle = getComputedStyle((config.joyElement ?? config.element)(joyContainer));
           const hintoricStyle = getComputedStyle(config.element(hintoricContainer));
 
           expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);

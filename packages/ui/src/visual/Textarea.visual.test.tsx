@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Textarea as JoyTextarea } from '
 import { Textarea as HintoricTextarea } from '../components/Textarea';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { lastShadowLayer } from './helpers';
+import { describeErrorParity } from './errorParity';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -60,4 +61,24 @@ describe('Textarea visual parity with @mui/joy', () => {
       });
     }
   }
+});
+
+describeErrorParity({
+  slug: 'textarea',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyTextarea error variant={variant} color={color} placeholder={color} />
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricTextarea error variant={variant} color={color} placeholder={color} />
+  ),
+  // Joy wraps its control in a styled root; ours is the bare <textarea>. Each
+  // side's visible box is therefore a different element — see the note at the
+  // top of this file.
+  joyElement: (container) => container.querySelector('textarea')!.parentElement as HTMLElement,
+  element: (container) => container.querySelector('textarea') as HTMLElement,
+  assertStyles: (hintoric, joy) => {
+    expect(hintoric.minHeight).toBe(joy.minHeight);
+  },
 });
