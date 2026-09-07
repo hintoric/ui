@@ -8,9 +8,15 @@ export type { LocaleOption };
 
 export interface LocaleSwitcherProps
   extends Omit<React.ComponentPropsWithoutRef<'button'>, 'color' | 'onChange' | 'value'> {
-  locales: readonly LocaleOption[];
-  value: string;
-  onChange: (value: string) => void;
+  /**
+   * The offered languages. Falls back to the `locales` of an enclosing
+   * `LocaleProvider`; one of the two must supply them.
+   */
+  locales?: readonly LocaleOption[];
+  /** The current language. Falls back to the `LocaleProvider`'s `locale`. */
+  value?: string;
+  /** Falls back to the `LocaleProvider`'s `onLocaleChange`. */
+  onChange?: (value: string) => void;
   /** Defaults to `outlined`, so the control reads as a control without being asked twice. */
   variant?: JoyVariant;
   color?: JoyColor;
