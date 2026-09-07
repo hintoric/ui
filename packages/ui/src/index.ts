@@ -283,4 +283,7 @@ export type { ColorSchemeToggleProps } from './components/ColorSchemeToggle';
 export { ColorSchemeMenuItems } from './components/ColorSchemeMenuItems';
 export type { ColorSchemeMenuItemsProps } from './components/ColorSchemeMenuItems';
 
+export { ColorSchemeMenu } from './components/ColorSchemeMenu';
+export type { ColorSchemeMenuProps } from './components/ColorSchemeMenu';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
