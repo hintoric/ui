@@ -4,6 +4,7 @@ import { computeRelativeTimeText } from './relativeTimeFormat';
 import type { RelativeTimeFormatOptions } from './relativeTimeFormat';
 import { scheduleRelativeTimeUpdate } from './relativeTimeScheduler';
 import { useDateTimeDefaults } from '../../theme/DateTimeProvider';
+import { cx } from '../../utils/cx';
 import type { RelativeTimeProps } from './types';
 
 function toDate(value: Date | string): Date {
@@ -59,7 +60,15 @@ export function RelativeTime({
     <time
       dateTime={isValidDate ? date.toISOString() : undefined}
       title={noTitle ? undefined : result.title || undefined}
-      className={className}
+      // `text-ink-primary` rather than inheriting: RelativeTime used to set
+      // no class at all, so on a dark page it rendered the inherited black on
+      // near-black and was invisible — its dark screenshots were solid black
+      // rectangles. Joy has no RelativeTime to compare against, but every
+      // `body-*` typography level in Joy sets a `color`, and this library has
+      // ink tokens for exactly that. `primary` rather than `secondary`/
+      // `tertiary` because no spec asked for a muted timestamp; this fixes
+      // readability without imposing a treatment, and `className` still wins.
+      className={cx('text-ink-primary', className)}
       data-testid={dataTestId}
     >
       {result.text}

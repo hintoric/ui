@@ -62,36 +62,29 @@ describe('RelativeTime visual (self-baseline)', () => {
   }
 
   /**
-   * The layout-only exception in CLAUDE.md, applied to a text primitive.
+   * A committed screenshot only catches a regression once a human looks at it.
+   * This is the assertion a PNG cannot make: that the component reads scheme
+   * tokens at all.
    *
-   * RelativeTime renders a bare <time> and sets no `bg-*`/`text-*`/`border-*`
-   * utility of its own — it inherits colour from whatever surrounds it, which
-   * is deliberate for a value formatter. So the "dark must differ from light"
-   * assertion every other Joy-exempt component carries is unsatisfiable here:
-   * measured, all three colour properties are identical in both schemes,
-   * because all three are inherited.
+   * RelativeTime used to fail this by rendering no colour of its own — it
+   * inherited, so on a dark page it was black on near-black and its dark
+   * baselines were solid black rectangles. It now sets `text-ink-primary`,
+   * which is what makes those baselines reviewable.
    *
-   * The meaningful assertion is the inverse — a scheme flip must not change
-   * the component's own contribution. What this would catch: someone giving
-   * RelativeTime a hardcoded colour, breaking inheritance for consumers who
-   * set their own.
+   * The component stays mounted across the flip — only the CSS custom
+   * properties change — so this compares the same element with itself.
    */
-  it('paints nothing of its own in either colour scheme', async () => {
+  it('reads colour-scheme tokens rather than a fixed colour', async () => {
     await setColorScheme('light');
     render(<RelativeTime date={daysFromNow(-3)} locale="en" data-testid="rt-tokens" />);
 
     const el = screen.getByTestId('rt-tokens');
-    const read = () => {
-      const style = getComputedStyle(el);
-      return [style.backgroundColor, style.color, style.borderTopColor];
-    };
+    const readColor = () => getComputedStyle(el).color;
 
-    const light = read();
+    const light = readColor();
     await setColorScheme('dark');
 
-    expect(read()).toEqual(light);
-    // ...and specifically: transparent, i.e. contributing no background.
-    expect(read()[0]).toBe('rgba(0, 0, 0, 0)');
+    expect(readColor()).not.toBe(light);
   });
 
 });
