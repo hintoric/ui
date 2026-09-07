@@ -7,6 +7,35 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { settleTransitions, lastShadowLayer } from './helpers';
 import type { JoyColor, JoyVariant } from '../utils/colorVariantClasses';
 
+/**
+ * Moves the real mouse onto an empty spacer before styles are measured.
+ *
+ * The browser harness leaves the pointer wherever the last `.hover()` put it,
+ * and a freshly rendered element can land under a stationary pointer and be
+ * measured in its :hover state. Both sides are affected: Select's own solid
+ * background read primary-600 instead of primary-500 for twenty cells, and
+ * Joy's outlined danger background read its hover tint (#FCE4E4) in another.
+ * Neither was a styling bug — just a mouse nobody had moved.
+ *
+ * The spacer is `position: fixed` in the bottom-right corner on purpose. An
+ * in-flow one shifts the elements measured after it by a sub-pixel, which is
+ * invisible to getComputedStyle but enough to make the committed screenshots
+ * disagree with a later run by a dozen anti-aliased pixels on a rounded
+ * border. Out of flow, it cannot move anything.
+ */
+export async function parkPointer(key: string): Promise<void> {
+  render(
+    <div
+      data-testid={`park-${key}`}
+      style={{ position: 'fixed', right: 0, bottom: 0, width: 120, height: 40 }}
+    />,
+  );
+  await page.getByTestId(`park-${key}`).hover();
+}
+
+const JOY_BOX: React.CSSProperties = { position: 'fixed', top: 0, left: 0, width: 320 };
+const HINTORIC_BOX: React.CSSProperties = { position: 'fixed', top: 120, left: 0, width: 320 };
+
 export interface ErrorParityConfig {
   /** Screenshot name prefix, e.g. 'checkbox'. */
   slug: string;
@@ -55,13 +84,23 @@ export function describeErrorParity(config: ErrorParityConfig): void {
       for (const color of config.colors) {
         const key = variant ? `${variant}-${color}` : color;
         it(`${key} in error state matches Joy UI`, async () => {
+          await parkPointer(key);
+
+          // Both wrappers are taken out of flow at fixed coordinates. In
+          // flow, their sub-pixel position depends on however much content
+          // earlier tests left in the document, and that varies between the
+          // run that writes a baseline and the run that checks it — enough to
+          // change a captured element's height by 1px and fail on nothing.
+          // (A test aborts at its first failing screenshot, so baselines are
+          // always written across more than one run; they have to be
+          // position-independent.)
           const { container: joyContainer } = render(
-            <div data-testid={`joy-err-${key}`}>
+            <div data-testid={`joy-err-${key}`} style={JOY_BOX}>
               <JoyCssVarsProvider>{config.renderJoy({ variant, color })}</JoyCssVarsProvider>
             </div>,
           );
           const { container: hintoricContainer } = render(
-            <div data-testid={`hintoric-err-${key}`}>
+            <div data-testid={`hintoric-err-${key}`} style={HINTORIC_BOX}>
               <ColorSchemeProvider>{config.renderHintoric({ variant, color })}</ColorSchemeProvider>
             </div>,
           );

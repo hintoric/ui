@@ -4,6 +4,17 @@ import { Select as BaseSelect } from '@base-ui/react/select';
 import { cx } from '../../utils/cx';
 import { selectVariants } from './selectVariants';
 import { UnfoldIcon } from '../../internal/svg-icons/UnfoldIcon';
+import { useFormContext } from 'react-hook-form';
+import { FormControlContext } from '../FormControl/FormControlContext';
+import {
+  FieldShell,
+  omitProps,
+  useBoundField,
+  useFieldIds,
+  useForkRef,
+  valueAdapter,
+  VALUE_PROPS,
+} from '../../internal/form';
 import type { SelectProps } from './types';
 
 const INDICATOR_SIZE_CLASS = {
@@ -45,11 +56,12 @@ const INDICATOR_PULL_CLASS = {
 const LISTBOX_CLASS =
   'z-50 max-h-[44vh] min-w-[max-content] overflow-auto rounded-sm bg-surface-popup p-1.5 font-body text-neutral-outlined-color shadow-[var(--shadow-md)] outline-none';
 
-function SelectComponent<Value = string>(
+function SelectBaseComponent<Value = string>(
   {
     variant = 'outlined',
-    color = 'neutral',
+    color,
     size = 'md',
+    error,
     placeholder,
     startDecorator,
     endDecorator,
@@ -95,13 +107,20 @@ function SelectComponent<Value = string>(
     return labelsByValue.get(selected) ?? String(selected);
   };
 
+  const formControl = React.useContext(FormControlContext);
+  // Joy: `color = inProps.color ?? (formControl.error ? 'danger' : ...)` — an
+  // explicit colour beats the error state. Confirmed against @mui/joy's
+  // Select.js.
+  const hasError = error ?? formControl?.error ?? false;
+  const effectiveColor = color ?? (hasError ? 'danger' : 'neutral');
+
   return (
     <BaseSelect.Root
       value={value}
       defaultValue={defaultValue}
       onValueChange={onChange as (value: Value | Value[] | null) => void}
       multiple={multiple}
-      disabled={disabled}
+      disabled={disabled ?? formControl?.disabled}
       name={name}
       required={required}
       defaultOpen={defaultListboxOpen}
@@ -112,7 +131,8 @@ function SelectComponent<Value = string>(
       <BaseSelect.Trigger
         ref={ref}
         id={id}
-        className={cx(selectVariants({ variant, color, size }), className)}
+        className={cx(selectVariants({ variant, color: effectiveColor, size }), className)}
+        aria-invalid={hasError || undefined}
         {...ariaProps}
       >
         {startDecorator && <span className="me-2 inline-flex items-center text-ink-icon">{startDecorator}</span>}
@@ -149,5 +169,70 @@ type SelectComponentType = (<Value = string>(props: SelectProps<Value> & { ref?:
   displayName?: string;
 };
 
-export const Select = React.forwardRef(SelectComponent) as unknown as SelectComponentType;
+const SelectBase = React.forwardRef(SelectBaseComponent) as unknown as SelectComponentType;
+SelectBase.displayName = 'SelectBase';
+
+function SelectFieldComponent<Value = string>(
+  { label, helperText, error, required, id: idProp, ...props }: SelectProps<Value>,
+  ref: React.Ref<HTMLButtonElement>,
+) {
+  const { id, helperId } = useFieldIds(idProp, helperText != null);
+  return (
+    <FieldShell
+      label={label}
+      helperText={helperText}
+      error={error}
+      required={required}
+      disabled={props.disabled}
+      id={id}
+      helperId={helperId}
+    >
+      <SelectBase
+        ref={ref}
+        id={id}
+        required={required}
+        error={error}
+        aria-describedby={helperId}
+        {...(props as SelectProps<Value>)}
+      />
+    </FieldShell>
+  );
+}
+
+const SelectField = React.forwardRef(SelectFieldComponent) as unknown as SelectComponentType;
+SelectField.displayName = 'SelectField';
+
+function BoundSelectComponent<Value = string>(
+  { name, onChange, error, helperText, ...rest }: SelectProps<Value>,
+  ref: React.Ref<HTMLButtonElement>,
+) {
+  const { fieldProps, errorMessage } = useBoundField(name!, valueAdapter, { onChange });
+  const { ref: fieldRef, ...boundProps } = fieldProps as { ref: React.Ref<HTMLButtonElement> };
+  const forkedRef = useForkRef(ref, fieldRef);
+  return (
+    <SelectField
+      {...(omitProps(rest, VALUE_PROPS) as SelectProps<Value>)}
+      {...(boundProps as Partial<SelectProps<Value>>)}
+      ref={forkedRef}
+      error={error || errorMessage != null}
+      helperText={errorMessage ?? helperText}
+    />
+  );
+}
+
+const BoundSelect = React.forwardRef(BoundSelectComponent) as unknown as SelectComponentType;
+BoundSelect.displayName = 'BoundSelect';
+
+function SelectRootComponent<Value = string>(
+  props: SelectProps<Value>,
+  ref: React.Ref<HTMLButtonElement>,
+) {
+  const form = useFormContext();
+  if (form && props.name) {
+    return <BoundSelect {...props} ref={ref} />;
+  }
+  return <SelectField {...props} ref={ref} />;
+}
+
+export const Select = React.forwardRef(SelectRootComponent) as unknown as SelectComponentType;
 Select.displayName = 'Select';

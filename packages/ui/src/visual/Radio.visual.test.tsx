@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Radio as JoyRadio } from '@mui/joy';
 import { Radio as HintoricRadio } from '../components/Radio';
 import { settleTransitions } from './helpers';
-import { describeErrorParity } from './errorParity';
+import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as JoyFormControl } from '@mui/joy';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 
@@ -123,6 +123,7 @@ describeErrorParity({
 
 describe('Radio error state with no explicit colour', () => {
   it('turns danger like Joy UI', async () => {
+    await parkPointer('radio-nocolor');
     const { container: joyContainer } = render(
       <div data-testid="joy-radio-danger">
         <JoyCssVarsProvider>

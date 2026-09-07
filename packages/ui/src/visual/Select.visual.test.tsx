@@ -7,6 +7,9 @@ import { Select as HintoricSelect } from '../components/Select';
 import { Option as HintoricOption } from '../components/Option';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { lastShadowLayer, lastShadowLayers, settleTransitions } from './helpers';
+import { describeErrorParity, parkPointer } from './errorParity';
+import { FormControl as JoyFormControl } from '@mui/joy';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -311,5 +314,78 @@ describe('Select visual parity with @mui/joy', () => {
     expect(hintoricStyle.paddingTop).toBe(joyStyle.paddingTop);
     expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
     expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
+  });
+});
+
+// Joy's Select has no error prop — it reads formControl.error and resolves
+// `color = inProps.color ?? (error ? 'danger' : ...)`, so an explicit colour
+// wins. This matrix proves that precedence; the case below proves the danger
+// colour itself.
+describeErrorParity({
+  slug: 'select',
+  variants: VARIANTS,
+  colors: COLORS,
+  renderJoy: ({ variant, color }) => (
+    <JoyFormControl error>
+      <JoySelect variant={variant} color={color} placeholder="—">
+        <JoyOption value="a">A</JoyOption>
+      </JoySelect>
+    </JoyFormControl>
+  ),
+  renderHintoric: ({ variant, color }) => (
+    <HintoricFormControl error>
+      <HintoricSelect variant={variant} color={color} placeholder="—">
+        <HintoricOption value="a">A</HintoricOption>
+      </HintoricSelect>
+    </HintoricFormControl>
+  ),
+  // Joy paints .MuiSelect-root and leaves its inner button transparent; our
+  // trigger button carries the classes itself.
+  joyElement: (container) => container.querySelector('.MuiSelect-root') as HTMLElement,
+  element: (container) => container.querySelector('button') as HTMLElement,
+  assertStyles: (hintoric, joy) => {
+    expect(hintoric.minHeight).toBe(joy.minHeight);
+    expect(hintoric.paddingLeft).toBe(joy.paddingLeft);
+  },
+});
+
+describe('Select error state with no explicit colour', () => {
+  it('turns danger like Joy UI', async () => {
+    await parkPointer('select-nocolor');
+    const { container: joyContainer } = render(
+      <div data-testid="joy-select-danger">
+        <JoyCssVarsProvider>
+          <JoyFormControl error>
+            <JoySelect placeholder="—">
+              <JoyOption value="a">A</JoyOption>
+            </JoySelect>
+          </JoyFormControl>
+        </JoyCssVarsProvider>
+      </div>,
+    );
+    const { container: hintoricContainer } = render(
+      <div data-testid="hintoric-select-danger">
+        <ColorSchemeProvider>
+          <HintoricFormControl error>
+            <HintoricSelect placeholder="—">
+              <HintoricOption value="a">A</HintoricOption>
+            </HintoricSelect>
+          </HintoricFormControl>
+        </ColorSchemeProvider>
+      </div>,
+    );
+    await settleTransitions();
+
+    const joy = getComputedStyle(joyContainer.querySelector('.MuiSelect-root') as HTMLElement);
+    const hintoric = getComputedStyle(hintoricContainer.querySelector('button') as HTMLElement);
+    expect(hintoric.borderColor).toBe(joy.borderColor);
+    expect(hintoric.backgroundColor).toBe(joy.backgroundColor);
+
+    await expect(page.getByTestId('joy-select-danger')).toMatchScreenshot(
+      'select-error-nocolor-joy',
+    );
+    await expect(page.getByTestId('hintoric-select-danger')).toMatchScreenshot(
+      'select-error-nocolor-hintoric',
+    );
   });
 });

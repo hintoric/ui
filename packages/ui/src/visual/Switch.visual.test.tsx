@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Switch as JoySwitch } from '@mui/joy';
 import { Switch as HintoricSwitch } from '../components/Switch';
 import { settleTransitions } from './helpers';
-import { describeErrorParity } from './errorParity';
+import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as JoyFormControl } from '@mui/joy';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 
@@ -129,6 +129,7 @@ describeErrorParity({
 
 describe('Switch error state with no explicit colour', () => {
   it('turns danger like Joy UI', async () => {
+    await parkPointer('switch-nocolor');
     const { container: joyContainer } = render(
       <div data-testid="joy-switch-danger">
         <JoyCssVarsProvider>

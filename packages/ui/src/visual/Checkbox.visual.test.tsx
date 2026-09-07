@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Checkbox as JoyCheckbox } from '@mui/joy';
 import { Checkbox as HintoricCheckbox } from '../components/Checkbox';
 import { settleTransitions } from './helpers';
-import { describeErrorParity } from './errorParity';
+import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as JoyFormControl } from '@mui/joy';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 
@@ -167,6 +167,7 @@ describeErrorParity({
 
 describe('Checkbox error state with no explicit colour', () => {
   it('turns danger like Joy UI', async () => {
+    await parkPointer('checkbox-nocolor');
     const { container: joyContainer } = render(
       <div data-testid="joy-checkbox-danger">
         <JoyCssVarsProvider>

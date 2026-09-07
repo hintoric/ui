@@ -6,6 +6,17 @@ import { autocompleteVariants } from './autocompleteVariants';
 import { ArrowDropDownIcon } from '../../internal/svg-icons/ArrowDropDownIcon';
 import { CancelIcon } from '../../internal/svg-icons/CancelIcon';
 import { AutocompleteOption } from '../AutocompleteOption';
+import { useFormContext } from 'react-hook-form';
+import { FormControlContext } from '../FormControl/FormControlContext';
+import {
+  FieldShell,
+  omitProps,
+  useBoundField,
+  useFieldIds,
+  useForkRef,
+  valueAdapter,
+  VALUE_PROPS,
+} from '../../internal/form';
 import type { AutocompleteProps } from './types';
 
 // Joy UI's AutocompleteListbox: boxShadow.md, radius.sm, background.popup
@@ -14,11 +25,12 @@ import type { AutocompleteProps } from './types';
 const LISTBOX_CLASS =
   'z-50 max-h-[40vh] min-w-[max-content] overflow-auto rounded-sm bg-surface-popup p-1 font-body shadow-[var(--shadow-md)] outline-none';
 
-function AutocompleteComponent<Value = string>(
+function AutocompleteBaseComponent<Value = string>(
   {
     variant = 'outlined',
-    color = 'neutral',
+    color,
     size = 'md',
+    error,
     options,
     getOptionLabel = (value: Value) => String(value),
     placeholder,
@@ -35,6 +47,11 @@ function AutocompleteComponent<Value = string>(
   }: AutocompleteProps<Value>,
   ref: React.Ref<HTMLInputElement>,
 ) {
+  const formControl = React.useContext(FormControlContext);
+  // Same rule as Select: an explicit colour beats the error state.
+  const hasError = error ?? formControl?.error ?? false;
+  const effectiveColor = color ?? (hasError ? 'danger' : 'neutral');
+
   return (
     <Combobox.Root
       items={options}
@@ -46,10 +63,11 @@ function AutocompleteComponent<Value = string>(
       onInputValueChange={onInputChange}
       disabled={disabled}
     >
-      <Combobox.InputGroup className={cx(autocompleteVariants({ variant, color, size }), className)}>
+      <Combobox.InputGroup className={cx(autocompleteVariants({ variant, color: effectiveColor, size }), className)}>
         {startDecorator && <span className="inline-flex items-center text-ink-icon">{startDecorator}</span>}
         <Combobox.Input
           ref={ref}
+          aria-invalid={hasError || undefined}
           placeholder={placeholder}
           className="min-w-0 flex-1 border-none bg-transparent p-0 outline-none placeholder:opacity-[0.64]"
           {...props}
@@ -85,5 +103,81 @@ type AutocompleteComponentType = (<Value = string>(
   props: AutocompleteProps<Value> & { ref?: React.Ref<HTMLInputElement> },
 ) => React.ReactElement) & { displayName?: string };
 
-export const Autocomplete = React.forwardRef(AutocompleteComponent) as unknown as AutocompleteComponentType;
+const AutocompleteBase = React.forwardRef(
+  AutocompleteBaseComponent,
+) as unknown as AutocompleteComponentType;
+AutocompleteBase.displayName = 'AutocompleteBase';
+
+function AutocompleteFieldComponent<Value = string>(
+  { label, helperText, error, required, id: idProp, ...props }: AutocompleteProps<Value>,
+  ref: React.Ref<HTMLInputElement>,
+) {
+  const { id, helperId } = useFieldIds(idProp, helperText != null);
+  return (
+    <FieldShell
+      label={label}
+      helperText={helperText}
+      error={error}
+      required={required}
+      disabled={props.disabled}
+      id={id}
+      helperId={helperId}
+    >
+      <AutocompleteBase
+        ref={ref}
+        id={id}
+        required={required}
+        error={error}
+        aria-describedby={helperId}
+        {...(props as AutocompleteProps<Value>)}
+      />
+    </FieldShell>
+  );
+}
+
+const AutocompleteField = React.forwardRef(
+  AutocompleteFieldComponent,
+) as unknown as AutocompleteComponentType;
+AutocompleteField.displayName = 'AutocompleteField';
+
+// inputValue/onInputChange stay unbound on purpose: the bound path owns
+// value/onChange, and the raw text in the box remains the component's own
+// business. Binding both would make every keystroke a form write.
+function BoundAutocompleteComponent<Value = string>(
+  { name, onChange, error, helperText, ...rest }: AutocompleteProps<Value>,
+  ref: React.Ref<HTMLInputElement>,
+) {
+  const { fieldProps, errorMessage } = useBoundField(name!, valueAdapter, { onChange });
+  const { ref: fieldRef, ...boundProps } = fieldProps as { ref: React.Ref<HTMLInputElement> };
+  const forkedRef = useForkRef(ref, fieldRef);
+  return (
+    <AutocompleteField
+      {...(omitProps(rest, VALUE_PROPS) as AutocompleteProps<Value>)}
+      {...(boundProps as Partial<AutocompleteProps<Value>>)}
+      ref={forkedRef}
+      error={error || errorMessage != null}
+      helperText={errorMessage ?? helperText}
+    />
+  );
+}
+
+const BoundAutocomplete = React.forwardRef(
+  BoundAutocompleteComponent,
+) as unknown as AutocompleteComponentType;
+BoundAutocomplete.displayName = 'BoundAutocomplete';
+
+function AutocompleteRootComponent<Value = string>(
+  props: AutocompleteProps<Value>,
+  ref: React.Ref<HTMLInputElement>,
+) {
+  const form = useFormContext();
+  if (form && props.name) {
+    return <BoundAutocomplete {...props} ref={ref} />;
+  }
+  return <AutocompleteField {...props} ref={ref} />;
+}
+
+export const Autocomplete = React.forwardRef(
+  AutocompleteRootComponent,
+) as unknown as AutocompleteComponentType;
 Autocomplete.displayName = 'Autocomplete';
