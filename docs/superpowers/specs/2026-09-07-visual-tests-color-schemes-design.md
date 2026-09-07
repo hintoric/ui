@@ -1,7 +1,9 @@
 # Colour schemes in the visual regression suite
 
 **Date:** 2026-09-07
-**Prompted by:** the suite has 63 test files, 1248 committed baseline PNGs and 0 assertions in dark mode. Every token in `[data-color-scheme="dark"]` (theme.css:210-345) was derived from `@mui/joy` source and has never been verified against the rendered package.
+**Prompted by:** the suite has 63 component test files and 1248 committed baseline PNGs, and until 2026-09-07 not one of them rendered anything in dark mode — the whole `[data-color-scheme="dark"]` block (theme.css:210-345) was derived from `@mui/joy` source and never verified against the rendered package.
+
+`DarkTokens.visual.test.tsx` (committed 2026-09-07 for the colour-scheme switcher family) closed part of that gap: it verifies the dark tokens against real Joy for the five primitives those forms are built from — `IconButton`, `ListItemButton`, `Switch`, `Select`, `Button`. This design generalises that from five primitives to every component, and folds the scheme axis into the per-component files rather than a separate one.
 
 ## Goal
 
@@ -27,11 +29,21 @@ The 2026-09-06 coverage audit is the precedent: adding assertions to one already
 
 Both selectors are attribute-based, so setting them on `<html>` puts the whole document, portals included, in one scheme. Light and dark therefore run **sequentially**, not as siblings in one document.
 
-### Why not wrapper-`div` scopes
+### Both mechanisms coexist, with a stated division of labour
 
-A wrapper `div` carrying the attribute was the first design and is wrong: `Menu`, `Modal`, `Drawer`, `Tooltip`, `Snackbar`, `Select` and `Autocomplete` render their popup into a portal on `body`, outside the wrapper. Those popups would have no scheme ancestor and would render light inside a dark test — silently, and in exactly the components where a dark bug is hardest to notice.
+`visual/darkMode.tsx` already exists (committed 2026-09-07 in `a956fb2`, alongside `DarkTokens`/`DarkVariant`/`DarkModeHarness`) and takes the *other* approach: wrapper `div`s carrying the attribute, via `renderJoyDark` / `renderHintoricDark`. Both approaches have a real argument, and neither subsumes the other:
 
-The pairing the suite needs is Joy-vs-Hintoric, never light-vs-dark, so nothing is lost by serialising the modes.
+- **Wrapper scopes** let a light and a dark element coexist in one test document. `defaultMode="dark"` cannot, because it writes onto the shared `<html>`. This is what a side-by-side token grid needs.
+- **Document state** is the only thing portalled content inherits. `darkMode.tsx` says so itself: *"Portalled content (Menu, Select's listbox) mounts outside these wrappers and therefore does NOT inherit them."* `Menu`, `Modal`, `Drawer`, `Tooltip`, `Snackbar`, `Select` and `Autocomplete` all portal to `body`, and a wrapper scope would leave their popups light inside a dark test — silently, in exactly the components where a dark bug is hardest to spot.
+
+Division of labour, to be documented in both files:
+
+| Mechanism | Use for |
+|---|---|
+| `darkMode.tsx` wrapper scopes | tests that show light and dark together in one document — the `DarkTokens` grid and its kin |
+| `setColorScheme()` document state | the 82-file retrofit, which necessarily includes every portalled component |
+
+The retrofit does not need light-vs-dark coexistence: its pairing is Joy-vs-Hintoric, both in the *same* scheme, so serialising the modes costs nothing.
 
 ### Helper API (`visual/helpers.ts`)
 
