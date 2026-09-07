@@ -52,10 +52,10 @@ describe('Textarea visual parity with @mui/joy', () => {
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
         await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(
-          `textarea-${variant}-${color}-joy`,
+          `textarea-${variant}-${color}-joy-light`,
         );
         await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(
-          `textarea-${variant}-${color}-hintoric`,
+          `textarea-${variant}-${color}-hintoric-light`,
         );
       });
     }

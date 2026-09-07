@@ -25,7 +25,7 @@ describe('ListItemDecorator visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.flexShrink).toBe(joyStyle.flexShrink);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('listitemdecorator-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitemdecorator-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('listitemdecorator-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitemdecorator-hintoric-light');
   });
 });

@@ -21,8 +21,8 @@ describe('ListItemButton visual parity with @mui/joy', () => {
     expect(hintoricStyle.color).toBe(joyStyle.color);
     expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('listitembutton-plain-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitembutton-plain-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('listitembutton-plain-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitembutton-plain-hintoric-light');
   });
 
   it('keeps plain/neutral when selected, applying the persistent active background', async () => {
@@ -45,8 +45,8 @@ describe('ListItemButton visual parity with @mui/joy', () => {
     expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
     expect(hintoricStyle.color).toBe(joyStyle.color);
 
-    await expect(page.getByTestId('joy-sel')).toMatchScreenshot('listitembutton-selected-joy');
-    await expect(page.getByTestId('hintoric-sel')).toMatchScreenshot('listitembutton-selected-hintoric');
+    await expect(page.getByTestId('joy-sel')).toMatchScreenshot('listitembutton-selected-joy-light');
+    await expect(page.getByTestId('hintoric-sel')).toMatchScreenshot('listitembutton-selected-hintoric-light');
   });
 
   it('shows the same focus-visible outline as Joy UI', async () => {

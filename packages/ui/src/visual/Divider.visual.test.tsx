@@ -26,8 +26,8 @@ describe('Divider visual parity with @mui/joy', () => {
     expect(hintoricStyle.height).toBe(joyStyle.height);
     expect(hintoricStyle.border).toBe(joyStyle.border);
 
-    await expect(page.getByTestId('joy-h')).toMatchScreenshot('divider-horizontal-joy');
-    await expect(page.getByTestId('hintoric-h')).toMatchScreenshot('divider-horizontal-hintoric');
+    await expect(page.getByTestId('joy-h')).toMatchScreenshot('divider-horizontal-joy-light');
+    await expect(page.getByTestId('hintoric-h')).toMatchScreenshot('divider-horizontal-hintoric-light');
   });
 
   it('bare vertical divider matches Joy UI', async () => {
@@ -50,8 +50,8 @@ describe('Divider visual parity with @mui/joy', () => {
     expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
     expect(hintoricStyle.width).toBe(joyStyle.width);
 
-    await expect(page.getByTestId('joy-v')).toMatchScreenshot('divider-vertical-joy');
-    await expect(page.getByTestId('hintoric-v')).toMatchScreenshot('divider-vertical-hintoric');
+    await expect(page.getByTestId('joy-v')).toMatchScreenshot('divider-vertical-joy-light');
+    await expect(page.getByTestId('hintoric-v')).toMatchScreenshot('divider-vertical-hintoric-light');
   });
 
   it('divider with children matches Joy UI', async () => {
@@ -74,7 +74,7 @@ describe('Divider visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
 
-    await expect(page.getByTestId('joy-c')).toMatchScreenshot('divider-children-joy');
-    await expect(page.getByTestId('hintoric-c')).toMatchScreenshot('divider-children-hintoric');
+    await expect(page.getByTestId('joy-c')).toMatchScreenshot('divider-children-joy-light');
+    await expect(page.getByTestId('hintoric-c')).toMatchScreenshot('divider-children-hintoric-light');
   });
 });

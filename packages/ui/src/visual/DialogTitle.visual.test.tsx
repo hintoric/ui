@@ -31,7 +31,7 @@ describe('DialogTitle visual parity with @mui/joy', () => {
     expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
     expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogtitle-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogtitle-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogtitle-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogtitle-hintoric-light');
   });
 });

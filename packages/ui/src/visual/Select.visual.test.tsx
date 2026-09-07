@@ -84,8 +84,8 @@ describe('Select visual parity with @mui/joy', () => {
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
         expect(lastShadowLayers(hintoricStyle.boxShadow, 1)).toBe(lastShadowLayers(joyStyle.boxShadow, 1));
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`select-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`select-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`select-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`select-${variant}-${color}-hintoric-light`);
       });
     }
   }
@@ -121,8 +121,8 @@ describe('Select visual parity with @mui/joy', () => {
       expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
       expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
 
-      await expect(page.getByTestId(`joy-size-${size}`)).toMatchScreenshot(`select-size-${size}-joy`);
-      await expect(page.getByTestId(`hintoric-size-${size}`)).toMatchScreenshot(`select-size-${size}-hintoric`);
+      await expect(page.getByTestId(`joy-size-${size}`)).toMatchScreenshot(`select-size-${size}-joy-light`);
+      await expect(page.getByTestId(`hintoric-size-${size}`)).toMatchScreenshot(`select-size-${size}-hintoric-light`);
     });
   }
 
@@ -184,7 +184,7 @@ describe('Select visual parity with @mui/joy', () => {
       await settleTransitions();
       const hintoricRing = getComputedStyle(page.getByTestId(`hintoric-focus-${color}`).element()).boxShadow;
 
-      await expect(page.getByTestId(`hintoric-focus-${color}`)).toMatchScreenshot(`select-focus-${color}-hintoric`);
+      await expect(page.getByTestId(`hintoric-focus-${color}`)).toMatchScreenshot(`select-focus-${color}-hintoric-light`);
       hintoricButton.blur();
 
       expect(lastShadowLayer(hintoricRing)).toBe(lastShadowLayer(joyRing));
@@ -221,8 +221,8 @@ describe('Select visual parity with @mui/joy', () => {
       expect(hintoricStyle.borderTopColor).toBe(joyStyle.borderTopColor);
       expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-      await expect(page.getByTestId(`joy-disabled-${variant}`)).toMatchScreenshot(`select-disabled-${variant}-joy`);
-      await expect(page.getByTestId(`hintoric-disabled-${variant}`)).toMatchScreenshot(`select-disabled-${variant}-hintoric`);
+      await expect(page.getByTestId(`joy-disabled-${variant}`)).toMatchScreenshot(`select-disabled-${variant}-joy-light`);
+      await expect(page.getByTestId(`hintoric-disabled-${variant}`)).toMatchScreenshot(`select-disabled-${variant}-hintoric-light`);
     });
   }
 

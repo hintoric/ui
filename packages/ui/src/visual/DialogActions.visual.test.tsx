@@ -25,7 +25,7 @@ describe('DialogActions visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogactions-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogactions-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogactions-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogactions-hintoric-light');
   });
 });

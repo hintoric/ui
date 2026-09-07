@@ -35,8 +35,8 @@ describe('Checkbox visual parity with @mui/joy', () => {
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`checkbox-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`checkbox-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`checkbox-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`checkbox-${variant}-${color}-hintoric-light`);
       });
     }
   }

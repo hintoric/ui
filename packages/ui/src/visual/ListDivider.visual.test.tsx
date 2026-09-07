@@ -25,7 +25,7 @@ describe('ListDivider visual parity with @mui/joy', () => {
     expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
     expect(hintoricStyle.height).toBe(joyStyle.height);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('listdivider-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listdivider-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('listdivider-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listdivider-hintoric-light');
   });
 });

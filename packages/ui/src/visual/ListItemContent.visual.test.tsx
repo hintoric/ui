@@ -19,7 +19,7 @@ describe('ListItemContent visual parity with @mui/joy', () => {
     expect(hintoricStyle.flexGrow).toBe(joyStyle.flexGrow);
     expect(hintoricStyle.minWidth).toBe(joyStyle.minWidth);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('listitemcontent-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitemcontent-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('listitemcontent-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listitemcontent-hintoric-light');
   });
 });

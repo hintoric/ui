@@ -44,8 +44,8 @@ describe('Alert visual parity with @mui/joy', () => {
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
 
-        await expect(joyLocator).toMatchScreenshot(`alert-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`alert-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`alert-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`alert-${variant}-${color}-hintoric-light`);
       });
     }
   }

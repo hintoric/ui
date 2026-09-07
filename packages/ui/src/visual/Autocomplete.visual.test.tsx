@@ -48,8 +48,8 @@ describe('Autocomplete visual parity with @mui/joy', () => {
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(hintoricStyle.minHeight).toBe(joyStyle.minHeight);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`autocomplete-${variant}-${color}-joy`);
-        await expect(hintoricRoot).toMatchScreenshot(`autocomplete-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`autocomplete-${variant}-${color}-joy-light`);
+        await expect(hintoricRoot).toMatchScreenshot(`autocomplete-${variant}-${color}-hintoric-light`);
       });
     }
   }

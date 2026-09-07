@@ -59,8 +59,8 @@ describe('Table visual parity with @mui/joy', () => {
         expect(hintoricHead.fontWeight).toBe(joyHead.fontWeight);
         expect(hintoricHead.color).toBe(joyHead.color);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`table-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`table-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`table-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`table-${variant}-${color}-hintoric-light`);
       });
     }
   }

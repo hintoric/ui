@@ -23,8 +23,8 @@ describe('Skeleton visual parity with @mui/joy', () => {
 
       expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-      await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy`);
-      await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric`);
+      await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy-light`);
+      await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric-light`);
     });
   }
 });

@@ -32,8 +32,8 @@ describe('LinearProgress visual parity with @mui/joy', () => {
         expect(hintoricStyle.minBlockSize).toBe(joyStyle.minBlockSize);
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`linearprogress-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`linearprogress-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`linearprogress-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`linearprogress-${variant}-${color}-hintoric-light`);
       });
     }
   }

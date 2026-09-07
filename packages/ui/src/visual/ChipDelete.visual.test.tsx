@@ -21,8 +21,8 @@ describe('ChipDelete visual parity with @mui/joy', () => {
     expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
     expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-    await expect(page.getByTestId('joy-d')).toMatchScreenshot('chipdelete-joy');
-    await expect(page.getByTestId('hintoric-d')).toMatchScreenshot('chipdelete-hintoric');
+    await expect(page.getByTestId('joy-d')).toMatchScreenshot('chipdelete-joy-light');
+    await expect(page.getByTestId('hintoric-d')).toMatchScreenshot('chipdelete-hintoric-light');
   });
 
   it('shows the same focus-visible outline as Joy UI', async () => {

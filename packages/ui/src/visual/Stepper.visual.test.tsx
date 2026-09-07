@@ -42,8 +42,8 @@ describe('Stepper visual parity with @mui/joy', () => {
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`stepindicator-${variant}-${color}-hintoric-light`);
       });
     }
   }
@@ -128,7 +128,7 @@ describe('Stepper visual parity with @mui/joy', () => {
       </HintoricStepper>,
     );
 
-    await expect(page.getByTestId('joy-stepper')).toMatchScreenshot('stepper-full-joy');
-    await expect(page.getByTestId('hintoric-stepper')).toMatchScreenshot('stepper-full-hintoric');
+    await expect(page.getByTestId('joy-stepper')).toMatchScreenshot('stepper-full-joy-light');
+    await expect(page.getByTestId('hintoric-stepper')).toMatchScreenshot('stepper-full-hintoric-light');
   });
 });

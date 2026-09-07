@@ -27,7 +27,7 @@ describe('LocaleSwitcher visual (self-baseline)', () => {
   it('closed state matches its own baseline screenshot', async () => {
     render(<LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />);
 
-    await expect(page.getByRole('button')).toMatchScreenshot('locale-switcher-closed');
+    await expect(page.getByRole('button')).toMatchScreenshot('locale-switcher-closed-light');
   });
 
   it('open menu matches its own baseline screenshot', async () => {
@@ -40,7 +40,7 @@ describe('LocaleSwitcher visual (self-baseline)', () => {
     // The popup lives in a portal, so the button's own box does not contain it
     // — screenshotting the button would show a green test and no menu. The
     // portal is still in the document, reachable by its role.
-    await expect(page.getByRole('menu')).toMatchScreenshot('locale-switcher-open');
+    await expect(page.getByRole('menu')).toMatchScreenshot('locale-switcher-open-light');
   });
 
   /**

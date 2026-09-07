@@ -29,8 +29,8 @@ describe('Link visual parity with @mui/joy', () => {
       expect(hintoricStyle.color).toBe(joyStyle.color);
       expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-      await expect(page.getByTestId(`joy-${color}`)).toMatchScreenshot(`link-plain-${color}-joy`);
-      await expect(page.getByTestId(`hintoric-${color}`)).toMatchScreenshot(`link-plain-${color}-hintoric`);
+      await expect(page.getByTestId(`joy-${color}`)).toMatchScreenshot(`link-plain-${color}-joy-light`);
+      await expect(page.getByTestId(`hintoric-${color}`)).toMatchScreenshot(`link-plain-${color}-hintoric-light`);
     });
   }
 

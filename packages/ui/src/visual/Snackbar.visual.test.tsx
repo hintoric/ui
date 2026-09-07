@@ -34,8 +34,8 @@ describe('Snackbar visual parity with @mui/joy', () => {
         expect(hintoricStyle.padding).toBe(joyStyle.padding);
         expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`snackbar-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`snackbar-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`snackbar-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`snackbar-${variant}-${color}-hintoric-light`);
       });
     }
   }

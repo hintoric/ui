@@ -31,7 +31,7 @@ describe('DialogContent visual parity with @mui/joy', () => {
     expect(hintoricStyle.color).toBe(joyStyle.color);
     expect(hintoricStyle.overflow).toBe(joyStyle.overflow);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogcontent-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogcontent-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('dialogcontent-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('dialogcontent-hintoric-light');
   });
 });

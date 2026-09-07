@@ -32,8 +32,8 @@ describe('CircularProgress visual parity with @mui/joy', () => {
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`circularprogress-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`circularprogress-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`circularprogress-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`circularprogress-${variant}-${color}-hintoric-light`);
       });
     }
   }

@@ -22,7 +22,7 @@ describe('FormLabel visual parity with @mui/joy', () => {
     expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
     expect(hintoricStyle.color).toBe(joyStyle.color);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('formlabel-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formlabel-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('formlabel-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formlabel-hintoric-light');
   });
 });

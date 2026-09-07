@@ -30,7 +30,7 @@ describe('ModalOverflow visual parity with @mui/joy', () => {
 
     expect(hintoricStyle.overflowY).toBe(joyStyle.overflowY);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('modaloverflow-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modaloverflow-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('modaloverflow-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modaloverflow-hintoric-light');
   });
 });

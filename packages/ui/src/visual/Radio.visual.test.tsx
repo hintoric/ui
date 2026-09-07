@@ -33,8 +33,8 @@ describe('Radio visual parity with @mui/joy', () => {
         expect(hintoricStyle.width).toBe(joyStyle.width);
         expect(hintoricStyle.height).toBe(joyStyle.height);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`radio-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`radio-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`radio-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`radio-${variant}-${color}-hintoric-light`);
       });
     }
   }

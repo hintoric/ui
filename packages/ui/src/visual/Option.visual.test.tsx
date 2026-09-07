@@ -46,8 +46,8 @@ describe('Option visual parity with @mui/joy', () => {
         expect(hintoricStyle.color).toBe(joyStyle.color);
         expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`option-${variant}-${color}-hintoric-light`);
       });
     }
   }

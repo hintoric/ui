@@ -48,8 +48,8 @@ describe('Button visual parity with @mui/joy', () => {
 
         // Real, committed screenshots via Vitest's own visual regression
         // feature — for humans to review, not the pass/fail signal above.
-        await expect(joyLocator).toMatchScreenshot(`button-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`button-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`button-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`button-${variant}-${color}-hintoric-light`);
       });
     }
   }

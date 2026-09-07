@@ -19,7 +19,7 @@ describe('ListSubheader visual parity with @mui/joy', () => {
     expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
     expect(hintoricStyle.color).toBe(joyStyle.color);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('listsubheader-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listsubheader-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('listsubheader-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('listsubheader-hintoric-light');
   });
 });

@@ -30,8 +30,8 @@ describe('RadioGroup visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('radiogroup-vertical-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('radiogroup-vertical-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('radiogroup-vertical-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('radiogroup-vertical-hintoric-light');
   });
 
   it("matches Joy UI's horizontal flex layout", async () => {

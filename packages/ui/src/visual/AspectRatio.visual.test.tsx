@@ -43,8 +43,8 @@ describe('AspectRatio visual parity with @mui/joy', () => {
       expect(hintoricRatio).toBeCloseTo(joyRatio, 1);
       expect(hintoricRatio).toBeCloseTo(expected, 1);
 
-      await expect(page.getByTestId(`joy-${ratio}`)).toMatchScreenshot(`aspectratio-${ratio.replace('/', '-')}-joy`);
-      await expect(page.getByTestId(`hintoric-${ratio}`)).toMatchScreenshot(`aspectratio-${ratio.replace('/', '-')}-hintoric`);
+      await expect(page.getByTestId(`joy-${ratio}`)).toMatchScreenshot(`aspectratio-${ratio.replace('/', '-')}-joy-light`);
+      await expect(page.getByTestId(`hintoric-${ratio}`)).toMatchScreenshot(`aspectratio-${ratio.replace('/', '-')}-hintoric-light`);
     });
   }
 });

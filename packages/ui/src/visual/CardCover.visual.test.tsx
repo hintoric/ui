@@ -30,7 +30,7 @@ describe('CardCover visual parity with @mui/joy', () => {
     expect(hintoricStyle.top).toBe(joyStyle.top);
     expect(hintoricStyle.left).toBe(joyStyle.left);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('cardcover-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('cardcover-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('cardcover-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('cardcover-hintoric-light');
   });
 });

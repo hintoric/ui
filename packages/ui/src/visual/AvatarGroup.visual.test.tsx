@@ -40,8 +40,8 @@ describe('AvatarGroup visual parity with @mui/joy', () => {
 
       expect(hintoricOverlap).toBeCloseTo(joyOverlap, 0);
 
-      await expect(page.getByTestId(`joy-${size}`)).toMatchScreenshot(`avatargroup-${size}-joy`);
-      await expect(page.getByTestId(`hintoric-${size}`)).toMatchScreenshot(`avatargroup-${size}-hintoric`);
+      await expect(page.getByTestId(`joy-${size}`)).toMatchScreenshot(`avatargroup-${size}-joy-light`);
+      await expect(page.getByTestId(`hintoric-${size}`)).toMatchScreenshot(`avatargroup-${size}-hintoric-light`);
     });
   }
 });

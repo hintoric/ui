@@ -26,7 +26,7 @@ describe('CardActions visual parity with @mui/joy', () => {
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
     expect(hintoricStyle.alignItems).toBe(joyStyle.alignItems);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('cardactions-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('cardactions-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('cardactions-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('cardactions-hintoric-light');
   });
 });

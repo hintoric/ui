@@ -32,8 +32,8 @@ describe('ButtonGroup visual parity with @mui/joy', () => {
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
     expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-    await expect(page.getByTestId('joy-h')).toMatchScreenshot('buttongroup-horizontal-joy');
-    await expect(page.getByTestId('hintoric-h')).toMatchScreenshot('buttongroup-horizontal-hintoric');
+    await expect(page.getByTestId('joy-h')).toMatchScreenshot('buttongroup-horizontal-joy-light');
+    await expect(page.getByTestId('hintoric-h')).toMatchScreenshot('buttongroup-horizontal-hintoric-light');
   });
 
   it('vertical group matches Joy UI', async () => {
@@ -57,7 +57,7 @@ describe('ButtonGroup visual parity with @mui/joy', () => {
 
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
 
-    await expect(page.getByTestId('joy-v')).toMatchScreenshot('buttongroup-vertical-joy');
-    await expect(page.getByTestId('hintoric-v')).toMatchScreenshot('buttongroup-vertical-hintoric');
+    await expect(page.getByTestId('joy-v')).toMatchScreenshot('buttongroup-vertical-joy-light');
+    await expect(page.getByTestId('hintoric-v')).toMatchScreenshot('buttongroup-vertical-hintoric-light');
   });
 });

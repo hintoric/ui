@@ -35,8 +35,8 @@ describe('ToggleButtonGroup visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('togglebuttongroup-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('togglebuttongroup-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('togglebuttongroup-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('togglebuttongroup-hintoric-light');
   });
 
   it('selected button gets a persistent background, matching the pressed color', async () => {

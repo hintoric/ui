@@ -44,8 +44,8 @@ describe('Avatar visual parity with @mui/joy', () => {
         expect(hintoricStyle.height).toBe(joyStyle.height);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
 
-        await expect(joyLocator).toMatchScreenshot(`avatar-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`avatar-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`avatar-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`avatar-${variant}-${color}-hintoric-light`);
       });
     }
   }

@@ -29,8 +29,8 @@ describe('List visual parity with @mui/joy', () => {
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
     expect(hintoricStyle.listStyleType).toBe(joyStyle.listStyleType);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('list-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('list-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('list-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('list-hintoric-light');
   });
 
   it('horizontal orientation matches Joy UI', async () => {

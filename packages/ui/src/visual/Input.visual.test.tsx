@@ -49,10 +49,10 @@ describe('Input visual parity with @mui/joy', () => {
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
         await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(
-          `input-${variant}-${color}-joy`,
+          `input-${variant}-${color}-joy-light`,
         );
         await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(
-          `input-${variant}-${color}-hintoric`,
+          `input-${variant}-${color}-hintoric-light`,
         );
       });
     }

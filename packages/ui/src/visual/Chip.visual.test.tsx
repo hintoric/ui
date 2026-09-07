@@ -46,8 +46,8 @@ describe('Chip visual parity with @mui/joy', () => {
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
 
-        await expect(joyLocator).toMatchScreenshot(`chip-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`chip-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`chip-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`chip-${variant}-${color}-hintoric-light`);
       });
     }
   }

@@ -33,8 +33,8 @@ describe('Drawer visual parity with @mui/joy', () => {
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`drawer-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`drawer-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`drawer-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`drawer-${variant}-${color}-hintoric-light`);
       });
     }
   }

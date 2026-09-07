@@ -72,8 +72,8 @@ describe('AutocompleteOption visual parity with @mui/joy', () => {
         expect(hintoricStyle.color).toBe(joyStyle.color);
         expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
 
-        await expect(joyOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-joy`);
-        await expect(hintoricOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-hintoric`);
+        await expect(joyOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-joy-light`);
+        await expect(hintoricOption).toMatchScreenshot(`autocomplete-option-${variant}-${color}-hintoric-light`);
       });
     }
   }

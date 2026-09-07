@@ -35,7 +35,7 @@ describe('DataGrid visual (self-baseline)', () => {
     for (const color of COLORS) {
       it(`${variant}/${color} matches its own baseline screenshot`, async () => {
         render(<DataGrid columns={columns} data={data} variant={variant} color={color} data-testid={`grid-${variant}-${color}`} />);
-        await expect(page.getByTestId(`grid-${variant}-${color}`)).toMatchScreenshot(`datagrid-${variant}-${color}`);
+        await expect(page.getByTestId(`grid-${variant}-${color}`)).toMatchScreenshot(`datagrid-${variant}-${color}-light`);
       });
     }
   }
@@ -43,13 +43,13 @@ describe('DataGrid visual (self-baseline)', () => {
   for (const borderAxis of BORDER_AXES) {
     it(`borderAxis=${borderAxis} matches its own baseline screenshot`, async () => {
       render(<DataGrid columns={columns} data={data} borderAxis={borderAxis} data-testid={`grid-border-${borderAxis}`} />);
-      await expect(page.getByTestId(`grid-border-${borderAxis}`)).toMatchScreenshot(`datagrid-border-${borderAxis}`);
+      await expect(page.getByTestId(`grid-border-${borderAxis}`)).toMatchScreenshot(`datagrid-border-${borderAxis}-light`);
     });
   }
 
   it('a sorted column shows its sort indicator and matches its own baseline', async () => {
     render(<DataGrid columns={columns} data={data} sorting={[{ id: 'name', desc: false }]} data-testid="grid-sorted" />);
-    await expect(page.getByTestId('grid-sorted')).toMatchScreenshot('datagrid-sorted-asc');
+    await expect(page.getByTestId('grid-sorted')).toMatchScreenshot('datagrid-sorted-asc-light');
   });
 
   it('the resize handle is present and hidden until hover (opacity-0 class)', () => {

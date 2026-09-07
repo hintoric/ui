@@ -19,7 +19,7 @@ describe('FormHelperText visual parity with @mui/joy', () => {
     expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
     expect(hintoricStyle.color).toBe(joyStyle.color);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('formhelpertext-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formhelpertext-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('formhelpertext-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formhelpertext-hintoric-light');
   });
 });

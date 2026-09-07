@@ -32,8 +32,8 @@ describe('Breadcrumbs visual parity with @mui/joy', () => {
       expect(hintoricStyle.padding).toBe(joyStyle.padding);
       expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
 
-      await expect(page.getByTestId(`joy-${size}`)).toMatchScreenshot(`breadcrumbs-${size}-joy`);
-      await expect(page.getByTestId(`hintoric-${size}`)).toMatchScreenshot(`breadcrumbs-${size}-hintoric`);
+      await expect(page.getByTestId(`joy-${size}`)).toMatchScreenshot(`breadcrumbs-${size}-joy-light`);
+      await expect(page.getByTestId(`hintoric-${size}`)).toMatchScreenshot(`breadcrumbs-${size}-hintoric-light`);
     });
   }
 });

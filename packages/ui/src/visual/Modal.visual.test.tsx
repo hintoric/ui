@@ -29,7 +29,7 @@ describe('Modal visual parity with @mui/joy', () => {
     expect(joyBackdrop).toBeTruthy();
     expect(getComputedStyle(hintoricBackdrop).position).toBe(getComputedStyle(joyBackdrop).position);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('modal-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modal-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('modal-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modal-hintoric-light');
   });
 });

@@ -29,7 +29,7 @@ describe('FormControl visual parity with @mui/joy', () => {
     expect(hintoricStyle.display).toBe(joyStyle.display);
     expect(hintoricStyle.flexDirection).toBe(joyStyle.flexDirection);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('formcontrol-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formcontrol-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('formcontrol-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('formcontrol-hintoric-light');
   });
 });

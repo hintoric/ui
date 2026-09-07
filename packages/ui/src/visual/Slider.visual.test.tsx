@@ -48,8 +48,8 @@ describe('Slider visual parity with @mui/joy', () => {
         expect(hintoricThumbStyle.backgroundColor).toBe(joyThumbStyle.backgroundColor);
         expect(hintoricThumbStyle.borderColor).toBe(joyThumbStyle.borderColor);
 
-        await expect(page.getByTestId(`joy-root-${variant}-${color}`)).toMatchScreenshot(`slider-${variant}-${color}-joy`);
-        await expect(hintoricControl).toMatchScreenshot(`slider-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-root-${variant}-${color}`)).toMatchScreenshot(`slider-${variant}-${color}-joy-light`);
+        await expect(hintoricControl).toMatchScreenshot(`slider-${variant}-${color}-hintoric-light`);
       });
     }
   }

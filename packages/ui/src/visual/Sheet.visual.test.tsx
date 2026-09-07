@@ -41,8 +41,8 @@ describe('Sheet visual parity with @mui/joy', () => {
         expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-        await expect(joyLocator).toMatchScreenshot(`sheet-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`sheet-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`sheet-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`sheet-${variant}-${color}-hintoric-light`);
       });
     }
   }

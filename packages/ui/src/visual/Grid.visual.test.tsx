@@ -29,7 +29,7 @@ describe('Grid visual parity (achieved layout)', () => {
     expect(aRect.width).toBeCloseTo(bRect.width, 0);
     expect(aRect.width).toBeCloseTo(150, 0);
 
-    await expect(page.getByTestId('container')).toMatchScreenshot('grid-two-columns');
+    await expect(page.getByTestId('container')).toMatchScreenshot('grid-two-columns-light');
   });
 
   it('spans the full row when xs is true', async () => {

@@ -48,8 +48,8 @@ describe('Menu visual parity with @mui/joy', () => {
         expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(lastShadowLayers(hintoricStyle.boxShadow, 2)).toBe(lastShadowLayers(joyStyle.boxShadow, 2));
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-joy`);
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-hintoric`);
+        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-joy-light`);
+        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(`menu-${variant}-${color}-hintoric-light`);
       });
     }
   }

@@ -34,7 +34,7 @@ describe('CardOverflow visual parity with @mui/joy', () => {
 
     expect(hintoricBleed).toBeCloseTo(joyBleed, 0);
 
-    await expect(page.getByTestId('joy-card')).toMatchScreenshot('cardoverflow-joy');
-    await expect(page.getByTestId('hintoric-card')).toMatchScreenshot('cardoverflow-hintoric');
+    await expect(page.getByTestId('joy-card')).toMatchScreenshot('cardoverflow-joy-light');
+    await expect(page.getByTestId('hintoric-card')).toMatchScreenshot('cardoverflow-hintoric-light');
   });
 });

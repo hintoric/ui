@@ -46,8 +46,8 @@ describe('Card visual parity with @mui/joy', () => {
         // not cosmetic: without it the cover escapes to the viewport.
         expect(hintoricStyle.position).toBe(joyStyle.position);
 
-        await expect(joyLocator).toMatchScreenshot(`card-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`card-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`card-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`card-${variant}-${color}-hintoric-light`);
       });
     }
   }

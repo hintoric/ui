@@ -25,8 +25,8 @@ describe('Switch visual parity with @mui/joy', () => {
       expect(hintoricStyle.height).toBe(joyStyle.height);
       expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-      await expect(page.getByTestId(`joy-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-joy`);
-      await expect(page.getByTestId(`hintoric-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-hintoric`);
+      await expect(page.getByTestId(`joy-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-joy-light`);
+      await expect(page.getByTestId(`hintoric-${color}`)).toMatchScreenshot(`switch-${color}-unchecked-hintoric-light`);
     });
 
     it(`color=${color} checked matches Joy UI's computed styles`, async () => {
@@ -43,8 +43,8 @@ describe('Switch visual parity with @mui/joy', () => {
 
       expect(hintoricStyle.width).toBe(joyStyle.width);
 
-      await expect(page.getByTestId(`joy-checked-${color}`)).toMatchScreenshot(`switch-${color}-checked-joy`);
-      await expect(page.getByTestId(`hintoric-checked-${color}`)).toMatchScreenshot(`switch-${color}-checked-hintoric`);
+      await expect(page.getByTestId(`joy-checked-${color}`)).toMatchScreenshot(`switch-${color}-checked-joy-light`);
+      await expect(page.getByTestId(`hintoric-checked-${color}`)).toMatchScreenshot(`switch-${color}-checked-hintoric-light`);
     });
   }
 

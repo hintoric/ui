@@ -46,8 +46,8 @@ describe('IconButton visual parity with @mui/joy', () => {
         expect(hintoricStyle.height).toBe(joyStyle.height);
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-        await expect(joyLocator).toMatchScreenshot(`iconbutton-${variant}-${color}-joy`);
-        await expect(hintoricLocator).toMatchScreenshot(`iconbutton-${variant}-${color}-hintoric`);
+        await expect(joyLocator).toMatchScreenshot(`iconbutton-${variant}-${color}-joy-light`);
+        await expect(hintoricLocator).toMatchScreenshot(`iconbutton-${variant}-${color}-hintoric-light`);
       });
     }
   }

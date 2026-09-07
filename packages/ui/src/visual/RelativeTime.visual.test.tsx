@@ -26,12 +26,12 @@ function minutesFromNow(minutes: number): Date {
 describe('RelativeTime visual (self-baseline)', () => {
   it('relative past matches its own baseline screenshot', async () => {
     render(<RelativeTime date={daysFromNow(-3)} locale="en" data-testid="rt-past" />);
-    await expect(page.getByTestId('rt-past')).toMatchScreenshot('relative-time-past');
+    await expect(page.getByTestId('rt-past')).toMatchScreenshot('relative-time-past-light');
   });
 
   it('relative future matches its own baseline screenshot', async () => {
     render(<RelativeTime date={minutesFromNow(5)} locale="en" data-testid="rt-future" />);
-    await expect(page.getByTestId('rt-future')).toMatchScreenshot('relative-time-future');
+    await expect(page.getByTestId('rt-future')).toMatchScreenshot('relative-time-future-light');
   });
 
   it('format="datetime" matches its own baseline screenshot', async () => {
@@ -42,11 +42,11 @@ describe('RelativeTime visual (self-baseline)', () => {
     render(
       <RelativeTime date="2026-07-06T12:00:00Z" format="datetime" locale="en" timeZone="UTC" data-testid="rt-datetime" />,
     );
-    await expect(page.getByTestId('rt-datetime')).toMatchScreenshot('relative-time-datetime');
+    await expect(page.getByTestId('rt-datetime')).toMatchScreenshot('relative-time-datetime-light');
   });
 
   it('format="micro" matches its own baseline screenshot', async () => {
     render(<RelativeTime date={daysFromNow(-3)} format="micro" locale="en" data-testid="rt-micro" />);
-    await expect(page.getByTestId('rt-micro')).toMatchScreenshot('relative-time-micro');
+    await expect(page.getByTestId('rt-micro')).toMatchScreenshot('relative-time-micro-light');
   });
 });

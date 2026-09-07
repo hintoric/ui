@@ -31,7 +31,7 @@ describe('ModalClose visual parity with @mui/joy', () => {
     expect(hintoricStyle.position).toBe(joyStyle.position);
     expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
 
-    await expect(page.getByTestId('joy')).toMatchScreenshot('modalclose-joy');
-    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modalclose-hintoric');
+    await expect(page.getByTestId('joy')).toMatchScreenshot('modalclose-joy-light');
+    await expect(page.getByTestId('hintoric')).toMatchScreenshot('modalclose-hintoric-light');
   });
 });
