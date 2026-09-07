@@ -46,6 +46,7 @@ export const NAV: NavGroup[] = [
       { to: '/slider', label: 'Slider' },
       { to: '/toggle-button-group', label: 'ToggleButtonGroup' },
       { to: '/form-control', label: 'FormControl' },
+      { to: '/forms', label: 'Forms' },
     ],
   },
   {

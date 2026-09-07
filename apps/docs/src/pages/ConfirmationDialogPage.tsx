@@ -5,7 +5,7 @@ import { PropsTable } from '../components/PropsTable';
 
 const CUSTOMER = 'kunde-4711';
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 export function ConfirmationDialogPage() {
   const [basic, setBasic] = useState(false);

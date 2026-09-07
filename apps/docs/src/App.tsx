@@ -56,6 +56,7 @@ import { ColorSchemeSwitchPage } from './pages/ColorSchemeSwitchPage';
 import { ColorSchemeSelectPage } from './pages/ColorSchemeSelectPage';
 import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
+import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 
 export function App() {
@@ -125,6 +126,7 @@ export function App() {
             <Route path="/color-scheme-select" element={<ColorSchemeSelectPage />} />
             <Route path="/locale-provider" element={<LocaleProviderPage />} />
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
+            <Route path="/forms" element={<FormsPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
           </Route>
         </Routes>

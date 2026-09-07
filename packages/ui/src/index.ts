@@ -96,6 +96,12 @@ export type { FormControlProps, FormControlContextValue } from './components/For
 export { FormLabel } from './components/FormLabel';
 export type { FormLabelProps } from './components/FormLabel';
 
+export { Form } from './components/Form';
+export type { FormProps, OwnedFormProps, ProvidedFormProps } from './components/Form';
+
+export { FormField } from './components/FormField';
+export type { FormFieldProps, FormFieldRenderArgs } from './components/FormField';
+
 export { FormHelperText } from './components/FormHelperText';
 export type { FormHelperTextProps } from './components/FormHelperText';
 
