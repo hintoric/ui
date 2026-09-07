@@ -27,6 +27,43 @@ no-modified-light-baseline gate on its first use.
 filter — it runs all 67 files. Pass it directly: `pnpm test:visual Button`.
 Every `Run:` line below has been corrected.
 
+**"Run twice" is really "run once per new screenshot per test."**
+`toMatchScreenshot` throws on a missing baseline, so a test with a joy *and* a
+hintoric screenshot aborts at the joy line on run 1 and only reaches the
+hintoric line on run 2 — three runs before green. Budget for that.
+
+**`screenshotFailures` had to be turned off** (`vitest.visual.config.ts`).
+Browser mode's automatic capture-on-failure writes auto-named PNGs into
+`__screenshots__` alongside the real baselines, and for an `it.fails()` test
+that happens on every run. Failure diffs still land in `.vitest-attachments/`.
+
+**Task 3 — Button's type scale was wrong, and the P2 assertion is what found
+it.** Measured against real `@mui/joy` 5.0.0-beta.52: `fontWeight` 500 where
+Joy uses 600, `fontSize` 16px where Joy uses 14px at `md` and 18px where Joy
+uses 16px at `lg`, line heights to match. `minHeight` and padding were
+correct, so it read as a font problem, and no assertion in 852 green tests
+compared a font property.
+
+Scope check before acting: Joy's `fontWeight.md` **is** 500, so the
+`font-medium` in twelve other components is correct — Joy's Button is the only
+component using `fontWeight.lg`. And `Chip`/`Alert`/`Badge` all match Joy's
+`sm→xs, md→sm, lg→md` size mapping exactly. **One component was wrong, not
+thirteen.**
+
+Fixed rather than encoded, by explicit decision (2026-09-07), overriding the
+"do not fix component bugs" constraint for this one case: the divergence was
+fully measured, the fix is three classes, and Button is the library's
+most-used component. Consequences worth knowing for later tasks:
+
+- A separate `leading-*` utility does not override the line-height that
+  `text-sm` pairs with — measured, both `leading-normal` and `leading-[1.5]`
+  left it at 20px. Use the `text-sm/[1.5]` shorthand.
+- Fixing a component **requires retaking its own baselines**, which breaks the
+  no-modified-light-baseline gate on purpose. Scope the retake: delete only
+  `*hintoric*` PNGs, never Joy's, then verify zero Joy baselines changed. That
+  check is what proves the retake was scoped correctly.
+- Add a changeset — it changes rendered output for consumers.
+
 ## Global Constraints
 
 - Work in the worktree `/Users/johanneswaigel/git/hintoric/ui/.worktrees/visual-tests-color-schemes` on branch `visual-tests-color-schemes`. Other sessions commit in the main checkout; never `cd` there.
@@ -35,10 +72,11 @@ Every `Run:` line below has been corrected.
 - Screenshot ids are always explicit. Never call `toMatchScreenshot()` without an id.
 - Baselines are named `<id>-chromium-darwin.png` on macOS and are local-only; no CI wiring exists.
 - A first run of a new assertion fails on purpose with "no existing reference screenshot found". Rerun once to confirm it passes.
-- **No light-mode baseline may change.** After every task, `git status` must show zero modified `*-light-chromium-darwin.png`. A modified light baseline means the change altered light rendering and must be understood before proceeding.
+- **No light-mode baseline may change.** After every task, `git status` must show zero modified `*-light-chromium-darwin.png`. A modified light baseline means the change altered light rendering and must be understood before proceeding. The one sanctioned exception is a deliberate component fix, which requires retaking that component's own `*hintoric*` baselines — never Joy's; see Task 3 under "Discovered during implementation".
 - Never nest colour-scheme scopes. There is no `[data-color-scheme="light"]` block, so a light scope inside a dark region stays dark.
 - `COLOR_SCHEMES`, `ColorScheme` and `setColorScheme` live in `src/visual/helpers.ts`. The wrapper-scope helpers in `src/visual/darkMode.tsx` stay as they are and are used only by `DarkTokens` / `DarkVariant` / `DarkModeHarness`.
-- Do **not** fix component bugs in this plan. P1 from the 2026-09-06 audit (`Input`, `Textarea`, `Autocomplete` sizing) is encoded with `it.fails()`, not repaired.
+- Do **not** fix component bugs in this plan, with one exception already taken: `Button`'s type scale (Task 3), fixed by explicit decision because it was fully measured and three classes wide. P1 from the 2026-09-06 audit (`Input`, `Textarea`, `Autocomplete` sizing) stays encoded with `it.fails()`, not repaired. Anything new that surfaces gets measured and reported first — the decision to fix or encode is the user's, not the executor's.
+- **Compare font properties.** `fontSize`, `fontWeight` and `lineHeight` go into every Flavour A assertion list from Task 4 onward. Their absence is what let Button's divergence survive 852 green tests, and adding them costs three lines per file while the file is already open.
 
 ---
 
@@ -258,7 +296,7 @@ git commit -m "Add a document-level colour scheme helper for the visual suite"
 - Consumes: nothing.
 - Produces: every existing baseline at `<id>-light-chromium-darwin.png`, so Task 3 onward can emit `-light` ids without re-baselining.
 
-- [ ] **Step 1: Count what exists, so the rename can be verified**
+- [x] **Step 1: Count what exists, so the rename can be verified**
 
 Run from `packages/ui/`:
 
@@ -268,7 +306,7 @@ find src/visual/__screenshots__ -name '*-chromium-darwin.png' | wc -l
 
 Expected: `1248`. Write the number down; Step 4 checks against it. If it differs, another branch has merged — reconcile before renaming, do not proceed on a guess.
 
-- [ ] **Step 2: Rename with git mv**
+- [x] **Step 2: Rename with git mv**
 
 The three dark-specific files are already scheme-explicit in their ids and must not be renamed. Everything else gets the suffix.
 
@@ -283,7 +321,7 @@ while IFS= read -r -d '' f; do
 done
 ```
 
-- [ ] **Step 3: Verify the rename is content-preserving**
+- [x] **Step 3: Verify the rename is content-preserving**
 
 ```bash
 git diff --cached --stat | tail -3
@@ -292,7 +330,7 @@ git diff --cached --diff-filter=M --name-only | wc -l
 
 Expected: the stat line reports renames only, and the count of **modified** (as opposed to renamed) files is `0`. A non-zero count means a PNG's content changed, which a rename cannot do — stop and investigate.
 
-- [ ] **Step 4: Verify the count**
+- [x] **Step 4: Verify the count**
 
 ```bash
 find src/visual/__screenshots__ -name '*-light-chromium-darwin.png' | wc -l
@@ -304,14 +342,14 @@ Expected: the number from Step 1, minus however many belong to the three dark-sp
 find src/visual/__screenshots__ \( -path '*/DarkTokens.visual.test.tsx/*' -o -path '*/DarkVariant.visual.test.tsx/*' -o -path '*/DarkModeHarness.visual.test.tsx/*' \) -name '*.png' | wc -l
 ```
 
-- [ ] **Step 5: Confirm the suite now fails as expected**
+- [x] **Step 5: Confirm the suite now fails as expected**
 
 Run: `pnpm test:visual`
 Expected: FAIL, with "no existing reference screenshot found" for the renamed ids — the tests still ask for the old names. This failure is the proof that the rename and the test ids are coupled; Task 3 onward fixes it file by file.
 
 Do **not** commit a red suite. Continue to Step 6 in the same task.
 
-- [ ] **Step 6: Point the ids at the renamed files**
+- [x] **Step 6: Point the ids at the renamed files**
 
 For each of the 63 component test files, append `-light` to every `toMatchScreenshot()` id. The ids are string literals and template literals; the suffix goes at the very end, inside the quotes or backticks:
 
@@ -329,7 +367,7 @@ Leave `DarkTokens`, `DarkVariant`, `DarkModeHarness` and `ColorSchemeHelper` alo
 
 This is a mechanical edit across 142 call sites. Do it with an edit per file rather than a blind repo-wide `sed`: `Tooltip.visual.test.tsx` has no call sites at all, and the word `toMatchScreenshot` appears in comments in `DataGrid` and `RelativeTime` that must not be rewritten.
 
-- [ ] **Step 7: Verify green with zero content change**
+- [x] **Step 7: Verify green with zero content change**
 
 Run: `pnpm test:visual`
 Expected: PASS, 66 files. Then:
@@ -340,7 +378,7 @@ git status --short | grep -c '\.png'
 
 Expected: `0` unstaged PNG changes — every PNG movement is already staged as a rename from Step 2, and no new PNG was written.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A src/visual
@@ -359,7 +397,7 @@ git commit -m "Suffix every existing baseline and screenshot id with -light"
 - Consumes: `COLOR_SCHEMES`, `ColorScheme`, `setColorScheme` from `./helpers`.
 - Produces: the Flavour A retrofit pattern that Tasks 5–10 apply to 58 more files. Later tasks are described as "apply Task 3's pattern", so this file is the reference — keep it exemplary.
 
-- [ ] **Step 1: Wrap the raster in a scheme loop**
+- [x] **Step 1: Wrap the raster in a scheme loop**
 
 In `packages/ui/src/visual/Button.visual.test.tsx`, replace the import of `settleTransitions` and the two nested loops:
 
@@ -418,7 +456,7 @@ describe('Button visual parity with @mui/joy', () => {
   }
 ```
 
-- [ ] **Step 2: Give the focus test both schemes too**
+- [x] **Step 2: Give the focus test both schemes too**
 
 Replace the existing focus test with a scheme loop. The focus ring is the bug CLAUDE.md cites as the reason interactive coverage is mandatory, and a focus ring that reads a palette token is exactly what a dark-mode token slip would break:
 
@@ -460,7 +498,7 @@ Replace the existing focus test with a scheme loop. The focus ring is the bug CL
 });
 ```
 
-- [ ] **Step 3: Add the audit's P2 sizing assertion**
+- [x] **Step 3: Add the audit's P2 sizing assertion**
 
 Append inside the `describe`, once — not per cell. `Button` is not a fill-width control, so the assertion pins it as shrink-to-fit in agreement with Joy, which is what the audit asked for:
 
@@ -502,17 +540,17 @@ Append inside the `describe`, once — not per cell. `Button` is not a fill-widt
   }
 ```
 
-- [ ] **Step 4: Run to create the dark baselines**
+- [x] **Step 4: Run to create the dark baselines**
 
 Run: `pnpm test:visual Button`
 Expected: FAIL with "no existing reference screenshot found" for the 20 new `-dark` ids. This is the documented first-run behaviour.
 
-- [ ] **Step 5: Rerun to confirm they pass**
+- [x] **Step 5: Rerun to confirm they pass**
 
 Run: `pnpm test:visual Button`
 Expected: PASS.
 
-- [ ] **Step 6: Look at the new baselines**
+- [x] **Step 6: Look at the new baselines**
 
 ```bash
 git status --short src/visual/__screenshots__/Button.visual.test.tsx/ | grep dark
@@ -520,7 +558,7 @@ git status --short src/visual/__screenshots__/Button.visual.test.tsx/ | grep dar
 
 Open several of the new `-dark` PNGs — at minimum one `solid`, one `soft`, one `outlined` and one `plain`. Check the backdrop is dark, the text is legible, and the Joy and Hintoric pair look like the same button. **This is a human review step: if executing via subagents, surface the file list and stop for it.**
 
-- [ ] **Step 7: Confirm no light baseline moved**
+- [x] **Step 7: Confirm no light baseline moved**
 
 ```bash
 git status --short src/visual/__screenshots__/Button.visual.test.tsx/ | grep -c 'light'
@@ -528,7 +566,7 @@ git status --short src/visual/__screenshots__/Button.visual.test.tsx/ | grep -c 
 
 Expected: `0`.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add packages/ui/src/visual/Button.visual.test.tsx packages/ui/src/visual/__screenshots__/Button.visual.test.tsx
