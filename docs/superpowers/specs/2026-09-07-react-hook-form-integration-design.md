@@ -245,6 +245,21 @@ gekoppelt, was der Consumer nicht pflegen soll.
 
 Alle drei zusätzlich als `devDependencies`, damit Tests und Docs bauen.
 
+### `external` im Build ist Teil der Peer-Zusage
+
+`vite.config.ts` bündelt jede Abhängigkeit, die nicht ausdrücklich in
+`build.rollupOptions.external` steht, und dieses Matching ist exakt auf den Specifier — kein
+Präfix. `react-hook-form` als peerDependency zu deklarieren, ohne es dort einzutragen, erzeugt genau
+den Fehler, den die Peer-Entscheidung vermeiden soll: eine zweite RHF-Instanz im Bundle, ein
+`useFormContext()`, das `null` liefert, und Felder, die sich unauffällig wie außerhalb eines
+Formulars verhalten.
+
+Einzutragen sind `react-hook-form` und `zod` (letzteres, weil `@hookform/resolvers/zod` es
+importiert — der Resolver selbst darf gebündelt bleiben). Die Kommentare an dieser Stelle
+dokumentieren, dass dieselbe Falle im Projekt bei Base UI und `country-flag-icons` schon
+zugeschnappt ist; sie ist hier gravierender, weil sie keinen Laufzeitfehler wirft, sondern nur
+Verhalten wegnimmt.
+
 ## Exports
 
 Neu aus `src/index.ts`: `Form`, `FormField` und ihre Typen. `zodResolver` wird **nicht**
@@ -383,4 +398,6 @@ Zwei Annahmen dieser Spec sind gegen die echten Pakete zu prüfen, nicht aus dem
 - `pnpm test:visual` grün, neue Baselines angesehen und committet
 - `pnpm typecheck` und `pnpm lint` grün
 - die Docs-Seite zeigt ein Formular, das absendet und Fehler anzeigt
+- `react-hook-form` und `zod` stehen in `build.rollupOptions.external`, und ein Blick in
+  `dist/index.js` bestätigt, dass keine RHF-Kopie mitgebündelt wurde
 - Changeset (minor) liegt im Branch
