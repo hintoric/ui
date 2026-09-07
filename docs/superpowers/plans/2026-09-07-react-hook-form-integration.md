@@ -615,7 +615,7 @@ the instance back out, which is how a submit button reaches isSubmitting when
   - `type OwnHandlers = { onChange?: unknown; onBlur?: unknown; onCheckedChange?: unknown }`
   - `FieldShell` — component, props `FieldShellProps { label?, helperText?, error?, required?, disabled?, id, helperId?, children }`
   - `useFieldIds(idProp: string | undefined, hasHelper: boolean): { id: string; helperId?: string }`
-  - `useForkRef<T>(...refs: Array<React.Ref<T> | undefined>): React.RefCallback<T>`
+  - `useForkRef<T>(consumerRef: React.Ref<T> | undefined, fieldRef: React.Ref<T> | undefined): React.RefCallback<T>` — fixed arity of two, memoized on both identities. Rest args are not possible: a rest array cannot be a useMemo dependency list, and every call site forks exactly two refs anyway.
   - All re-exported from `./internal/form`.
 
 - [ ] **Step 1: Write the failing tests**
