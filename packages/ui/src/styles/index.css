@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "./theme.css";
 
+/*
+ * Tailwind's stock `dark:` keys off `prefers-color-scheme`, which contradicts
+ * ColorSchemeProvider the moment a user overrides their OS setting. Point it
+ * at the same attribute our tokens use. Our own components never write `dark:`
+ * (they read tokens instead) — this exists entirely for consumers' markup.
+ */
+@custom-variant dark (&:where([data-color-scheme="dark"], [data-color-scheme="dark"] *));
+
 @source "../";
 
 /*
