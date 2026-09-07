@@ -2,6 +2,7 @@ import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useForm } from 'react-hook-form';
 import { Input } from './Input';
 
 describe('Input', () => {
@@ -62,5 +63,32 @@ describe('Input', () => {
     render(<Input aria-label="name" color="danger" />);
     const wrapper = screen.getByRole('textbox', { name: 'name' }).parentElement;
     expect(wrapper).toHaveClass('focus-within:shadow-[inset_0_0_0_2px_var(--color-danger-500)]');
+  });
+
+  it('calls onChange with a real ChangeEvent whose target is the input element', async () => {
+    const onChange = vi.fn();
+    render(<Input aria-label="name" name="email" onChange={onChange} />);
+    const input = screen.getByRole('textbox', { name: 'name' });
+    await userEvent.type(input, 'x');
+
+    const event = onChange.mock.calls.at(-1)?.[0];
+    // The fake event this replaces carried only target.value, which is why
+    // react-hook-form's register() could never resolve the field.
+    expect(event.target).toBe(input);
+    expect(event.target.name).toBe('email');
+    expect(event.target.value).toBe('x');
+    expect(typeof event.preventDefault).toBe('function');
+  });
+
+  it('works with react-hook-form register()', async () => {
+    const seen: Record<string, unknown>[] = [];
+    function Probe() {
+      const form = useForm<{ email: string }>({ defaultValues: { email: '' } });
+      seen.push(form.watch());
+      return <Input aria-label="email" {...form.register('email')} />;
+    }
+    render(<Probe />);
+    await userEvent.type(screen.getByRole('textbox', { name: 'email' }), 'a@b.de');
+    expect(seen.at(-1)).toEqual({ email: 'a@b.de' });
   });
 });
