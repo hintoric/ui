@@ -6,3 +6,4 @@ export { FieldShell } from './FieldShell';
 export type { FieldShellProps } from './FieldShell';
 export { useFieldIds } from './useFieldIds';
 export { useForkRef } from './useForkRef';
+export { omitProps, VALUE_PROPS, CHECKED_PROPS } from './omitProps';

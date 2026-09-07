@@ -3,6 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Form } from '../Form';
 import { Input } from './Input';
 
 describe('Input', () => {
@@ -90,5 +92,106 @@ describe('Input', () => {
     render(<Probe />);
     await userEvent.type(screen.getByRole('textbox', { name: 'email' }), 'a@b.de');
     expect(seen.at(-1)).toEqual({ email: 'a@b.de' });
+  });
+});
+
+describe('Input inside a Form', () => {
+  it('binds its initial value from defaultValues', () => {
+    render(
+      <Form defaultValues={{ email: 'a@b.de' }} onSubmit={vi.fn()}>
+        <Input name="email" label="E-Mail" />
+      </Form>,
+    );
+    expect(screen.getByLabelText('E-Mail')).toHaveValue('a@b.de');
+  });
+
+  it('writes changes back into the form values', async () => {
+    const onSubmit = vi.fn();
+    render(
+      <Form defaultValues={{ email: '' }} onSubmit={onSubmit}>
+        <Input name="email" label="E-Mail" />
+        <button type="submit">ok</button>
+      </Form>,
+    );
+    await userEvent.type(screen.getByLabelText('E-Mail'), 'x@y.de');
+    await userEvent.click(screen.getByRole('button', { name: 'ok' }));
+    expect(onSubmit.mock.calls[0][0]).toEqual({ email: 'x@y.de' });
+  });
+
+  it('shows the zod message as helper text and marks the field invalid', async () => {
+    render(
+      <Form
+        schema={z.object({ email: z.string().email('keine E-Mail') })}
+        defaultValues={{ email: 'nope' }}
+        onSubmit={vi.fn()}
+      >
+        <Input name="email" label="E-Mail" helperText="wird nicht veröffentlicht" />
+        <button type="submit">ok</button>
+      </Form>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'ok' }));
+
+    const input = screen.getByLabelText('E-Mail');
+    expect(await screen.findByText('keine E-Mail')).toBeInTheDocument();
+    expect(screen.queryByText('wird nicht veröffentlicht')).not.toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', screen.getByText('keine E-Mail').id);
+  });
+
+  it('validates on blur when the form asks for it', async () => {
+    render(
+      <Form
+        schema={z.object({ email: z.string().email('keine E-Mail') })}
+        defaultValues={{ email: '' }}
+        mode="onBlur"
+        onSubmit={vi.fn()}
+      >
+        <Input name="email" label="E-Mail" />
+      </Form>,
+    );
+    await userEvent.type(screen.getByLabelText('E-Mail'), 'nope');
+    await userEvent.tab();
+    expect(await screen.findByText('keine E-Mail')).toBeInTheDocument();
+  });
+
+  it('turns danger when the bound field has an error', async () => {
+    render(
+      <Form
+        schema={z.object({ email: z.string().email('keine E-Mail') })}
+        defaultValues={{ email: 'nope' }}
+        onSubmit={vi.fn()}
+      >
+        <Input name="email" label="E-Mail" />
+        <button type="submit">ok</button>
+      </Form>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'ok' }));
+    await screen.findByText('keine E-Mail');
+    expect(screen.getByLabelText('E-Mail').parentElement).toHaveClass(
+      'border-danger-outlined-border',
+    );
+  });
+});
+
+describe('Input outside a Form', () => {
+  it('stays uncontrolled and unwrapped with a name but no form', () => {
+    const { container } = render(<Input aria-label="frei" name="email" />);
+    // No FormControl wrapper appears: the <span> input wrapper is the root.
+    expect(container.firstElementChild?.tagName).toBe('SPAN');
+    expect(screen.getByRole('textbox', { name: 'frei' })).toHaveAttribute('name', 'email');
+  });
+
+  it('still honours a controlled value prop', async () => {
+    const onChange = vi.fn();
+    render(<Input aria-label="frei" value="fest" onChange={onChange} />);
+    await userEvent.type(screen.getByRole('textbox', { name: 'frei' }), 'x');
+    expect(screen.getByRole('textbox', { name: 'frei' })).toHaveValue('fest');
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it('renders label and helper text without a form', () => {
+    render(<Input name="x" label="Titel" helperText="Hinweis" />);
+    expect(screen.getByLabelText('Titel')).toBeInTheDocument();
+    expect(screen.getByText('Hinweis')).toBeInTheDocument();
   });
 });
