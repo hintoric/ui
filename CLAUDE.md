@@ -23,6 +23,41 @@ Baselines are named per browser+platform (`*-chromium-darwin.png` on macOS) and 
 - `pnpm lint` — from repo root
 - `pnpm build` — builds `dist/index.js` + `dist/style.css`
 
+## Every user-facing change needs a changeset
+
+`@hintoric/ui` is published to npm from `main` by Changesets. Any change to `packages/ui/src`
+that a consumer of the package could notice — a new component, a new or changed prop, a fixed
+behaviour, an export — **must** ship with a changeset in the same branch:
+
+```bash
+pnpm changeset   # from the repo root: pick @hintoric/ui, minor for new components/APIs, patch for fixes
+```
+
+The changeset's text lands verbatim in `packages/ui/CHANGELOG.md` and in the GitHub release, so
+write it for someone reading the release notes, not as a commit subject. No changeset is needed
+for spec/docs-only commits, for test-only or CI-only changes, or for anything under `apps/` —
+`apps/docs` and `apps/playground` are both `private`, so `@hintoric/ui` is the only package that
+is ever published (`.changeset/config.json` also lists `playground` under `ignore`, though not
+`docs`).
+
+What happens after a merge to `main`: the `Release` workflow runs `changesets/action`, which
+collects the pending changesets into a "Version Packages" PR (bumping the version and writing the
+CHANGELOG). **That PR is the release** — merging it triggers the same workflow again, which now
+publishes to npm via OIDC trusted publishing (no `NPM_TOKEN`), pushes the git tag
+`@hintoric/ui@<version>` and cuts the matching GitHub release. So a release is two merges, and
+a merge with no pending changesets correctly publishes nothing.
+
+**The action major must match the `@changesets/cli` major**: `changesets/action@v1` is for CLI v2,
+`@v2` is for CLI v3 (what this repo uses). Do not "simplify" that pin. The mismatch fails
+*silently* — v1 detects published packages by scraping `New tag:` lines off the CLI's stdout, which
+CLI v3 no longer prints, so 0.1.0 through 0.2.0 all published to npm with a green job and yet no
+git tag and no GitHub release. The tags for those three versions were created by hand afterwards.
+After any release, verify the whole chain, not just the workflow's colour:
+
+```bash
+npm view @hintoric/ui dist-tags && git ls-remote --tags origin && gh release list
+```
+
 ## Don't re-derive what's already been reverse-engineered
 
 Every color/spacing/shadow/radius token in `packages/ui/src/styles/theme.css` and every per-variant class map in `packages/ui/src/utils/colorVariantClasses.ts` was copied from real `@mui/joy` source or measured against the real rendered package — not guessed. If something looks off, it's more likely a token this project hasn't reverse-engineered yet than a wrong assumption in the existing tokens. Check the Phase 1 plan's "Post-Phase-1" addenda first; if it's genuinely new, verify against the real package (a throwaway `@mui/joy` + `@emotion/react` + `@emotion/styled` sandbox, or the visual test suite above) before changing a token, and document what you found the same way those addenda do.
