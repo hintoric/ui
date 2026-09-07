@@ -12,10 +12,16 @@ export interface ListProps extends React.ComponentPropsWithoutRef<'ul'> {
   orientation?: 'horizontal' | 'vertical';
 }
 
+// Padding is vertical only. Joy's vertical List pads the block axis and
+// leaves the inline axis at 0, so its rows span the list's full width;
+// ours used `p-1`/`p-1.5`, which inset every row by 4-6px per side.
+// Measured 2026-09-07 against real @mui/joy: a ListItem in a 320px-wide list
+// came out 312px for us against Joy's 320px. Same shape of divergence as
+// MenuList's padding, found in the same pass.
 const SIZE_CLASS = {
-  sm: 'gap-1 p-1 text-sm',
-  md: 'gap-1 p-1 text-base',
-  lg: 'gap-1.5 p-1.5 text-lg',
+  sm: 'gap-1 px-0 py-1 text-sm',
+  md: 'gap-1 px-0 py-1 text-base',
+  lg: 'gap-1.5 px-0 py-1.5 text-lg',
 } as const;
 
 // Scope note: this v1 doesn't cascade --ListItem-* CSS variables down to

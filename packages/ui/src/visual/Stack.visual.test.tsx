@@ -18,7 +18,7 @@ import { COLOR_SCHEMES, setColorScheme } from './helpers';
 // boxes — the same way Grid's test measures achieved column widths. That is
 // also what a consumer actually sees.
 const DIRECTIONS = ['row', 'column'] as const;
-const SPACINGS = ['0', '1', '2', '3', '4', '5', '6', '8'] as const;
+const SPACINGS = [0, 1, 2, 3, 4, 5, 6, 8] as const;
 
 /** Distance between the two children's facing edges, along the stack's axis. */
 function childGap(container: HTMLElement, direction: 'row' | 'column'): number {
@@ -44,7 +44,7 @@ describe('Stack visual parity with @mui/joy', () => {
         );
         render(
           <ColorSchemeProvider defaultMode={scheme}>
-            <HintoricStack data-testid={`hintoric-${direction}`} direction={direction} spacing="2">
+            <HintoricStack data-testid={`hintoric-${direction}`} direction={direction} spacing={2}>
               <span>A</span>
               <span>B</span>
             </HintoricStack>
@@ -79,7 +79,7 @@ describe('Stack visual parity with @mui/joy', () => {
       for (const spacing of SPACINGS) {
         const joy = render(
           <JoyCssVarsProvider defaultMode={scheme}>
-            <JoyStack data-testid="joy-gap" direction="column" spacing={Number(spacing)}>
+            <JoyStack data-testid="joy-gap" direction="column" spacing={spacing}>
               <span>A</span>
               <span>B</span>
             </JoyStack>
@@ -114,7 +114,7 @@ describe('Stack visual parity with @mui/joy', () => {
     await setColorScheme('light');
     render(
       <ColorSchemeProvider defaultMode="light">
-        <HintoricStack data-testid="scheme-stack" direction="row" spacing="3">
+        <HintoricStack data-testid="scheme-stack" direction="row" spacing={3}>
           <span>A</span>
           <span>B</span>
         </HintoricStack>
