@@ -272,4 +272,7 @@ export type { StepButtonProps } from './components/StepButton';
 export { StepIndicator } from './components/StepIndicator';
 export type { StepIndicatorProps } from './components/StepIndicator';
 
+export { ColorSchemeToggle } from './components/ColorSchemeToggle';
+export type { ColorSchemeToggleProps } from './components/ColorSchemeToggle';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';

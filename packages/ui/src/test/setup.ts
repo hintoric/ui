@@ -24,6 +24,10 @@ export const matchMediaState = {
 beforeEach(() => {
   matchMediaState.matches = false;
   matchMediaState.listeners.clear();
+  // ColorSchemeProvider persists the chosen mode, so without this a test
+  // inherits whatever mode the previous test in the same file left behind and
+  // starts its cycle from the wrong place.
+  window.localStorage.clear();
 });
 
 window.matchMedia = ((query: string) => ({
