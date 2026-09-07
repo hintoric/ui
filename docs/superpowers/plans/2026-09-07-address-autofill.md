@@ -735,7 +735,12 @@ git commit -m "Add useAddressSuggestions: debounced, abortable address search"
   from `../../internal/form`.
 - Produces: `AddressAutofill` component. Task 7 exports it from `packages/ui/src/index.ts`.
 
-- [ ] **Step 1: Write the failing tests**
+**Note:** the component destructures `...rest` twice for two different purposes — once from its own
+props (native passthrough like `id`/`data-testid`), once from `fieldProps` (react-hook-form's bound
+`value`/`onChange`/`onBlur`/`name`). Both can't be named `rest` in the same function scope (it's a
+redeclaration, not just shadowing) — the code below names the second one `fieldRest`.
+
+- [x] **Step 1: Write the failing tests**
 
 ```tsx
 // packages/ui/src/components/AddressAutofill/AddressAutofill.test.tsx
@@ -865,12 +870,12 @@ describe('AddressAutofill', () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `pnpm --filter @hintoric/ui test -- AddressAutofill.test.tsx`
 Expected: FAIL with "Cannot find module './AddressAutofill'".
 
-- [ ] **Step 3: Write `AddressAutofill.tsx`**
+- [x] **Step 3: Write `AddressAutofill.tsx`**
 
 ```tsx
 'use client';
@@ -919,7 +924,7 @@ function AddressAutofillComponent(
   });
 
   const { fieldProps, errorMessage } = useBoundField(name, valueAdapter, {});
-  const { ref: fieldRef, ...rest } = fieldProps as {
+  const { ref: fieldRef, ...fieldRest } = fieldProps as {
     ref: React.Ref<HTMLInputElement>;
     name: string;
     value: AddressSuggestion | null;
@@ -930,7 +935,7 @@ function AddressAutofillComponent(
   // inside a <FormProvider> (see AutocompleteRootComponent) — passing this
   // field's own `name` through would register a second, independent binding
   // for the same form value, fighting the one just established above.
-  const boundProps = omitProps(rest, ['name']) as {
+  const boundProps = omitProps(fieldRest, ['name']) as {
     value: AddressSuggestion | null;
     onChange: (value: AddressSuggestion | null) => void;
     onBlur: () => void;
@@ -977,17 +982,17 @@ export { AddressAutofill } from './AddressAutofill';
 export type { AddressAutofillProps, AddressSuggestion } from './types';
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `pnpm --filter @hintoric/ui test -- AddressAutofill.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Typecheck and full jsdom suite**
+- [x] **Step 5: Typecheck and full jsdom suite**
 
 Run: `pnpm typecheck && pnpm --filter @hintoric/ui test`
 Expected: no errors, all tests (including every other component's) pass.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/ui/src/components/AddressAutofill/AddressAutofill.tsx packages/ui/src/components/AddressAutofill/index.ts packages/ui/src/components/AddressAutofill/AddressAutofill.test.tsx
