@@ -49,6 +49,11 @@ import { MenuPage } from './pages/MenuPage';
 import { StepperPage } from './pages/StepperPage';
 import { AccordionPage } from './pages/AccordionPage';
 import { ColorSchemeProviderPage } from './pages/ColorSchemeProviderPage';
+import { ColorSchemeMenuPage } from './pages/ColorSchemeMenuPage';
+import { ColorSchemeTogglePage } from './pages/ColorSchemeTogglePage';
+import { ColorSchemeToggleGroupPage } from './pages/ColorSchemeToggleGroupPage';
+import { ColorSchemeSwitchPage } from './pages/ColorSchemeSwitchPage';
+import { ColorSchemeSelectPage } from './pages/ColorSchemeSelectPage';
 import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
@@ -113,6 +118,11 @@ export function App() {
             <Route path="/accordion" element={<AccordionPage />} />
 
             <Route path="/color-scheme-provider" element={<ColorSchemeProviderPage />} />
+            <Route path="/color-scheme-menu" element={<ColorSchemeMenuPage />} />
+            <Route path="/color-scheme-toggle" element={<ColorSchemeTogglePage />} />
+            <Route path="/color-scheme-toggle-group" element={<ColorSchemeToggleGroupPage />} />
+            <Route path="/color-scheme-switch" element={<ColorSchemeSwitchPage />} />
+            <Route path="/color-scheme-select" element={<ColorSchemeSelectPage />} />
             <Route path="/locale-provider" element={<LocaleProviderPage />} />
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />

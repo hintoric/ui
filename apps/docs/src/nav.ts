@@ -99,6 +99,11 @@ export const NAV: NavGroup[] = [
     title: 'Utils',
     links: [
       { to: '/color-scheme-provider', label: 'ColorSchemeProvider' },
+      { to: '/color-scheme-menu', label: 'ColorSchemeMenu' },
+      { to: '/color-scheme-toggle', label: 'ColorSchemeToggle' },
+      { to: '/color-scheme-toggle-group', label: 'ColorSchemeToggleGroup' },
+      { to: '/color-scheme-switch', label: 'ColorSchemeSwitch' },
+      { to: '/color-scheme-select', label: 'ColorSchemeSelect' },
       { to: '/locale-provider', label: 'LocaleProvider' },
     ],
   },

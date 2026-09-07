@@ -249,6 +249,32 @@ a {
   color: var(--color-ink-secondary);
 }
 
+/*
+ * Lists had no styling at all, so the browser default (no marker, no indent)
+ * made an <ol>/<ul> read as run-together prose. Matches .docs-content p's
+ * type and colour so a list beside a paragraph looks deliberate.
+ */
+.docs-content ul,
+.docs-content ol {
+  margin: 0.75em 0;
+  padding-left: 1.5em;
+  font-size: var(--text-base);
+  line-height: var(--text-base--line-height);
+  color: var(--color-ink-secondary);
+}
+
+.docs-content ul {
+  list-style: disc;
+}
+
+.docs-content ol {
+  list-style: decimal;
+}
+
+.docs-content li {
+  margin: 0.25em 0;
+}
+
 .docs-lede {
   color: var(--color-ink-secondary);
   font-size: 1.05rem;

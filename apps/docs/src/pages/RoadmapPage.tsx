@@ -25,6 +25,12 @@ const GROUPS: RoadmapGroup[] = [
       { name: 'Container', done: true },
       { name: 'Grid', done: true },
       { name: 'ColorSchemeProvider', done: true },
+      { name: 'ColorSchemeMenu', done: true },
+      { name: 'ColorSchemeMenuItems', done: true },
+      { name: 'ColorSchemeToggle', done: true },
+      { name: 'ColorSchemeToggleGroup', done: true },
+      { name: 'ColorSchemeSwitch', done: true },
+      { name: 'ColorSchemeSelect', done: true },
     ],
   },
   {
