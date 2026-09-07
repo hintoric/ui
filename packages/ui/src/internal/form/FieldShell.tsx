@@ -12,6 +12,13 @@ export interface FieldShellProps {
   disabled?: boolean;
   id: string;
   helperId?: string;
+  /**
+   * Set this for a control that a <label> cannot address — a radiogroup, or a
+   * slider whose focusable element is a thumb inside a wrapper. The label then
+   * carries this id instead of an htmlFor, and the caller points the control's
+   * aria-labelledby at it.
+   */
+  labelId?: string;
   children: React.ReactNode;
 }
 
@@ -28,6 +35,7 @@ export function FieldShell({
   disabled,
   id,
   helperId,
+  labelId,
   children,
 }: FieldShellProps): React.ReactElement {
   if (label == null && helperText == null) {
@@ -35,7 +43,12 @@ export function FieldShell({
   }
   return (
     <FormControl error={error} required={required} disabled={disabled}>
-      {label != null && <FormLabel htmlFor={id}>{label}</FormLabel>}
+      {label != null &&
+        (labelId != null ? (
+          <FormLabel id={labelId}>{label}</FormLabel>
+        ) : (
+          <FormLabel htmlFor={id}>{label}</FormLabel>
+        ))}
       {children}
       {helperText != null && <FormHelperText id={helperId}>{helperText}</FormHelperText>}
     </FormControl>

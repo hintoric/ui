@@ -3,6 +3,10 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Slider as JoySlider } from '@mui/joy';
 import { Slider as HintoricSlider } from '../components/Slider';
+import { FormControl as JoyFormControl, FormHelperText as JoyFormHelperText } from '@mui/joy';
+import { FormControl as HintoricFormControl } from '../components/FormControl';
+import { FormHelperText as HintoricFormHelperText } from '../components/FormHelperText';
+import { parkPointer } from './errorParity';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -89,5 +93,52 @@ describe('Slider visual parity with @mui/joy', () => {
     expect(hintoricInput.disabled).toBe(true);
     expect(joyStyle.pointerEvents).toBe('none');
     expect(getComputedStyle(hintoricControl).pointerEvents).toBe('none');
+  });
+});
+
+// Joy's Slider reads no FormControl context at all, so an error state must
+// leave the track and thumb exactly as they were — only the helper text moves.
+// This pins that down, so a later "helpful" danger slider fails here.
+describe('Slider error state', () => {
+  it('leaves the slider itself unchanged and only reddens the helper text', async () => {
+    await parkPointer('slider-error');
+    const { container: joyContainer } = render(
+      <div data-testid="joy-sl-error" style={{ position: 'fixed', top: 0, left: 0, width: 320 }}>
+        <JoyCssVarsProvider>
+          <JoyFormControl error>
+            <JoySlider defaultValue={40} />
+            <JoyFormHelperText>zu klein</JoyFormHelperText>
+          </JoyFormControl>
+        </JoyCssVarsProvider>
+      </div>,
+    );
+    const { container: hintoricContainer } = render(
+      <div
+        data-testid="hintoric-sl-error"
+        style={{ position: 'fixed', top: 200, left: 0, width: 320 }}
+      >
+        <HintoricFormControl error>
+          <HintoricSlider defaultValue={40} />
+          <HintoricFormHelperText>zu klein</HintoricFormHelperText>
+        </HintoricFormControl>
+      </div>,
+    );
+
+    const joyThumb = joyContainer.querySelector('.MuiSlider-thumb') as HTMLElement;
+    const hintoricThumb = hintoricContainer.querySelector('[data-index="0"]') as HTMLElement;
+    expect(getComputedStyle(hintoricThumb).backgroundColor).toBe(
+      getComputedStyle(joyThumb).backgroundColor,
+    );
+
+    const joyHelper = joyContainer.querySelector('.MuiFormHelperText-root') as HTMLElement;
+    // Queried by the helper's own id rather than div:last-child, which
+    // matches the first last-child div anywhere in the tree.
+    const hintoricHelper = Array.from(hintoricContainer.querySelectorAll('div')).find(
+      (el) => el.textContent === joyHelper.textContent && el.children.length === 0,
+    ) as HTMLElement;
+    expect(getComputedStyle(hintoricHelper).color).toBe(getComputedStyle(joyHelper).color);
+
+    await expect(page.getByTestId('joy-sl-error')).toMatchScreenshot('slider-error-joy');
+    await expect(page.getByTestId('hintoric-sl-error')).toMatchScreenshot('slider-error-hintoric');
   });
 });

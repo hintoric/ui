@@ -500,3 +500,45 @@ den gerenderten Abstand zwischen den Slots.
 **Offen bleibt:** `FormControl` fehlt Joys `size`-Prop. Solange das so ist, ist der Gap-Ansatz
 korrekt und einfacher. Kommt die Größe dazu, muss auf Joys Margin-Modell umgestellt werden — ein
 Gap kann pro Slot keine unterschiedlichen Abstände.
+
+## Addendum, 2026-09-07: was das echte Paket über den Fehlerzustand sagt
+
+Der Plan nahm an, `Select` und `Autocomplete` hätten ein `error`-Prop und die übrigen nicht. Gemessen
+gilt: **nur `Input` (und damit `Textarea`) hat eines.** `Select`, `Autocomplete`, `Checkbox`,
+`Switch`, `Radio`, `RadioGroup` und `Slider` haben in Joy gar keines — sie lesen `formControl.error`
+aus dem Kontext. Alle Visual-Tests vergleichen deshalb gegen `<FormControl error>` und nicht gegen
+ein erfundenes `color="danger"`.
+
+### Präzedenz: explizite Farbe schlägt den Fehlerzustand — überall
+
+Bei `Checkbox`, `Switch` und `Select` steht das so in Joys Quelle. Bei `Radio` steht dort das
+Gegenteil (`activeColor = formControl.error ? 'danger' : …`), gemessen verhält es sich aber wie die
+anderen: ein Joy-`Radio` mit `color="primary"` in `<FormControl error>` rendert `rgb(11, 107, 203)`.
+Das gerenderte Paket schlägt die Lesart seines Build-Outputs — so steht es auch als Kommentar im
+Code, damit niemand die Zeile „korrigiert".
+
+### `Slider` reagiert überhaupt nicht auf den Fehlerzustand
+
+Joys `Slider` liest keinen `FormControl`-Kontext (null Vorkommen von `formControl` in `Slider.js`).
+Ein Joy-Slider sieht im Fehlerzustand exakt aus wie ein gültiger. Unser Slider tut es ihm gleich:
+`hasError` setzt nur `aria-invalid`, die Spur bleibt blau. Ein danger-Slider wäre eine Erfindung
+gewesen, kein Fix — festgenagelt in `Slider.visual.test.tsx`.
+
+### `Slider`: zwei aria-Attribute, zwei Knoten
+
+`role="slider"` ist bei Base UI ein verstecktes `<input type="range">` im Thumb. Base UI reicht
+`aria-describedby` und `aria-labelledby` an dieses Input weiter, **`aria-invalid` aber nicht** — das
+bleibt auf dem Thumb-Wrapper. Über Base UIs API ist das nicht umzulenken. Die Testmatrix hat dafür
+einen eigenen `invalidTarget`-Haken; das ist die zweite dokumentierte Slider-Grenze neben
+Focus-on-Error.
+
+### Offen: `RadioGroup` verdeckt bei Joy den Fehlerzustand
+
+Ein Joy-`Radio` **direkt** in `<FormControl error>` wird danger. Dasselbe `Radio` **innerhalb einer
+`JoyRadioGroup`** behält seine primary-Farbe — die Gruppe schattet den Fehlerzustand ab. Unseres
+wird in beiden Fällen danger.
+
+Das ist bewusst nicht angeglichen: Joy zu folgen hieße, eine ungültige Radio-Gruppe wieder gültig
+aussehen zu lassen. Das ist eine Produktentscheidung über Barrierefreiheit, kein Token zum
+Abschreiben. Der Visual-Test der Gruppe vergleicht die Radio-Farbe deshalb nicht und sagt im
+Kommentar, warum.

@@ -31,6 +31,22 @@ export interface FieldMatrixConfig {
   expectedAfterEdit: Record<string, unknown>;
   /** Returns the element that should carry aria-invalid / aria-describedby. */
   control: () => HTMLElement;
+  /**
+   * The element that actually takes focus, when that is not the one carrying
+   * the aria attributes. A radiogroup is named by aria-labelledby but is not
+   * focusable — the radios inside it are; a Slider's attributes sit on its
+   * control while the thumb is what focuses. Defaults to `control`.
+   */
+  focusTarget?: () => HTMLElement;
+  /**
+   * The element carrying aria-invalid, when it is not the one carrying
+   * aria-describedby. Only Slider needs this: Base UI's Slider.Thumb forwards
+   * aria-describedby and aria-labelledby down to the hidden range input that
+   * holds role="slider", but keeps aria-invalid on the thumb wrapper. Two
+   * nodes, not one — and not something this library can redirect through Base
+   * UI's API. Defaults to `control`.
+   */
+  invalidTarget?: () => HTMLElement;
   /** Root tag name the field renders with no label and no helper text. */
   standaloneRootTag: string;
   /** Renders the field with a name but no <Form> around it. */
@@ -79,7 +95,7 @@ export function runFieldMatrix(config: FieldMatrixConfig): void {
         {config.render({ name: config.name, label })}
       </Form>,
     );
-    config.control().focus();
+    (config.focusTarget ?? config.control)().focus();
     await userEvent.tab();
     expect(await screen.findByText(config.message)).toBeInTheDocument();
   });
@@ -105,9 +121,8 @@ export function runFieldMatrix(config: FieldMatrixConfig): void {
     );
     await userEvent.click(screen.getByRole('button', { name: 'ok' }));
     const message = await screen.findByText(config.message);
-    const control = config.control();
-    expect(control).toHaveAttribute('aria-invalid', 'true');
-    expect(control).toHaveAttribute('aria-describedby', message.id);
+    expect((config.invalidTarget ?? config.control)()).toHaveAttribute('aria-invalid', 'true');
+    expect(config.control()).toHaveAttribute('aria-describedby', message.id);
   });
 
   it('6. is unchanged outside a Form, even with a name', () => {
