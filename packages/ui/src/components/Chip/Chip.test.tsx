@@ -28,7 +28,10 @@ describe('Chip', () => {
         Large
       </Chip>,
     );
-    expect(screen.getByTestId('chip')).toHaveClass('min-h-7', 'text-base');
+    // `text-base/[1.5]`, not bare `text-base`: Joy renders body text at
+    // line-height 1.5 and Tailwind's size utility pairs its own, so the size
+    // class carries the line-height too (see chipVariants.ts).
+    expect(screen.getByTestId('chip')).toHaveClass('min-h-7', 'text-base/[1.5]');
   });
 
   it('renders decorators around the label', () => {
