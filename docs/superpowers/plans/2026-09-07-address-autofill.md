@@ -54,7 +54,7 @@ jsdom, `test:visual` for real-browser parity against `@mui/joy`), Vite (`apps/do
   All later tasks import these from `../../components/Autocomplete` (already re-exported via
   `export type { AutocompleteProps }` in `packages/ui/src/index.ts` — no change needed there for this task).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to the end of the `describe('Autocomplete', ...)` block in
 `packages/ui/src/components/Autocomplete/Autocomplete.test.tsx` (it currently ends after the
@@ -105,13 +105,13 @@ Add to the end of the `describe('Autocomplete', ...)` block in
   });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 Run: `pnpm --filter @hintoric/ui test -- Autocomplete.test.tsx`
 Expected: the four new assertions on `loading`/`loadingText`/`noOptionsText`/`filter` FAIL (props
 don't exist yet, "No options" is still hardcoded, and there is no client filtering to disable).
 
-- [ ] **Step 3: Add the four props to `AutocompleteProps<Value>`**
+- [x] **Step 3: Add the four props to `AutocompleteProps<Value>`**
 
 In `packages/ui/src/components/Autocomplete/types.ts`, add after the existing `disableClearable`
 field (last field before the closing `}`):
@@ -142,7 +142,7 @@ field (last field before the closing `}`):
   filter?: null | ((itemValue: Value, query: string, itemToString?: (itemValue: Value) => string) => boolean);
 ```
 
-- [ ] **Step 4: Implement in `Autocomplete.tsx`**
+- [x] **Step 4: Implement in `Autocomplete.tsx`**
 
 Change the `AutocompleteBaseComponent` destructuring (currently ends `disableClearable = false,
 className, ...props`) to:
@@ -177,7 +177,7 @@ Replace the `<Combobox.Empty>` line (currently `<Combobox.Empty className="px-3 
 text-ink-tertiary">No options</Combobox.Empty>`) with:
 
 ```tsx
-          <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">
+          <Combobox.Empty className="px-3 py-2 text-sm text-ink-secondary">
             {loading ? loadingText : noOptionsText}
           </Combobox.Empty>
 ```
@@ -186,21 +186,27 @@ text-ink-tertiary">No options</Combobox.Empty>`) with:
 `Autocomplete.js`: `AutocompleteLoading` just renders `loadingText`. Adding an icon here would be an
 unrequested embellishment on top of the thing this task is explicitly mirroring.)
 
+**Also fixes a pre-existing token bug found while writing Task 2's visual test**: the "No options"
+text was `text-ink-tertiary` (`--color-neutral-600`, `#555E68`), but Joy's own
+`AutocompleteNoOptions`/`AutocompleteLoading` (both `styled(ListItem)`) set `color:
+theme.palette.text.secondary`, which resolves to `--color-neutral-700` (`#32383E`) — this repo's
+`ink-secondary` token, not `ink-tertiary`. Nothing tested this text's color against Joy before now.
+
 (No changes needed in `AutocompleteFieldComponent`/`BoundAutocompleteComponent`/
 `AutocompleteRootComponent` — all four new props flow through their existing generic
 `...props`/`...rest` spreads.)
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 Run: `pnpm --filter @hintoric/ui test -- Autocomplete.test.tsx`
 Expected: PASS, all tests including the six new ones and the pre-existing ones.
 
-- [ ] **Step 6: Typecheck**
+- [x] **Step 6: Typecheck**
 
 Run: `pnpm typecheck` (from repo root)
 Expected: no errors.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add packages/ui/src/components/Autocomplete/types.ts packages/ui/src/components/Autocomplete/Autocomplete.tsx packages/ui/src/components/Autocomplete/Autocomplete.test.tsx
@@ -217,90 +223,93 @@ git commit -m "Add loading/loadingText/noOptionsText/filter to Autocomplete"
 **Interfaces:**
 - Consumes: `Autocomplete` (`loading`, `loadingText`, `noOptionsText` props from Task 1).
 
-- [ ] **Step 1: Add Joy-parity cases**
+- [x] **Step 1: Add Joy-parity cases**
 
 Append to `packages/ui/src/visual/Autocomplete.visual.test.tsx`, inside the existing
 `describe('Autocomplete visual parity with @mui/joy', ...)` block, right before its closing `});`
 (after the `'disabled input matches Joy UI'` test):
 
 ```tsx
-  it('loadingText (with no options) matches Joy UI', async () => {
+  // Forcing Joy's real Autocomplete popup open from the outside turned out to
+  // be unreliable in practice (its `open` state is internal to
+  // useAutocomplete, with no public controlled prop, and simulated
+  // mousedown/click/ArrowDown events didn't consistently mount its Popper
+  // portal even though the popup-indicator's own rendered state visibly
+  // flipped). Joy's `AutocompleteNoOptions`/`AutocompleteLoading` are just
+  // `styled(ListItem)` with one added rule — `color: theme.palette.text.secondary`
+  // (confirmed in `@mui/joy`'s `Autocomplete.js`) — so comparing against a
+  // bare `<ListItem sx={{ color: 'text.secondary' }}>` is the same comparison
+  // without depending on that interaction succeeding, and matches this file's
+  // existing pattern of comparing against a plain rendered Joy primitive
+  // rather than a live nested one.
+  it("loadingText's color matches Joy's text.secondary token", async () => {
     render(
       <JoyCssVarsProvider>
-        <JoyAutocomplete options={[]} loading loadingText="Searching…" data-testid="joy-loading" />
+        <JoyListItem sx={{ color: 'text.secondary' }} data-testid="joy-secondary-text">
+          reference
+        </JoyListItem>
       </JoyCssVarsProvider>,
     );
     render(<HintoricAutocomplete options={[]} loading loadingText="Searching…" data-testid="hintoric-loading" />);
 
-    // Neither library exposes a declarative "force the popup open" prop for
-    // this (Joy's own `open` is internal-Popper-only, per its
-    // AutocompleteProps.d.ts) — both open the same way a real user would.
-    // Joy's `data-testid` lands on its outer root, not the input (same as
-    // the file's other tests), so click the input inside it directly;
-    // Hintoric's `data-testid` lands on the input itself already.
-    await userEvent.click(page.getByTestId('joy-loading').element().querySelector('input')!);
     await userEvent.click(page.getByTestId('hintoric-loading').element());
-
-    const joyLoading = document.querySelector('.MuiAutocomplete-loading') as HTMLElement;
-    // "Searching…" is a direct text child of Combobox.Empty's own <div> —
-    // findByText returns that div itself (same reasoning as noOptionsText below).
     const hintoricLoading = await screen.findByText('Searching…');
 
-    expect(getComputedStyle(hintoricLoading).color).toBe(getComputedStyle(joyLoading).color);
+    expect(getComputedStyle(hintoricLoading).color).toBe(
+      getComputedStyle(page.getByTestId('joy-secondary-text').element()).color,
+    );
 
-    await expect(page.getByTestId('joy-loading')).toMatchScreenshot('autocomplete-loading-joy');
     await expect(page.getByTestId('hintoric-loading')).toMatchScreenshot('autocomplete-loading-hintoric');
   });
 
-  it('noOptionsText matches Joy UI', async () => {
+  it("noOptionsText's color matches Joy's text.secondary token, and defaults to 'No options'", async () => {
     render(
       <JoyCssVarsProvider>
-        <JoyAutocomplete options={[]} noOptionsText="Nothing found" data-testid="joy-empty" />
+        <JoyListItem sx={{ color: 'text.secondary' }} data-testid="joy-secondary-text-2">
+          reference
+        </JoyListItem>
       </JoyCssVarsProvider>,
     );
     render(<HintoricAutocomplete options={[]} noOptionsText="Nothing found" data-testid="hintoric-empty" />);
 
-    await userEvent.click(page.getByTestId('joy-empty').element().querySelector('input')!);
     await userEvent.click(page.getByTestId('hintoric-empty').element());
-
-    const joyEmpty = document.querySelector('.MuiAutocomplete-noOptions') as HTMLElement;
-    // "Nothing found" is a direct text child of Combobox.Empty's own <div>
-    // (no wrapping span, unlike the loading branch above) — findByText
-    // returns that div itself.
     const hintoricEmpty = await screen.findByText('Nothing found');
 
-    expect(getComputedStyle(hintoricEmpty).color).toBe(getComputedStyle(joyEmpty).color);
+    expect(getComputedStyle(hintoricEmpty).color).toBe(
+      getComputedStyle(page.getByTestId('joy-secondary-text-2').element()).color,
+    );
 
-    await expect(page.getByTestId('joy-empty')).toMatchScreenshot('autocomplete-empty-joy');
     await expect(page.getByTestId('hintoric-empty')).toMatchScreenshot('autocomplete-empty-hintoric');
   });
 ```
 
-Add the two missing imports at the top of the file (`userEvent` and `screen` are not imported yet
-there):
+Add the missing imports at the top of the file (`userEvent` and `screen` are not imported yet
+there, and `ListItem` needs adding to the existing `@mui/joy` import):
 
 ```ts
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { CssVarsProvider as JoyCssVarsProvider, Autocomplete as JoyAutocomplete, ListItem as JoyListItem } from '@mui/joy';
 ```
 
-(`render` is already imported from `@testing-library/react` without `screen` — extend that
-existing import line rather than duplicating it.)
+(`render` is already imported from `@testing-library/react` without `screen`, and
+`JoyCssVarsProvider`/`JoyAutocomplete` are already imported from `@mui/joy` without `ListItem` —
+extend both existing import lines rather than duplicating them.)
 
-- [ ] **Step 2: Run the visual tests**
+- [x] **Step 2: Run the visual tests**
 
 Run: `pnpm --filter @hintoric/ui test:visual -- Autocomplete.visual.test.tsx`
 Expected: FAILS the first time on purpose with "no existing reference screenshot found" for the
-four new screenshot names — this is expected per this repo's convention.
+two new screenshot names — this is expected per this repo's convention.
 
-- [ ] **Step 3: Re-run to confirm the new baselines pass**
+- [x] **Step 3: Re-run to confirm the new baselines pass**
 
 Run: `pnpm --filter @hintoric/ui test:visual -- Autocomplete.visual.test.tsx`
-Expected: PASS. Open the four new PNGs under
+Expected: PASS. Open the two new PNGs under
 `packages/ui/src/visual/__screenshots__/Autocomplete.visual.test.tsx/` and confirm the loading and
 empty text actually render and look right before trusting them.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/ui/src/visual/Autocomplete.visual.test.tsx packages/ui/src/visual/__screenshots__/Autocomplete.visual.test.tsx

@@ -89,7 +89,7 @@ function AutocompleteBaseComponent<Value = string>(
       <Combobox.Portal>
         <Combobox.Positioner side="bottom" align="start" sideOffset={4} className="z-50 outline-none">
           <Combobox.Popup className={LISTBOX_CLASS}>
-            <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">
+            <Combobox.Empty className="px-3 py-2 text-sm text-ink-secondary">
               {loading ? loadingText : noOptionsText}
             </Combobox.Empty>
             <Combobox.List>
