@@ -85,6 +85,34 @@ export function ColorSchemeProvider({ children, defaultMode = 'system' }: ColorS
 
   const resolvedMode: ResolvedColorScheme = mode === 'system' ? systemScheme : mode;
 
+  /*
+   * The wrapper <div> below is not enough on its own. Base UI mounts every
+   * portalled surface — Menu, Select's listbox, Modal, Drawer, Tooltip,
+   * Snackbar — onto document.body, which makes them SIBLINGS of that div
+   * rather than descendants, so the dark tokens never cascade to them. A dark
+   * app with a light popup was the result, and it affected most of the
+   * library's overlay surface.
+   *
+   * Mirroring the attribute onto <html> fixes every portal at once, because
+   * document.body is a descendant of it. The div stays: it carries the
+   * attribute during server rendering and the first paint, before this effect
+   * has run.
+   *
+   * The trade-off is that <html> is shared. Two nested providers asking for
+   * different schemes will fight over it, and the innermost mounted one wins
+   * for portalled content while each div still governs its own in-flow
+   * subtree. Nesting providers with different schemes is not supported.
+   */
+  React.useEffect(() => {
+    const root = document.documentElement;
+    const previous = root.getAttribute('data-color-scheme');
+    root.setAttribute('data-color-scheme', resolvedMode);
+    return () => {
+      if (previous === null) root.removeAttribute('data-color-scheme');
+      else root.setAttribute('data-color-scheme', previous);
+    };
+  }, [resolvedMode]);
+
   const value = React.useMemo(() => ({ mode, resolvedMode, setMode }), [mode, resolvedMode, setMode]);
 
   return (
