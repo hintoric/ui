@@ -49,9 +49,14 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # changesets/action v1 targets @changesets/cli v2 and detects published
+      # packages by scraping "New tag:" lines off the CLI's stdout. Our CLI is v3,
+      # whose output no longer carries those lines, so v1 published to npm but then
+      # pushed no git tags and cut no GitHub releases -- silently, with a green job.
+      # v2 is the CLI-v3-compatible major: it reads CHANGESETS_OUTPUT instead, and
+      # pushes tags plus releases through the GitHub API by default.
       - name: Create Release Pull Request or publish to npm
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
-          publish: pnpm release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          publish-script: pnpm release
+          github-token: ${{ secrets.GITHUB_TOKEN }}
