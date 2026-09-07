@@ -94,6 +94,7 @@ export const NAV: NavGroup[] = [
     links: [
       { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
       { to: '/locale-switcher', label: 'LocaleSwitcher' },
+      { to: '/map-image', label: 'MapImage' },
     ],
   },
   {
