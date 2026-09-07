@@ -90,11 +90,14 @@ type ProvidedForm<T> = FormOwnProps<T> & {
 };
 ```
 
-`schema` und `form` schließen sich TypeScript-seitig aus. Der Grund ist keine Geschmacksfrage: RHF
-nimmt den Resolver in `useForm({ resolver })` entgegen und `useForm` setzt `control._options` bei
-jedem Render aus seinen eigenen Props neu. Ein `schema`-Prop kann den Resolver einer von außen
-erzeugten Instanz deshalb nicht zuverlässig nachträglich einhängen — es würde bei jedem Render
-überschrieben. Wer sein `useForm` selbst baut, baut auch seinen Resolver selbst.
+`schema` und `form` schließen sich TypeScript-seitig aus. Wer sein `useForm` selbst baut, baut auch
+seinen Resolver selbst.
+
+Die Begründung ist **nicht**, dass das andere technisch unmöglich wäre — siehe das Addendum unten,
+das genau diese Annahme widerlegt. Sie ist: es gäbe zwei Quellen für denselben Resolver. Übergäbe
+jemand `form={useForm({ resolver: a })}` **und** `schema={b}`, müsste die Bibliothek entscheiden,
+welcher gewinnt, und jede Antwort darauf überrascht die Hälfte der Aufrufer. Der einzige Weg, der
+das nicht produziert, ist der, bei dem die Frage nicht auftreten kann.
 
 ### Warum `useForm` immer läuft
 
@@ -401,3 +404,63 @@ Zwei Annahmen dieser Spec sind gegen die echten Pakete zu prüfen, nicht aus dem
 - `react-hook-form` und `zod` stehen in `build.rollupOptions.external`, und ein Blick in
   `dist/index.js` bestätigt, dass keine RHF-Kopie mitgebündelt wurde
 - Changeset (minor) liegt im Branch
+
+## Addendum, 2026-09-07: die zwei Annahmen, überprüft
+
+Beide gegen die tatsächlich installierten Pakete geprüft, bevor Code aus ihnen argumentiert —
+Base UI über einen Render, react-hook-form 7.87.0 zusätzlich am Quellcode.
+
+### Base UIs `Input` reicht ein natives `onChange` durch — bestätigt
+
+Ein `onChange` an Base UIs `Input` bekommt ein echtes `ChangeEvent`, dessen `target` das reale
+`HTMLInputElement` ist und `target.name` trägt. Stärker noch: `<BaseInput {...register('email')} />`
+treibt das Formular schon von sich aus korrekt. Das Fake-Ereignis in `Input.tsx` kann also ersatzlos
+entfallen; es war nie nötig, sondern hat die register-Route aktiv kaputt gemacht.
+
+### `useForm` überschreibt `control._options` **nicht** — widerlegt
+
+Die Annahme klang plausibel, weil `useForm` bei jedem Render diese Zeile ausführt:
+
+```js
+const control = _formControl.current.control;
+control._options = props;
+```
+
+`_options` ist aber kein normales Feld, sondern ein Getter/Setter-Paar auf dem Control, und der
+Setter **merged**:
+
+```js
+set _options(value) {
+  _options = { ..._options, ...value };
+}
+```
+
+Die Zuweisung legt damit ein neues Objekt an — die Identität wechselt bei jedem Render, was die
+Annahme oberflächlich zu bestätigen schien —, behält aber jeden Schlüssel, den die neuen Props nicht
+mitbringen. Ein von außen auf `control._options` gesetzter Resolver überlebt also beliebig viele
+Renders. Nachgemessen mit einem Probe-Render, der die Objektidentität pro Render mitschreibt:
+
+```
+render 1: _options#1 resolver=undefined
+render 1: assigned resolver onto _options#1
+render 2: _options#2 resolver=SET
+```
+
+**Was das für das Design heißt:** ein `schema`-Prop, das auf eine fremde `useForm`-Instanz wirkt,
+wäre baubar — über `form.control._options = { resolver: zodResolver(schema) }`. Es bleibt trotzdem
+draußen, aber aus einem anderen Grund als dem, den diese Spec ursprünglich nannte: `_options` ist
+ein unterstrich-präfigiertes Privatfeld, und dass sein Setter merged statt ersetzt, ist
+Implementierungsdetail, das jede Minor-Version von react-hook-form ändern darf. Ein API-Versprechen
+darauf zu bauen heißt, es an eine Zeile fremden Codes zu hängen, die niemand für uns stabil hält.
+Dazu kommt der eigentliche Grund, der auch bei stabiler Semantik gilt: zwei Quellen für denselben
+Resolver sind eine Fehlerquelle, keine Bequemlichkeit.
+
+Der `Form`-Kommentar im Code darf die Union deshalb **nicht** mit „technisch nicht möglich"
+begründen.
+
+### Nebenfund: `useForm` hat ein `formControl`-Prop
+
+7.87.0 akzeptiert `useForm({ formControl })` und übernimmt dann ein bestehendes Control statt ein
+neues zu erzeugen. Für diese Spec nicht gebraucht — `<Form>` nimmt das vollständige
+`UseFormReturn`, was einfacher ist —, aber es ist der unterstützte Weg, falls später doch einmal
+eine Instanz durchgereicht werden muss.
