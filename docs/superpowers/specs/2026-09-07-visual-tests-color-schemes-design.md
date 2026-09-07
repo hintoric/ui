@@ -89,7 +89,9 @@ This makes the migration of existing baselines a single mechanical rule for all 
 
 Done with `git mv`; contents unchanged, so nothing is re-baselined and the rename is trivially reviewable. Had the suffix gone in the middle of the id (`…-primary-light-joy`), each of the 63 files would have needed its own rename rule.
 
-Three `toMatchScreenshot()` calls currently pass no id and derive the filename from the test name. They get explicit ids, because their test names are about to gain the scheme.
+All 142 real `toMatchScreenshot()` call sites already pass an explicit id, so no filename derives from a test name and renaming test titles cannot move a baseline. (An earlier count of three unnamed calls was wrong — all three matches were in comments.)
+
+`Tooltip.visual.test.tsx` takes no screenshots at all, by a documented decision about floating-ui positioning. It still gains scheme coverage for its computed-style assertions.
 
 ## Two test flavours
 
