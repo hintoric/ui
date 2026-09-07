@@ -84,6 +84,68 @@ most-used component. Consequences worth knowing for later tasks:
   `pnpm test:visual 2>&1 | grep -oE "src/visual/__screenshots__/[^ ]*\.png" |
   grep -v vitest-attachments | sort -u`, delete those, re-run.
 
+**Tasks 6-11 — what the font assertions found, and three wrong estimates.**
+The retrofit of all 58 Flavour A files was done with a scripted transform
+(scheme loop around the whole `describe` body, `defaultMode={scheme}` on every
+provider, `-${scheme}` on every screenshot id, plus the three font
+comparisons). Running the result produced 25 distinct divergences in one pass.
+Two mattered structurally:
+
+- **Joy remaps its main palette channel per scheme** — step 500 in light, 400
+  in dark (`extendTheme.js:393-403`). This project had no `main` token, so
+  `Link` (which Joy resolves from `palette[color].mainChannel`, not
+  `plainColor` — `Link.js:120`) and `Divider` kept their light colour on a dark
+  page. One root cause, three components. Fixed with
+  `--color-*-main`.
+- **Joy renders every `body-*` level at line-height 1.5**, and Tailwind's size
+  utilities each ship their own paired value — only `text-base` agrees. Nine
+  components were off by a pixel or two. `Checkbox` and `Radio` were a
+  different case again: Joy derives their line-height from the control's box
+  size, not from the text.
+
+Estimates I got wrong, in order, all by counting from our side instead of
+Joy's: "13 components share Button's problem" (it was 1 — Joy's
+`fontWeight.md` *is* 500, so `font-medium` was right everywhere but Button);
+"about 5 more" (right on the weight axis, but I had not looked at line-height
+at all); "20+ on line-height" (13 in the end). **Measure Joy's rendered value
+before sizing a problem.** The assertions do this for free; source-grepping
+does not.
+
+Two mechanical traps worth knowing:
+
+- The transform put `-${scheme}` inside single-quoted ids, where it is six
+  literal characters. The light test then created a baseline named
+  `…-joy-scheme` and the dark test compared against it — "161 pixels (ratio
+  1.00) differ", which reads like a real regression. 58 ids in 25 files.
+  Always leave a screenshot id as a template literal.
+- `pnpm test:visual "A|B"` matches nothing; filters are substrings, not
+  regexes. Pass them space-separated: `pnpm test:visual Alert Chip`.
+
+**One property is compared with a tolerance.** Joy states line-height as a
+unitless ratio, so `1.42858 × 14px` computes to `20.0001px` where an
+equivalent Tailwind class gives a clean `20px`. `expectSameLineHeight` in
+helpers.ts allows 0.01px. This is the only loosened comparison in the suite,
+and it is the test that changed rather than the component — deliberately, and
+noted here because it would otherwise look like defining a failure away.
+
+**Still open after Tasks 6-11:**
+
+- `Switch` reports `fontSize` 16px against Joy's 14px in both schemes.
+  Joy's `SwitchRoot` sets `fontSize.md` (16px) at `md`, but `SwitchTrack` maps
+  `md` to `fontSize.sm` (14px) — so the two sides are probably measuring
+  different slots, which is a test-symmetry question rather than a token one.
+  Not resolved.
+- `Select`'s `disabled plain` dark background failed one full-suite run
+  (`rgb(23,26,28)` against Joy's `rgb(11,13,14)`) and passes 76/76 in
+  isolation, twice. Both values are real endpoints, which points at
+  `settleTransitions`' fixed 200ms being too short under full-suite load
+  rather than at a token. The helper's own comment already flags that fixed
+  delay as a weakness.
+- `Container.visual.test.tsx` takes no screenshots at all and has no
+  documented reason, unlike `Tooltip`. Predates this work; violates rule 4.
+- `Menu`'s Joy reference images contain a sliver of our component (see the
+  Task 3 notes).
+
 ## Global Constraints
 
 - Work in the worktree `/Users/johanneswaigel/git/hintoric/ui/.worktrees/visual-tests-color-schemes` on branch `visual-tests-color-schemes`. Other sessions commit in the main checkout; never `cd` there.
@@ -728,7 +790,7 @@ git commit -m "Cover LocaleSwitcher in both colour schemes"
 - Consumes: the patterns established in Tasks 1, 3 and 4 — the text must describe what those files actually do.
 - Produces: the rules Tasks 6–12 are held to.
 
-- [ ] **Step 1: Extend the hard-requirement list**
+- [x] **Step 1: Extend the hard-requirement list**
 
 In `CLAUDE.md`, under "Hard requirement: every component needs full visual regression coverage", change item 1 and add items 5 and 6:
 
@@ -744,7 +806,7 @@ In `CLAUDE.md`, under "Hard requirement: every component needs full visual regre
 6. Asserts `display` and `width` against Joy inside a fixed-width parent. This is P2 from `docs/superpowers/specs/2026-09-06-visual-test-coverage-audit.md`: four components had silently diverged on fill-versus-shrink because nothing compared sizing. Where the divergence is still unfixed (`Input`, `Textarea`, `Autocomplete`), the assertion is written and marked `it.fails()` with a pointer to P1, never skipped — a `skip` lets the fix land unnoticed, `it.fails()` turns red the moment someone fixes the component.
 ```
 
-- [ ] **Step 2: Document Flavour B, which the file never mentioned**
+- [x] **Step 2: Document Flavour B, which the file never mentioned**
 
 Add after the numbered list:
 
@@ -761,7 +823,7 @@ A composition whose parts already carry full Joy-compared coverage (`LocaleSwitc
 **Layout-only exception.** A component that sets no `bg-*` / `text-*` / `border-*` colour utility of its own paints nothing, so the "must differ" assertion is unsatisfiable. For those, assert the layout properties are *identical* across both schemes — a scheme flip must not move anything — with a comment saying why. `Grid` is the only current case.
 ```
 
-- [ ] **Step 3: Document the naming convention and the light-island limitation**
+- [x] **Step 3: Document the naming convention and the light-island limitation**
 
 Add after the paragraph about baseline naming:
 
@@ -771,11 +833,11 @@ Screenshot ids end with the scheme: `button-solid-primary-joy-light`. The suffix
 Our light tokens live in Tailwind's `@theme { }` block, which compiles to `:root`; there is no `[data-color-scheme="light"]` block. A light-mode island nested inside a dark region therefore stays dark. Joy supports this and we do not, deliberately — the alternative is duplicating every light value into a second hand-maintained block. Consequence for tests: **never nest scopes.** The scheme is document state and there is only one.
 ```
 
-- [ ] **Step 4: Verify the claims are true**
+- [x] **Step 4: Verify the claims are true**
 
 Read back each rule and check it against the code Tasks 1, 3 and 4 actually produced. A rule that describes an intention rather than the code is worse than no rule — this file is loaded into every session's context.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add CLAUDE.md
@@ -797,12 +859,12 @@ Each batch is one task with the same six steps. **Apply the pattern from Task 3,
 
 Per-batch steps, identical in each of Tasks 6–11:
 
-- [ ] **Step 1: Retrofit each file in the batch**
-- [ ] **Step 2: Run `pnpm test:visual <Batch pattern>` — expect first-run baseline failures**
-- [ ] **Step 3: Rerun — expect PASS**
-- [ ] **Step 4: Report the new dark PNGs and stop for human review**
-- [ ] **Step 5: Confirm `git status` shows zero modified `*-light-*.png`**
-- [ ] **Step 6: Commit as `Cover <batch name> in both colour schemes`**
+- [x] **Step 1: Retrofit each file in the batch**
+- [x] **Step 2: Run `pnpm test:visual <Batch pattern>` — expect first-run baseline failures**
+- [x] **Step 3: Rerun — expect PASS**
+- [x] **Step 4: Report the new dark PNGs and stop for human review**
+- [x] **Step 5: Confirm `git status` shows zero modified `*-light-*.png`**
+- [x] **Step 6: Commit as `Cover <batch name> in both colour schemes`**
 
 **Task 6 — Buttons and actions (7 files):** `IconButton`, `ButtonGroup`, `ToggleButtonGroup`, `Chip`, `ChipDelete`, `Link`, `Badge`.
 
