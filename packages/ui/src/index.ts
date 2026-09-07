@@ -25,6 +25,12 @@ export type {
 export { Box } from './components/Box';
 export type { BoxProps } from './components/Box';
 
+export { HintoricLogo } from './components/HintoricLogo';
+export type { HintoricLogoProps } from './components/HintoricLogo';
+
+export { HintoricIcon } from './components/HintoricIcon';
+export type { HintoricIconProps } from './components/HintoricIcon';
+
 export { Stack } from './components/Stack';
 export type { StackProps, StackSpacing } from './components/Stack';
 
