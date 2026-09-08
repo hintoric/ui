@@ -1471,24 +1471,24 @@ git commit -m "Add AddressAutofill docs page"
 
 **Files:** none (verification only).
 
-- [ ] **Step 1: Full jsdom suite**
+- [x] **Step 1: Full jsdom suite**
 
 Run: `pnpm --filter @hintoric/ui test`
 Expected: PASS, no regressions in any other component's tests.
 
-- [ ] **Step 2: Full visual suite**
+- [x] **Step 2: Full visual suite**
 
 Run: `pnpm --filter @hintoric/ui test:visual`
 Expected: PASS. (Do not run this concurrently with another `test:visual` invocation in this shared
 checkout — two Chromium instances screenshotting at once produce phantom failures, per this repo's
 known trap.)
 
-- [ ] **Step 3: Typecheck and lint, repo-wide**
+- [x] **Step 3: Typecheck and lint, repo-wide**
 
 Run: `pnpm typecheck && pnpm lint`
 Expected: PASS.
 
-- [ ] **Step 4: Confirm the changeset and its scope**
+- [x] **Step 4: Confirm the changeset and its scope**
 
 Run: `git status` and `cat .changeset/address-autofill.md`
 Expected: working tree clean (everything committed task-by-task already), changeset present and
