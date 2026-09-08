@@ -20,6 +20,20 @@ jsdom, `test:visual` for real-browser parity against `@mui/joy`), Vite (`apps/do
 
 **Spec:** [docs/superpowers/specs/2026-09-07-address-autofill-design.md](../specs/2026-09-07-address-autofill-design.md)
 
+**Post-execution note (2026-09-08):** the real-browser verification in Task 8 (Step 4, exactly the
+step this plan added it for) surfaced four things the mocked tests couldn't — see the spec's
+"Addendum, 2026-09-08" for the full account. In short: the API initially had no CORS support at all
+(fixed server-side, not a code change here); selecting a suggestion re-searched for the suggestion's
+own label text, which could 500 the API for some label shapes — fixed by giving `Autocomplete`'s
+`onInputChange` a `reason: 'input' | 'reset' | 'clear'` second argument (a fifth new `Autocomplete`
+prop beyond the four below, matching `@mui/joy`'s own `AutocompleteInputChangeReason`), and having
+`AddressAutofill` only treat `reason === 'input'` as a real search trigger; `useAddressSuggestions`
+had a `react-hooks/set-state-in-effect` lint violation, fixed by deriving the below-minLength state
+at render time instead of resetting it via `setState` inside the effect; and the docs page needed
+`defaultValues` on every `<Form>` (an existing convention, see `FormsPage.tsx`) to avoid Base UI's
+uncontrolled-to-controlled warning. The task sections below are unchanged from before these were
+found — read them alongside the spec addendum, not as contradicting it.
+
 ## Global Constraints
 
 - No hardcoded UI text anywhere in `AddressAutofill` — `belowMinLengthContent`, `loadingContent`,
@@ -1264,7 +1278,7 @@ git commit -m "Export AddressAutofill, add changeset"
 - Consumes: `AddressAutofill`, `Form`, `JoyColor`, `JoyVariant` from `@hintoric/ui` (its built
   `dist/`, per this repo's Vite setup — no `src/` alias exists).
 
-- [ ] **Step 1: Write the docs page**
+- [x] **Step 1: Write the docs page**
 
 ```tsx
 // apps/docs/src/pages/AddressAutofillPage.tsx
@@ -1397,7 +1411,7 @@ export function AddressAutofillPage() {
 }
 ```
 
-- [ ] **Step 2: Register the route and nav entry**
+- [x] **Step 2: Register the route and nav entry**
 
 In `apps/docs/src/nav.ts`, add after the `{ to: '/autocomplete', label: 'Autocomplete' }` line
 (inside the `Inputs` group):
@@ -1419,13 +1433,13 @@ and add the route after `<Route path="/autocomplete" element={<AutocompletePage 
             <Route path="/address-autofill" element={<AddressAutofillPage />} />
 ```
 
-- [ ] **Step 3: Build the UI package**
+- [x] **Step 3: Build the UI package**
 
 Run: `pnpm --filter @hintoric/ui build`
 Expected: succeeds; `packages/ui/dist/` now includes the new export (docs resolves `@hintoric/ui`
 from `dist/`, not `src/`, so this step is required before the docs dev server reflects anything).
 
-- [ ] **Step 4: Run the docs dev server and verify against the real API in the browser**
+- [x] **Step 4: Run the docs dev server and verify against the real API in the browser**
 
 Run: `pnpm --filter docs dev` (or use the project's browser-preview tooling to start the `docs`
 dev server and open `/address-autofill`).
@@ -1436,7 +1450,7 @@ that the "Watching the selected value" demo shows the selected `AddressSuggestio
 the browser's network tab shows a real `GET .../api/autocomplete?q=acker&limit=10` request (not a
 mock) — this is the one point in the whole plan that exercises the real network endpoint end to end.
 
-- [ ] **Step 5: Typecheck and lint**
+- [x] **Step 5: Typecheck and lint**
 
 Run: `pnpm typecheck && pnpm lint` (from repo root)
 Expected: no errors. If `pnpm lint` reports failures outside `apps/docs/src/pages/AddressAutofillPage.tsx`,
@@ -1444,7 +1458,7 @@ Expected: no errors. If `pnpm lint` reports failures outside `apps/docs/src/page
 they belong to someone else's concurrent work in this shared checkout — confirm by checking the
 reported file paths, not by re-running lint again.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/docs/src/pages/AddressAutofillPage.tsx apps/docs/src/nav.ts apps/docs/src/App.tsx

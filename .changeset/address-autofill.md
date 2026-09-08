@@ -14,3 +14,8 @@ suggestions when there are none yet, so existing results stay visible while a ne
 flight. A fourth new prop, `filter`, is Base UI-specific (no Joy equivalent): pass `null` to disable
 Base UI's own client-side re-filtering of `options`, needed whenever `options` already reflects a
 server-filtered result set for the current query.
+
+`onInputChange` now receives a second `reason: 'input' | 'reset' | 'clear'` argument — again
+matching `@mui/joy`'s own `AutocompleteInputChangeReason` exactly — so a consumer that re-fetches on
+every input change can gate that on `reason === 'input'` and skip re-searching for an option's own
+label right after it's selected (`AddressAutofill` does exactly this).

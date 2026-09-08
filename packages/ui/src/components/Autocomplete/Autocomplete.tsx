@@ -64,7 +64,24 @@ function AutocompleteBaseComponent<Value = string>(
       defaultValue={defaultValue}
       onValueChange={onChange as (value: Value | null) => void}
       inputValue={inputValue}
-      onInputValueChange={onInputChange}
+      onInputValueChange={(nextValue, eventDetails) => {
+        // Base UI's own reasons for this callback are far more granular than
+        // Joy's ('item-press' and several others all mean "the text changed
+        // because a value was selected/synced, not typed"; a real keystroke
+        // is 'input-change' — confirmed by logging the live value, since
+        // TypeScript's declared union for this exact callback (as reported by
+        // tsc) omits 'input-change' even though it's what Base UI actually
+        // sends; the `as string` below works around that declared/runtime
+        // mismatch). Matching Joy's three-value union exactly:
+        // 'input-change' -> 'input', 'input-clear' -> 'clear', everything
+        // else -> 'reset'. A consumer that re-fetches on 'input' only (the
+        // whole reason this exists) never re-searches for an option's own
+        // label right after selecting it.
+        const rawReason: string = eventDetails.reason;
+        const reason =
+          rawReason === 'input-change' ? 'input' : rawReason === 'input-clear' ? 'clear' : 'reset';
+        onInputChange?.(nextValue, reason);
+      }}
       disabled={disabled}
       filter={filter}
     >

@@ -21,12 +21,15 @@ export function useAddressSuggestions(
   const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
+  const belowMinLength = query.length < minQueryLength;
 
   React.useEffect(() => {
-    if (query.length < minQueryLength) {
-      setSuggestions([]);
-      setIsLoading(false);
-      setHasError(false);
+    // Below minQueryLength: derived below at render time (see `return`) —
+    // resetting state here too would call setState synchronously inside the
+    // effect body for no reason (react-hooks/set-state-in-effect), and the
+    // stale suggestions/error from a previous longer query are already
+    // masked by the derived values below.
+    if (belowMinLength) {
       return;
     }
 
@@ -58,7 +61,11 @@ export function useAddressSuggestions(
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, minQueryLength, debounceMs, limit]);
+  }, [belowMinLength, query, limit, debounceMs]);
 
-  return { suggestions, isLoading, hasError };
+  return {
+    suggestions: belowMinLength ? [] : suggestions,
+    isLoading: belowMinLength ? false : isLoading,
+    hasError: belowMinLength ? false : hasError,
+  };
 }

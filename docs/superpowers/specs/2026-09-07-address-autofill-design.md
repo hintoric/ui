@@ -264,3 +264,58 @@ Fertig, wenn `pnpm test` und `pnpm test:visual` grün sind, die Baseline-Screens
 Doku-Seite unter *Inputs* erreichbar ist und im Browser gegen die echte API funktioniert (nicht nur
 gemockt), und ein Changeset (minor, für `AddressAutofill` sowie `Autocomplete`s vier neue Props)
 liegt.
+
+---
+
+## Addendum, 2026-09-08: vier Funde aus der echten Browser-Verifikation
+
+Die Vorgabe „im Browser gegen die echte API, nicht nur gemockt" (siehe Abnahme) hat hier tatsächlich
+etwas gefangen — alle vier Punkte wären mit gemockten Tests allein unsichtbar geblieben.
+
+### Die API hatte zunächst kein CORS — betraf jeden Konsumenten, nicht nur diese Doku
+
+Der erste Test im echten Browser schlug fehl: `Access to fetch ... has been blocked by CORS policy:
+No 'Access-Control-Allow-Origin' header is present`. Per `curl` mit beliebigem `Origin`-Header
+bestätigt — der Server sendete den Header überhaupt nicht, unabhängig vom Aufrufer. Das ist kein
+Fehler dieser Komponente, sondern hätte **jeden** Browser-Konsumenten dieser API betroffen, von
+jeder Domain aus. Der Dienstbetreiber hat `access-control-allow-origin: *` nachträglich ergänzt;
+seitdem funktioniert der reale Rundlauf.
+
+### Nach der Auswahl re-suchte die Komponente nach dem eigenen Label — und das konnte die API zum Absturz bringen
+
+Nach der Auswahl eines Vorschlags setzt `Autocomplete`/Base UI den Eingabetext auf das volle Label
+der Auswahl (z. B. „Mahlsdorfer Str., 12555 Berlin"). Da `AddressAutofill` `query` ursprünglich
+direkt an `inputValue`/`onInputChange` gekoppelt hatte, löste genau das eine **zweite** Anfrage aus —
+diesmal nach dem Label selbst statt nach dem, was tatsächlich getippt wurde. Für bestimmte
+Label-Formen (Kommata, mehrere Wörter) lieferte die echte API dafür einen **500**, den der Browser
+wegen der zu dem Zeitpunkt fehlenden CORS-Header fälschlich als CORS-Fehler meldete — zwei
+unabhängige Funde, die sich in der Fehlermeldung überlagerten.
+
+Behoben durch Aufspalten in zwei Zustände in `AddressAutofillComponent`: `inputValue` (zeigt immer
+den neuesten Text, unabhängig vom Grund) und `query` (nur bei echtem Tippen aktualisiert). Möglich
+wurde das erst durch eine vierte, hier neu ergänzte `Autocomplete`-Fähigkeit: `onInputChange`
+bekommt jetzt einen zweiten `reason`-Parameter (`'input' | 'reset' | 'clear'`), der exakt
+`@mui/joy`s eigene `AutocompleteInputChangeReason` nachbildet. Base UIs eigene Gründe für dieses
+Ereignis sind feingranularer (u. a. `item-press` für die Auswahl selbst) — alles außer echtem Tippen
+(`input-change`, per Live-Logging bestätigt, obwohl `tsc` für genau diesen Callback eine engere,
+das nicht enthaltende Vereinigung meldet — daher der `as string`-Ausweg in `Autocomplete.tsx`) und
+dem Leeren-Knopf (`input-clear`) wird auf `'reset'` abgebildet. `AddressAutofill` aktualisiert
+`query` nur bei `reason !== 'reset'`.
+
+### `useAddressSuggestions` verletzte `react-hooks/set-state-in-effect`
+
+`pnpm lint` (Teil der Abnahme, aber erst nach der Browser-Verifikation tatsächlich gegen diese Datei
+gelaufen) meldete: synchrones `setState` im Effekt-Körper für den „unterhalb `minQueryLength`"-Zweig.
+Behoben, indem dieser Zweig nicht mehr als zurückgesetzter State, sondern als **abgeleiteter Wert**
+beim Rendern berechnet wird (`belowMinLength ? [] : suggestions` usw.) — der Effekt selbst tut in
+diesem Fall gar nichts mehr, statt State synchron zu leeren.
+
+### Konsequenz für die Doku-Seite: `defaultValues` ist jetzt Pflicht, nicht optional
+
+Ohne `defaultValues={{ address: null }}` (bzw. die entsprechende Form für das Varianten-Raster)
+meldete Base UI: „A component is changing the uncontrolled selectedValue state of Combobox to be
+controlled." — `field.value` aus react-hook-form ist ohne `defaultValues` zunächst `undefined`,
+wird nach der ersten Auswahl aber ein definierter Wert. `FormsPage.tsx` befolgt diese Konvention
+bereits durchgängig; die neue Doku-Seite tat es zunächst nicht. Jetzt setzen alle drei
+`<Form>`-Stellen auf der Seite `defaultValues` explizit, für das Raster über ein generiertes
+`Record<string, AddressSuggestion | null>` mit allen 20 Feldnamen.

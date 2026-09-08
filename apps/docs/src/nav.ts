@@ -43,6 +43,7 @@ export const NAV: NavGroup[] = [
       { to: '/switch', label: 'Switch' },
       { to: '/select', label: 'Select' },
       { to: '/autocomplete', label: 'Autocomplete' },
+      { to: '/address-autofill', label: 'AddressAutofill' },
       { to: '/slider', label: 'Slider' },
       { to: '/toggle-button-group', label: 'ToggleButtonGroup' },
       { to: '/form-control', label: 'FormControl' },

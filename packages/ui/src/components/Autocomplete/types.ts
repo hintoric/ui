@@ -22,7 +22,16 @@ export interface AutocompleteProps<Value = string>
   onChange?: (value: Value | null) => void;
   /** The raw text in the input. Use when controlled. */
   inputValue?: string;
-  onInputChange?: (value: string) => void;
+  /**
+   * Called as the raw input text changes. `reason` mirrors `@mui/joy`'s own
+   * three-value union (`AutocompleteInputChangeReason`): `'input'` for real
+   * typing, `'clear'` for the clear button, `'reset'` for everything else —
+   * most commonly the text resetting to a freshly selected option's label. A
+   * consumer that re-fetches on every input change should gate that on
+   * `reason === 'input'`, otherwise selecting an option immediately re-fires
+   * a search for its own label.
+   */
+  onInputChange?: (value: string, reason: 'input' | 'reset' | 'clear') => void;
   /** Renders a FormLabel above the field. Omit it and no wrapper is added. */
   label?: React.ReactNode;
   /** Renders a FormHelperText below the field. A field error replaces it while one is pending. */

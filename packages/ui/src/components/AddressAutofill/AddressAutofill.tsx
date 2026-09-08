@@ -36,7 +36,23 @@ function AddressAutofillComponent(
   }: AddressAutofillProps,
   ref: React.Ref<HTMLInputElement>,
 ) {
+  // Two states, not one: `inputValue` is whatever text the field visibly
+  // shows (updated on every change, whatever the reason); `query` is only
+  // what actually drives the search. They diverge exactly once — right after
+  // selecting a suggestion, Autocomplete resets the input text to that
+  // suggestion's full label ('reset', not 'input'). Without the split,
+  // `query` would follow along and immediately re-fire a search for that
+  // label text, which is both pointless and (found while testing this
+  // end-to-end against the real API) can 500 the API for some label shapes.
+  const [inputValue, setInputValue] = React.useState('');
   const [query, setQuery] = React.useState('');
+  const handleInputChange = (value: string, reason: 'input' | 'reset' | 'clear') => {
+    setInputValue(value);
+    if (reason !== 'reset') {
+      setQuery(value);
+    }
+  };
+
   const { suggestions, isLoading, hasError } = useAddressSuggestions(query, {
     minQueryLength,
     debounceMs,
@@ -72,8 +88,8 @@ function AddressAutofillComponent(
       ref={forkedRef}
       options={suggestions}
       getOptionLabel={getOptionLabel}
-      inputValue={query}
-      onInputChange={setQuery}
+      inputValue={inputValue}
+      onInputChange={handleInputChange}
       loading={isLoading}
       loadingText={loadingContent}
       noOptionsText={noOptionsText}
