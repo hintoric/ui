@@ -220,6 +220,9 @@ export type { AutocompleteProps } from './components/Autocomplete';
 export { AutocompleteOption } from './components/AutocompleteOption';
 export type { AutocompleteOptionProps } from './components/AutocompleteOption';
 
+export { AddressAutofill } from './components/AddressAutofill';
+export type { AddressAutofillProps, AddressSuggestion } from './components/AddressAutofill';
+
 export { Table } from './components/Table';
 export type { TableProps, TableBorderAxis } from './components/Table';
 

@@ -23,6 +23,7 @@ import { RadioPage } from './pages/RadioPage';
 import { SwitchPage } from './pages/SwitchPage';
 import { SelectPage } from './pages/SelectPage';
 import { AutocompletePage } from './pages/AutocompletePage';
+import { AddressAutofillPage } from './pages/AddressAutofillPage';
 import { SliderPage } from './pages/SliderPage';
 import { ToggleButtonGroupPage } from './pages/ToggleButtonGroupPage';
 import { FormControlPage } from './pages/FormControlPage';
@@ -90,6 +91,7 @@ export function App() {
             <Route path="/switch" element={<SwitchPage />} />
             <Route path="/select" element={<SelectPage />} />
             <Route path="/autocomplete" element={<AutocompletePage />} />
+            <Route path="/address-autofill" element={<AddressAutofillPage />} />
             <Route path="/slider" element={<SliderPage />} />
             <Route path="/toggle-button-group" element={<ToggleButtonGroupPage />} />
             <Route path="/form-control" element={<FormControlPage />} />

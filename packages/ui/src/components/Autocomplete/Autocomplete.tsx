@@ -42,6 +42,10 @@ function AutocompleteBaseComponent<Value = string>(
     inputValue,
     onInputChange,
     disableClearable = false,
+    loading = false,
+    loadingText = 'Loading…',
+    noOptionsText = 'No options',
+    filter,
     className,
     ...props
   }: AutocompleteProps<Value>,
@@ -60,8 +64,26 @@ function AutocompleteBaseComponent<Value = string>(
       defaultValue={defaultValue}
       onValueChange={onChange as (value: Value | null) => void}
       inputValue={inputValue}
-      onInputValueChange={onInputChange}
+      onInputValueChange={(nextValue, eventDetails) => {
+        // Base UI's own reasons for this callback are far more granular than
+        // Joy's ('item-press' and several others all mean "the text changed
+        // because a value was selected/synced, not typed"; a real keystroke
+        // is 'input-change' — confirmed by logging the live value, since
+        // TypeScript's declared union for this exact callback (as reported by
+        // tsc) omits 'input-change' even though it's what Base UI actually
+        // sends; the `as string` below works around that declared/runtime
+        // mismatch). Matching Joy's three-value union exactly:
+        // 'input-change' -> 'input', 'input-clear' -> 'clear', everything
+        // else -> 'reset'. A consumer that re-fetches on 'input' only (the
+        // whole reason this exists) never re-searches for an option's own
+        // label right after selecting it.
+        const rawReason: string = eventDetails.reason;
+        const reason =
+          rawReason === 'input-change' ? 'input' : rawReason === 'input-clear' ? 'clear' : 'reset';
+        onInputChange?.(nextValue, reason);
+      }}
       disabled={disabled}
+      filter={filter}
     >
       <Combobox.InputGroup className={cx(autocompleteVariants({ variant, color: effectiveColor, size }), className)}>
         {startDecorator && <span className="inline-flex items-center text-ink-icon">{startDecorator}</span>}
@@ -84,7 +106,9 @@ function AutocompleteBaseComponent<Value = string>(
       <Combobox.Portal>
         <Combobox.Positioner side="bottom" align="start" sideOffset={4} className="z-50 outline-none">
           <Combobox.Popup className={LISTBOX_CLASS}>
-            <Combobox.Empty className="px-3 py-2 text-sm text-ink-tertiary">No options</Combobox.Empty>
+            <Combobox.Empty className="px-3 py-2 text-sm text-ink-secondary">
+              {loading ? loadingText : noOptionsText}
+            </Combobox.Empty>
             <Combobox.List>
               {(item: Value) => (
                 <AutocompleteOption key={getOptionLabel(item)} value={item}>
