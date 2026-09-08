@@ -187,6 +187,25 @@
   --color-surface-3: var(--color-neutral-300);
   --color-divider: rgba(99, 107, 116, 0.2);
 
+  /* Joy's `mainChannel` — the palette step a component reaches for when it
+     wants "the" colour rather than a variant slot. Joy remaps it per scheme
+     in extendTheme.js:393-403:
+
+       const channelMapping = { main: '500', light: '200', dark: '700' };
+       if (supportedColorScheme === 'dark') { channelMapping.main = 400; }
+
+     so it is step 500 in light and step 400 in dark. Added 2026-09-07: this
+     project had no `main` token at all, so components reaching for it
+     hardcoded `-500` and never changed in dark mode. That is what made
+     `Link` (which Joy's Link.js:120 resolves from `palette[color]
+     .mainChannel`, not from `plainColor`) and `Divider` render their light
+     colour on a dark page. */
+  --color-primary-main: var(--color-primary-500);
+  --color-neutral-main: var(--color-neutral-500);
+  --color-danger-main: var(--color-danger-500);
+  --color-success-main: var(--color-success-500);
+  --color-warning-main: var(--color-warning-500);
+
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   /* radius scale (Joy UI defaultTheme.radius) */
@@ -342,7 +361,19 @@
   --color-surface-1: var(--color-neutral-800);
   --color-surface-2: var(--color-neutral-700);
   --color-surface-3: var(--color-neutral-600);
-  --color-divider: rgba(99, 107, 116, 0.16);
+  /* neutral-400's channel, not neutral-500's: Joy's divider resolves from
+     `neutral.mainChannel`, which is step 400 in dark (see the note on
+     --color-*-main above). The 0.16 opacity here was already correct — only
+     the channel had been carried over from light, so the divider stayed too
+     dark against a dark surface. Measured against real @mui/joy: it renders
+     rgba(159, 166, 173, 0.16). */
+  --color-divider: rgba(159, 166, 173, 0.16);
+
+  --color-primary-main: var(--color-primary-400);
+  --color-neutral-main: var(--color-neutral-400);
+  --color-danger-main: var(--color-danger-400);
+  --color-success-main: var(--color-success-400);
+  --color-warning-main: var(--color-warning-400);
 
   /* shadow.xs/md/lg (Joy UI defaultTheme.shadow, dark mode: shadowChannel
      '0 0 0' / shadowOpacity 0.6). See the light-mode block's comment for

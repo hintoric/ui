@@ -5,9 +5,9 @@ import { SURFACE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { TooltipProps } from './types';
 
 const SIZE_CLASS = {
-  sm: 'py-0.5 px-1.5 text-xs',
-  md: 'py-1 px-2 text-sm',
-  lg: 'py-1.5 px-2.5 text-base',
+  sm: 'py-0.5 px-1.5 text-xs/[1.5]',
+  md: 'py-1 px-2 text-sm/[1.5]',
+  lg: 'py-1.5 px-2.5 text-base/[1.5]',
 } as const;
 
 export function Tooltip({

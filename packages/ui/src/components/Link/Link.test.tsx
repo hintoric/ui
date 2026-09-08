@@ -10,7 +10,10 @@ describe('Link', () => {
 
   it('defaults to primary color with hover underline', () => {
     render(<Link href="/x">Go</Link>);
-    expect(screen.getByRole('link')).toHaveClass('text-primary-500', 'hover:underline');
+    // `text-primary-main`, not `text-primary-500`: Joy resolves a
+    // variant-less Link from the main palette channel, which is step 500 in
+    // light but step 400 in dark (see Link.tsx).
+    expect(screen.getByRole('link')).toHaveClass('text-primary-main', 'hover:underline');
   });
 
   it('applies variant styling with padding when given', () => {

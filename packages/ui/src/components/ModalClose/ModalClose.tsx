@@ -21,7 +21,10 @@ export const ModalClose = React.forwardRef<HTMLButtonElement, ModalCloseProps>(f
       ref={ref}
       aria-label={ariaLabel}
       className={cx(
-        'absolute top-2 right-2 inline-flex size-6 items-center justify-center rounded-full text-sm transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+        // ModalClose is a <button> and does not inherit font-weight — it took the
+        // UA default 400 where real @mui/joy renders 500 (measured 2026-09-07), the
+        // same mechanism as ChipDelete.
+        'absolute top-2 right-2 inline-flex size-6 items-center justify-center rounded-full text-base/[1.5] font-medium transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
         INTERACTIVE_COLOR_CLASSES.plain.neutral,
         className,
       )}

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { RelativeTime } from '../components/RelativeTime';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 // RelativeTime is exempt from this suite's usual "compare against real
 // @mui/joy" rule (see docs/superpowers/specs/2026-09-04-relative-time-design.md,
@@ -24,29 +25,66 @@ function minutesFromNow(minutes: number): Date {
 }
 
 describe('RelativeTime visual (self-baseline)', () => {
-  it('relative past matches its own baseline screenshot', async () => {
-    render(<RelativeTime date={daysFromNow(-3)} locale="en" data-testid="rt-past" />);
-    await expect(page.getByTestId('rt-past')).toMatchScreenshot('relative-time-past');
+  for (const scheme of COLOR_SCHEMES) {
+    it(`relative past matches its own baseline screenshot in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(<RelativeTime date={daysFromNow(-3)} locale="en" data-testid="rt-past" />);
+      await expect(page.getByTestId('rt-past')).toMatchScreenshot(`relative-time-past-${scheme}`);
+    });
+
+    it(`relative future matches its own baseline screenshot in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(<RelativeTime date={minutesFromNow(5)} locale="en" data-testid="rt-future" />);
+      await expect(page.getByTestId('rt-future')).toMatchScreenshot(`relative-time-future-${scheme}`);
+    });
+
+    it(`format="datetime" matches its own baseline screenshot in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      // Unlike the relative-format cases above, 'datetime' mode's displayed
+      // text is independent of "now" (it always formats the given date
+      // absolutely) -- a fixed literal date keeps this screenshot stable
+      // across real-world days, where a now-relative offset would not.
+      render(
+        <RelativeTime date="2026-07-06T12:00:00Z" format="datetime" locale="en" timeZone="UTC" data-testid="rt-datetime" />,
+      );
+      await expect(page.getByTestId('rt-datetime')).toMatchScreenshot(`relative-time-datetime-${scheme}`);
+    });
+
+    it(`format="micro" matches its own baseline screenshot in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(<RelativeTime date={daysFromNow(-3)} format="micro" locale="en" data-testid="rt-micro" />);
+      await expect(page.getByTestId('rt-micro')).toMatchScreenshot(`relative-time-micro-${scheme}`);
+    });
+  }
+
+  /**
+   * A committed screenshot only catches a regression once a human looks at it.
+   * This is the assertion a PNG cannot make: that the component reads scheme
+   * tokens at all.
+   *
+   * RelativeTime used to fail this by rendering no colour of its own — it
+   * inherited, so on a dark page it was black on near-black and its dark
+   * baselines were solid black rectangles. It now sets `text-ink-primary`,
+   * which is what makes those baselines reviewable.
+   *
+   * The component stays mounted across the flip — only the CSS custom
+   * properties change — so this compares the same element with itself.
+   */
+  it('reads colour-scheme tokens rather than a fixed colour', async () => {
+    await setColorScheme('light');
+    render(<RelativeTime date={daysFromNow(-3)} locale="en" data-testid="rt-tokens" />);
+
+    const el = screen.getByTestId('rt-tokens');
+    const readColor = () => getComputedStyle(el).color;
+
+    const light = readColor();
+    await setColorScheme('dark');
+
+    expect(readColor()).not.toBe(light);
   });
 
-  it('relative future matches its own baseline screenshot', async () => {
-    render(<RelativeTime date={minutesFromNow(5)} locale="en" data-testid="rt-future" />);
-    await expect(page.getByTestId('rt-future')).toMatchScreenshot('relative-time-future');
-  });
-
-  it('format="datetime" matches its own baseline screenshot', async () => {
-    // Unlike the relative-format cases above, 'datetime' mode's displayed
-    // text is independent of "now" (it always formats the given date
-    // absolutely) -- a fixed literal date keeps this screenshot stable
-    // across real-world days, where a now-relative offset would not.
-    render(
-      <RelativeTime date="2026-07-06T12:00:00Z" format="datetime" locale="en" timeZone="UTC" data-testid="rt-datetime" />,
-    );
-    await expect(page.getByTestId('rt-datetime')).toMatchScreenshot('relative-time-datetime');
-  });
-
-  it('format="micro" matches its own baseline screenshot', async () => {
-    render(<RelativeTime date={daysFromNow(-3)} format="micro" locale="en" data-testid="rt-micro" />);
-    await expect(page.getByTestId('rt-micro')).toMatchScreenshot('relative-time-micro');
-  });
 });

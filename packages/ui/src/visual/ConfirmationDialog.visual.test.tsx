@@ -9,7 +9,7 @@ import { ModalDialog } from '../components/ModalDialog';
 import { Button } from '../components/Button';
 import { Alert } from '../components/Alert';
 import { Input } from '../components/Input';
-import { settleTransitions } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 // ConfirmationDialog inherits LocaleSwitcher's exemption from this suite's
 // usual "compare against real @mui/joy" rule (see
@@ -75,131 +75,178 @@ async function renderState(state: State, overrides: Partial<ConfirmationDialogPr
 }
 
 describe('ConfirmationDialog visual (self-baseline)', () => {
-  for (const color of COLORS) {
-    for (const state of ['empty', 'matched', 'pending', 'error'] as const) {
-      it(`${color}/${state} matches its own baseline screenshot`, async () => {
-        await renderState(state, { color });
+  for (const scheme of COLOR_SCHEMES) {
+    for (const color of COLORS) {
+      for (const state of ['empty', 'matched', 'pending', 'error'] as const) {
+        it(`${color}/${state} matches its own baseline screenshot in ${scheme}`, async () => {
+          await setColorScheme(scheme);
 
-        await expect(page.getByRole('dialog')).toMatchScreenshot(`confirmation-dialog-${color}-${state}`);
-      });
+          await renderState(state, { color });
+
+          await expect(page.getByRole('dialog')).toMatchScreenshot(`confirmation-dialog-${color}-${state}-${scheme}`);
+        });
+      }
     }
   }
 });
 
 describe('ConfirmationDialog passes color through', () => {
-  for (const color of COLORS) {
-    it(`color=${color} reaches the confirm button and the error alert, and nothing else`, async () => {
-      await renderState('error', { color });
-      // Captured before the references exist, so the queries above cannot pick
-      // a reference by mistake.
-      const confirm = getComputedStyle(confirmButton());
-      const alert = getComputedStyle(errorAlert());
-      const neutralField = getComputedStyle(field());
-      render(
-        <>
-          <Button data-testid="reference-button" variant="solid" color={color}>
-            Referenz
-          </Button>
-          <Alert data-testid="reference-alert" variant="soft" color={color}>
-            Referenz
-          </Alert>
-          <Input data-testid="reference-field" variant="outlined" color="neutral" />
-        </>,
-      );
-      await settleTransitions();
+  for (const scheme of COLOR_SCHEMES) {
+    for (const color of COLORS) {
+      it(`color=${color} reaches the confirm button and the error alert, and nothing else in ${scheme}`, async () => {
+        await setColorScheme(scheme);
 
-      const referenceButton = getComputedStyle(screen.getByTestId('reference-button'));
-      expect(confirm.backgroundColor).toBe(referenceButton.backgroundColor);
-      expect(confirm.color).toBe(referenceButton.color);
-      expect(confirm.borderColor).toBe(referenceButton.borderColor);
-      expect(confirm.borderRadius).toBe(referenceButton.borderRadius);
-      expect(confirm.minHeight).toBe(referenceButton.minHeight);
-      expect(confirm.paddingInlineStart).toBe(referenceButton.paddingInlineStart);
-      expect(confirm.fontSize).toBe(referenceButton.fontSize);
-      expect(confirm.fontWeight).toBe(referenceButton.fontWeight);
+        await renderState('error', { color });
+        // Captured before the references exist, so the queries above cannot pick
+        // a reference by mistake.
+        const confirm = getComputedStyle(confirmButton());
+        const alert = getComputedStyle(errorAlert());
+        const neutralField = getComputedStyle(field());
+        render(
+          <>
+            <Button data-testid="reference-button" variant="solid" color={color}>
+              Referenz
+            </Button>
+            <Alert data-testid="reference-alert" variant="soft" color={color}>
+              Referenz
+            </Alert>
+            <Input data-testid="reference-field" variant="outlined" color="neutral" />
+          </>,
+        );
+        await settleTransitions();
 
-      const referenceAlert = getComputedStyle(screen.getByTestId('reference-alert'));
-      expect(alert.backgroundColor).toBe(referenceAlert.backgroundColor);
-      expect(alert.color).toBe(referenceAlert.color);
-      expect(alert.borderColor).toBe(referenceAlert.borderColor);
-      expect(alert.borderRadius).toBe(referenceAlert.borderRadius);
-      expect(alert.padding).toBe(referenceAlert.padding);
+        const referenceButton = getComputedStyle(screen.getByTestId('reference-button'));
+        expect(confirm.backgroundColor).toBe(referenceButton.backgroundColor);
+        expect(confirm.color).toBe(referenceButton.color);
+        expect(confirm.borderColor).toBe(referenceButton.borderColor);
+        expect(confirm.borderRadius).toBe(referenceButton.borderRadius);
+        expect(confirm.minHeight).toBe(referenceButton.minHeight);
+        expect(confirm.paddingInlineStart).toBe(referenceButton.paddingInlineStart);
+        expect(confirm.fontSize).toBe(referenceButton.fontSize);
+        expect(confirm.fontWeight).toBe(referenceButton.fontWeight);
 
-      // The field must NOT take the colour: tinting it red while someone is
-      // halfway through typing punishes the typing itself.
-      const referenceField = getComputedStyle(screen.getByTestId('reference-field'));
-      expect(neutralField.borderColor).toBe(referenceField.borderColor);
-      expect(neutralField.backgroundColor).toBe(referenceField.backgroundColor);
-    });
+        const referenceAlert = getComputedStyle(screen.getByTestId('reference-alert'));
+        expect(alert.backgroundColor).toBe(referenceAlert.backgroundColor);
+        expect(alert.color).toBe(referenceAlert.color);
+        expect(alert.borderColor).toBe(referenceAlert.borderColor);
+        expect(alert.borderRadius).toBe(referenceAlert.borderRadius);
+        expect(alert.padding).toBe(referenceAlert.padding);
+
+        // The field must NOT take the colour: tinting it red while someone is
+        // halfway through typing punishes the typing itself.
+        const referenceField = getComputedStyle(screen.getByTestId('reference-field'));
+        expect(neutralField.borderColor).toBe(referenceField.borderColor);
+        expect(neutralField.backgroundColor).toBe(referenceField.backgroundColor);
+      });
+    }
   }
 });
 
 describe('ConfirmationDialog passes size through', () => {
-  for (const size of SIZES) {
-    it(`size=${size} reaches the field and both buttons`, async () => {
-      await renderState('empty', { size });
-      const dialogField = getComputedStyle(field());
-      const confirm = getComputedStyle(confirmButton());
-      const cancel = getComputedStyle(cancelButton());
-      render(
-        <>
-          <Input data-testid="reference-field" size={size} />
-          <Button data-testid="reference-solid" variant="solid" color="danger" size={size}>
-            Referenz
-          </Button>
-          <Button data-testid="reference-plain" variant="plain" color="neutral" size={size}>
-            Referenz
-          </Button>
-        </>,
-      );
-      await settleTransitions();
+  for (const scheme of COLOR_SCHEMES) {
+    for (const size of SIZES) {
+      it(`size=${size} reaches the field and both buttons in ${scheme}`, async () => {
+        await setColorScheme(scheme);
 
-      const referenceField = getComputedStyle(screen.getByTestId('reference-field'));
-      expect(dialogField.minHeight).toBe(referenceField.minHeight);
-      expect(dialogField.fontSize).toBe(referenceField.fontSize);
-      expect(dialogField.borderRadius).toBe(referenceField.borderRadius);
+        await renderState('empty', { size });
+        const dialogField = getComputedStyle(field());
+        const confirm = getComputedStyle(confirmButton());
+        const cancel = getComputedStyle(cancelButton());
+        render(
+          <>
+            <Input data-testid="reference-field" size={size} />
+            <Button data-testid="reference-solid" variant="solid" color="danger" size={size}>
+              Referenz
+            </Button>
+            <Button data-testid="reference-plain" variant="plain" color="neutral" size={size}>
+              Referenz
+            </Button>
+          </>,
+        );
+        await settleTransitions();
 
-      const referenceSolid = getComputedStyle(screen.getByTestId('reference-solid'));
-      expect(confirm.minHeight).toBe(referenceSolid.minHeight);
-      expect(confirm.fontSize).toBe(referenceSolid.fontSize);
+        const referenceField = getComputedStyle(screen.getByTestId('reference-field'));
+        expect(dialogField.minHeight).toBe(referenceField.minHeight);
+        expect(dialogField.fontSize).toBe(referenceField.fontSize);
+        expect(dialogField.borderRadius).toBe(referenceField.borderRadius);
 
-      const referencePlain = getComputedStyle(screen.getByTestId('reference-plain'));
-      expect(cancel.minHeight).toBe(referencePlain.minHeight);
-      expect(cancel.backgroundColor).toBe(referencePlain.backgroundColor);
-      expect(cancel.color).toBe(referencePlain.color);
-    });
+        const referenceSolid = getComputedStyle(screen.getByTestId('reference-solid'));
+        expect(confirm.minHeight).toBe(referenceSolid.minHeight);
+        expect(confirm.fontSize).toBe(referenceSolid.fontSize);
+
+        const referencePlain = getComputedStyle(screen.getByTestId('reference-plain'));
+        expect(cancel.minHeight).toBe(referencePlain.minHeight);
+        expect(cancel.backgroundColor).toBe(referencePlain.backgroundColor);
+        expect(cancel.color).toBe(referencePlain.color);
+      });
+    }
   }
 });
 
 describe('ConfirmationDialog surface', () => {
-  it('is a plain ModalDialog, untinted by color', async () => {
-    await renderState('empty', { color: 'danger' });
-    // Grabbed while it is still the only dialog: opening the reference Modal
-    // marks this one aria-hidden, and a role query would no longer find it.
-    const surface = dialog();
-    render(
-      <Modal open>
-        <ModalDialog data-testid="reference-surface" />
-      </Modal>,
-    );
-    await settleTransitions();
+  for (const scheme of COLOR_SCHEMES) {
+    it(`is a plain ModalDialog, untinted by color in ${scheme}`, async () => {
+      await setColorScheme(scheme);
 
-    const own = getComputedStyle(surface);
-    const reference = getComputedStyle(screen.getByTestId('reference-surface'));
+      await renderState('empty', { color: 'danger' });
+      // Grabbed while it is still the only dialog: opening the reference Modal
+      // marks this one aria-hidden, and a role query would no longer find it.
+      const surface = dialog();
+      render(
+        <Modal open>
+          <ModalDialog data-testid="reference-surface" />
+        </Modal>,
+      );
+      await settleTransitions();
 
-    expect(own.backgroundColor).toBe(reference.backgroundColor);
-    expect(own.borderColor).toBe(reference.borderColor);
-    expect(own.borderRadius).toBe(reference.borderRadius);
-    expect(own.padding).toBe(reference.padding);
-  });
+      const own = getComputedStyle(surface);
+      const reference = getComputedStyle(screen.getByTestId('reference-surface'));
+
+      expect(own.backgroundColor).toBe(reference.backgroundColor);
+      expect(own.borderColor).toBe(reference.borderColor);
+      expect(own.borderRadius).toBe(reference.borderRadius);
+      expect(own.padding).toBe(reference.padding);
+    });
+  }
 });
 
 describe('ConfirmationDialog focus', () => {
-  it('puts the initial focus in the field in a real browser', async () => {
-    // jsdom agreed with this too, but `autoFocus` inside a portal competes with
-    // Base UI's own focus management, and only a real browser settles that.
+  for (const scheme of COLOR_SCHEMES) {
+    it(`puts the initial focus in the field in a real browser in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      // jsdom agreed with this too, but `autoFocus` inside a portal competes with
+      // Base UI's own focus management, and only a real browser settles that.
+      await renderState('empty');
+
+      expect(document.activeElement).toBe(field());
+    });
+  }
+});
+
+/**
+ * A committed screenshot only catches a regression once a human looks at it.
+ * This is the assertion a PNG cannot make: that the dialog reads scheme tokens
+ * at all. A hardcoded light surface passes every screenshot test on its own
+ * baseline and fails here.
+ *
+ * ConfirmationDialog has no Joy counterpart, so there is nothing to compare
+ * against — which is exactly why this assertion carries the weight.
+ */
+describe('ConfirmationDialog follows the colour scheme', () => {
+  it('renders a different surface in dark than in light', async () => {
+    await setColorScheme('light');
     await renderState('empty');
 
-    expect(document.activeElement).toBe(field());
+    const el = dialog();
+    const read = () => {
+      const style = getComputedStyle(el);
+      return [style.backgroundColor, style.color, style.borderTopColor];
+    };
+
+    const light = read();
+    await setColorScheme('dark');
+
+    expect(read()).not.toEqual(light);
   });
 });

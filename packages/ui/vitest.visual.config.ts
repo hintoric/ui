@@ -19,6 +19,13 @@ export default defineConfig({
       provider: playwright(),
       headless: true,
       instances: [{ browser: 'chromium' }],
+      // Every screenshot in __screenshots__ is a deliberate, committed
+      // baseline. Browser mode's automatic capture-on-failure writes
+      // auto-named PNGs into the same directory, which for an `it.fails()`
+      // test happens on every single run — so the baseline directory would
+      // accumulate junk that looks like a baseline but is not one. Failure
+      // diffs still land in .vitest-attachments/, which is where they belong.
+      screenshotFailures: false,
     },
   },
 });

@@ -18,9 +18,9 @@ export const alertVariants = cva('flex items-center rounded-sm font-body font-me
     variant: { solid: '', soft: '', outlined: '', plain: '' },
     color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
     size: {
-      sm: 'gap-2 p-2 text-xs',
-      md: 'gap-2.5 p-3 text-sm',
-      lg: 'gap-3.5 p-4 text-base',
+      sm: 'gap-2 p-2 text-xs/[1.5]',
+      md: 'gap-2.5 p-3 text-sm/[1.5]',
+      lg: 'gap-3.5 p-4 text-base/[1.5]',
     },
   },
   compoundVariants,

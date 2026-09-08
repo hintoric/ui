@@ -21,9 +21,14 @@ export const checkboxBoxVariants = cva(
       variant: { solid: '', soft: '', outlined: '', plain: '' },
       color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
       size: {
-        sm: 'size-4',
-        md: 'size-5',
-        lg: 'size-6',
+      // `leading-N` matches `size-N`: Joy sets `lineHeight: var(--Checkbox-size)`
+      // on the slot this box corresponds to, so the line-height is the box's
+      // own dimension rather than a typography ratio. Measured against real
+      // @mui/joy 2026-09-07: ours rendered 24px (inherited from the text size)
+      // where Joy rendered 20px at `md`.
+        sm: 'size-4 leading-4',
+        md: 'size-5 leading-5',
+        lg: 'size-6 leading-6',
       },
     },
     compoundVariants,

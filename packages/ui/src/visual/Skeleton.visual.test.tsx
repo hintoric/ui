@@ -3,30 +3,37 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Skeleton as JoySkeleton } from '@mui/joy';
 import { Skeleton as HintoricSkeleton } from '../components/Skeleton';
-import { setColorScheme } from './helpers';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 const VARIANTS = ['text', 'circular', 'rectangular'] as const;
 
 // No color/variant (in the Joy-color sense) axis — tests its actual
 // supported states (shape variants), per CLAUDE.md's allowance.
 describe('Skeleton visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    it(`variant=${variant} matches Joy UI's computed shape`, async () => {
-      render(
-        <JoyCssVarsProvider>
-          <JoySkeleton data-testid={`joy-${variant}`} variant={variant} width={80} height={40} />
-        </JoyCssVarsProvider>,
-      );
-      render(<HintoricSkeleton data-testid={`hintoric-${variant}`} variant={variant} width={80} height={40} />);
+  // The scheme axis is on this raster only: the background-token
+  // comparison below already loops over both schemes itself, and wrapping
+  // that too shadowed its own `scheme` variable — every case ran twice
+  // with the same screenshot id.
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`variant=${variant} matches Joy UI's computed shape in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoySkeleton data-testid={`joy-${variant}`} variant={variant} width={80} height={40} />
+          </JoyCssVarsProvider>,
+        );
+        render(<HintoricSkeleton data-testid={`hintoric-${variant}`} variant={variant} width={80} height={40} />);
 
-      const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}`).element());
-      const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}`).element());
+        const joyStyle = getComputedStyle(page.getByTestId(`joy-${variant}`).element());
+        const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${variant}`).element());
 
-      expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
 
-      await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy`);
-      await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric`);
-    });
+        await expect(page.getByTestId(`joy-${variant}`)).toMatchScreenshot(`skeleton-${variant}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-${variant}`)).toMatchScreenshot(`skeleton-${variant}-hintoric-${scheme}`);
+      });
+    }
   }
 
   // Regression test: Skeleton used to hardcode `bg-neutral-200`, a raw

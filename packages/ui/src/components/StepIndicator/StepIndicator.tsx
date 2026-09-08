@@ -27,7 +27,12 @@ export const StepIndicator = React.forwardRef<HTMLDivElement, StepIndicatorProps
     <div
       ref={ref}
       className={cx(
-        'inline-flex shrink-0 items-center justify-center rounded-[50%] font-body text-sm font-medium',
+        // Deliberately no font-size, weight or line-height: Joy's
+        // StepIndicator sets none either — it inherits the `title-{size}`
+        // typography its Stepper applies (see Stepper.tsx). Forcing a size
+        // here made every Stepper size render 16px; measured 2026-09-07 in a
+        // real composition, Joy renders 14px inside a `sm` Stepper.
+        'inline-flex shrink-0 items-center justify-center rounded-[50%] font-body',
         SIZE_CLASS[size],
         STATIC_COLOR_CLASSES[variant][color],
         className,

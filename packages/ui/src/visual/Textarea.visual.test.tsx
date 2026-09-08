@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Textarea as JoyTextarea } from '@mui/joy';
 import { Textarea as HintoricTextarea } from '../components/Textarea';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { lastShadowLayer } from './helpers';
+import { COLOR_SCHEMES, lastShadowLayer, setColorScheme } from './helpers';
 import { describeErrorParity } from './errorParity';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
@@ -15,50 +15,57 @@ const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 // "visible box" is therefore a different element: Joy's wrapper vs our bare
 // textarea — that's the correct, fair comparison target for each.
 describe('Textarea visual parity with @mui/joy', () => {
-  for (const variant of VARIANTS) {
-    for (const color of COLORS) {
-      it(`${variant}/${color} matches Joy UI's computed styles`, async () => {
-        const { container: joyContainer } = render(
-          <div data-testid={`joy-${variant}-${color}`}>
-            <JoyCssVarsProvider>
-              <JoyTextarea variant={variant} color={color} placeholder={color} />
-            </JoyCssVarsProvider>
-          </div>,
-        );
-        const { container: hintoricContainer } = render(
-          <div data-testid={`hintoric-${variant}-${color}`}>
-            <ColorSchemeProvider>
-              <HintoricTextarea
-                variant={variant}
-                color={color}
-                placeholder={color}
-                aria-label={`${variant}-${color}`}
-              />
-            </ColorSchemeProvider>
-          </div>,
-        );
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} matches Joy UI's computed styles in ${scheme}`, async () => {
+          await setColorScheme(scheme);
 
-        const joyWrapper = joyContainer.querySelector('textarea')!.parentElement as HTMLElement;
-        const hintoricTextarea = hintoricContainer.querySelector('textarea') as HTMLElement;
+          const { container: joyContainer } = render(
+            <div data-testid={`joy-${variant}-${color}`}>
+              <JoyCssVarsProvider defaultMode={scheme}>
+                <JoyTextarea variant={variant} color={color} placeholder={color} />
+              </JoyCssVarsProvider>
+            </div>,
+          );
+          const { container: hintoricContainer } = render(
+            <div data-testid={`hintoric-${variant}-${color}`}>
+              <ColorSchemeProvider defaultMode={scheme}>
+                <HintoricTextarea
+                  variant={variant}
+                  color={color}
+                  placeholder={color}
+                  aria-label={`${variant}-${color}`}
+                />
+              </ColorSchemeProvider>
+            </div>,
+          );
 
-        const joyStyle = getComputedStyle(joyWrapper);
-        const hintoricStyle = getComputedStyle(hintoricTextarea);
+          const joyWrapper = joyContainer.querySelector('textarea')!.parentElement as HTMLElement;
+          const hintoricTextarea = hintoricContainer.querySelector('textarea') as HTMLElement;
 
-        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-        expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
-        expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
-        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
-        expect(lastShadowLayer(hintoricStyle.boxShadow)).toBe(lastShadowLayer(joyStyle.boxShadow));
-        expect(hintoricStyle.resize).toBe(joyStyle.resize);
-        expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+          const joyStyle = getComputedStyle(joyWrapper);
+          const hintoricStyle = getComputedStyle(hintoricTextarea);
 
-        await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(
-          `textarea-${variant}-${color}-joy`,
-        );
-        await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(
-          `textarea-${variant}-${color}-hintoric`,
-        );
-      });
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
+          expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+          expect(lastShadowLayer(hintoricStyle.boxShadow)).toBe(lastShadowLayer(joyStyle.boxShadow));
+          expect(hintoricStyle.resize).toBe(joyStyle.resize);
+          expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+
+          await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(
+            `textarea-${variant}-${color}-joy-${scheme}`,
+          );
+          await expect(page.getByTestId(`hintoric-${variant}-${color}`)).toMatchScreenshot(
+            `textarea-${variant}-${color}-hintoric-${scheme}`,
+          );
+        });
+      }
     }
   }
 });

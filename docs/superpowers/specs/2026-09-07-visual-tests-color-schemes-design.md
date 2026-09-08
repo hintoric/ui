@@ -1,7 +1,9 @@
 # Colour schemes in the visual regression suite
 
 **Date:** 2026-09-07
-**Prompted by:** the suite has 63 test files, 1248 committed baseline PNGs and 0 assertions in dark mode. Every token in `[data-color-scheme="dark"]` (theme.css:210-345) was derived from `@mui/joy` source and has never been verified against the rendered package.
+**Prompted by:** the suite has 63 component test files and 1248 committed baseline PNGs, and until 2026-09-07 not one of them rendered anything in dark mode — the whole `[data-color-scheme="dark"]` block (theme.css:210-345) was derived from `@mui/joy` source and never verified against the rendered package.
+
+`DarkTokens.visual.test.tsx` (committed 2026-09-07 for the colour-scheme switcher family) closed part of that gap: it verifies the dark tokens against real Joy for the five primitives those forms are built from — `IconButton`, `ListItemButton`, `Switch`, `Select`, `Button`. This design generalises that from five primitives to every component, and folds the scheme axis into the per-component files rather than a separate one.
 
 ## Goal
 
@@ -10,11 +12,15 @@ Every component in `packages/ui/src/components/*` is covered in **both** colour 
 - components with an `@mui/joy` counterpart — computed-style parity against real Joy, in light **and** dark;
 - our own components and blocks — self-baseline screenshots per scheme, plus one assertion that dark actually differs from light.
 
-Scope for this design: all 63 existing test files, plus 19 new files for the components that have none (18 uncovered components and the new `ConfirmationDialog`). Every file touched also picks up the sizing assertion the 2026-09-06 audit recommended as P2 — see "Relationship to the 2026-09-06 coverage audit".
+Scope for this design: **80 files** — all 63 existing component test files, plus 17 new ones for the components that have none (`AccordionDetails`, `AccordionGroup`, `AccordionSummary`, `Box`, `Dropdown`, `ListItem`, `MenuButton`, `MenuItem`, `MenuList`, `Stack`, `Step`, `StepButton`, `StepIndicator`, `Tab`, `TabList`, `TabPanel`, `Typography`). Every file touched also picks up the sizing assertion the 2026-09-06 audit recommended as P2 — see "Relationship to the 2026-09-06 coverage audit".
+
+`DarkTokens`, `DarkVariant` and `DarkModeHarness` are already scheme-aware by construction and are not retrofitted.
+
+`ConfirmationDialog` is **not in scope on this branch**: the component and its 205-line visual test live on `locale-provider-spec`. It is a Flavour B component and needs the same treatment, but as a follow-up once that branch merges — see "Merge-time follow-up".
 
 ## Why dark parity is the valuable half
 
-Light-mode parity is already asserted 1248 times. Dark mode is asserted zero times, and our dark tokens are a *reverse-engineered copy* of Joy's — the exact situation CLAUDE.md warns about under "Don't re-derive what's already been reverse-engineered". Expect real divergences to surface in Phase 2. That is the point of the exercise, not a risk to be managed.
+Light-mode parity is asserted across all 63 component files. Dark-mode parity is asserted for five primitives in one file, and our dark tokens are otherwise a *reverse-engineered copy* of Joy's — the exact situation CLAUDE.md warns about under "Don't re-derive what's already been reverse-engineered". Expect real divergences to surface in Phase 2. That is the point of the exercise, not a risk to be managed.
 
 The 2026-09-06 coverage audit is the precedent: adding assertions to one already-passing component (`Select`) turned up five real divergences.
 
@@ -27,11 +33,21 @@ The 2026-09-06 coverage audit is the precedent: adding assertions to one already
 
 Both selectors are attribute-based, so setting them on `<html>` puts the whole document, portals included, in one scheme. Light and dark therefore run **sequentially**, not as siblings in one document.
 
-### Why not wrapper-`div` scopes
+### Both mechanisms coexist, with a stated division of labour
 
-A wrapper `div` carrying the attribute was the first design and is wrong: `Menu`, `Modal`, `Drawer`, `Tooltip`, `Snackbar`, `Select` and `Autocomplete` render their popup into a portal on `body`, outside the wrapper. Those popups would have no scheme ancestor and would render light inside a dark test — silently, and in exactly the components where a dark bug is hardest to notice.
+`visual/darkMode.tsx` already exists (committed 2026-09-07 in `a956fb2`, alongside `DarkTokens`/`DarkVariant`/`DarkModeHarness`) and takes the *other* approach: wrapper `div`s carrying the attribute, via `renderJoyDark` / `renderHintoricDark`. Both approaches have a real argument, and neither subsumes the other:
 
-The pairing the suite needs is Joy-vs-Hintoric, never light-vs-dark, so nothing is lost by serialising the modes.
+- **Wrapper scopes** let a light and a dark element coexist in one test document. `defaultMode="dark"` cannot, because it writes onto the shared `<html>`. This is what a side-by-side token grid needs.
+- **Document state** is the only thing portalled content inherits. `darkMode.tsx` says so itself: *"Portalled content (Menu, Select's listbox) mounts outside these wrappers and therefore does NOT inherit them."* `Menu`, `Modal`, `Drawer`, `Tooltip`, `Snackbar`, `Select` and `Autocomplete` all portal to `body`, and a wrapper scope would leave their popups light inside a dark test — silently, in exactly the components where a dark bug is hardest to spot.
+
+Division of labour, to be documented in both files:
+
+| Mechanism | Use for |
+|---|---|
+| `darkMode.tsx` wrapper scopes | tests that show light and dark together in one document — the `DarkTokens` grid and its kin |
+| `setColorScheme()` document state | the 80-file retrofit, which necessarily includes every portalled component |
+
+The retrofit does not need light-vs-dark coexistence: its pairing is Joy-vs-Hintoric, both in the *same* scheme, so serialising the modes costs nothing.
 
 ### Helper API (`visual/helpers.ts`)
 
@@ -73,7 +89,9 @@ This makes the migration of existing baselines a single mechanical rule for all 
 
 Done with `git mv`; contents unchanged, so nothing is re-baselined and the rename is trivially reviewable. Had the suffix gone in the middle of the id (`…-primary-light-joy`), each of the 63 files would have needed its own rename rule.
 
-Three `toMatchScreenshot()` calls currently pass no id and derive the filename from the test name. They get explicit ids, because their test names are about to gain the scheme.
+All 142 real `toMatchScreenshot()` call sites already pass an explicit id, so no filename derives from a test name and renaming test titles cannot move a baseline. (An earlier count of three unnamed calls was wrong — all three matches were in comments.)
+
+`Tooltip.visual.test.tsx` takes no screenshots at all, by a documented decision about floating-ui positioning. It still gains scheme coverage for its computed-style assertions.
 
 ## Two test flavours
 
@@ -87,7 +105,7 @@ No "dark ≠ light" assertion here — Joy has real dark tokens and is the oracl
 
 ### Flavour B — self-baseline
 
-For `DataGrid`, `Grid`, `LocaleSwitcher`, `RelativeTime`, `ConfirmationDialog`, and the specced colour-scheme switcher family. These have no Joy counterpart, so there is nothing to compare against; a self-baseline PNG per scheme is the change-detection signal.
+For `DataGrid`, `Grid`, `LocaleSwitcher` and `RelativeTime` on this branch, and for `ConfirmationDialog` and the colour-scheme switcher family once they merge. These have no Joy counterpart, so there is nothing to compare against; a self-baseline PNG per scheme is the change-detection signal.
 
 A committed PNG only regresses when a human looks at it, so each Flavour B test adds one assertion a screenshot cannot make: mount once, read computed styles in light, `setColorScheme('dark')`, read again, and assert that at least one of `backgroundColor` / `color` / `borderColor` changed. This catches a hardcoded light colour.
 
@@ -105,11 +123,11 @@ Note this exception only ever applies to **Flavour B**: Flavour A has no differe
 
 That audit's core finding still stands: **the pass/fail signal is a hand-written property list, and it is short.** This work multiplies coverage along a new axis (schemes) and adds two properties to every list (below), but the lists remain hand-written. A dark-mode bug in a property nobody thought to list stays invisible, and no amount of scheme coverage changes that.
 
-**P2 is folded into this work** (decided 2026-09-07). Every file this migration touches also gains the audit's missing sizing assertion — `display` and `width` compared inside a fixed-width parent — because the migration opens all 82 files exactly once and doing it later means a second full pass over the same files. It is the assertion that would have caught all four P1 bugs.
+**P2 is folded into this work** (decided 2026-09-07). Every file this migration touches also gains the audit's missing sizing assertion — `display` and `width` compared inside a fixed-width parent — because the migration opens all 80 files exactly once and doing it later means a second full pass over the same files. It is the assertion that would have caught all four P1 bugs.
 
 **P1 and P3 stay out of scope:**
 
-- **P1** — `Input`, `Textarea` and `Autocomplete` shrink to content where Joy fills its container. These are component bugs, not test bugs; fixing them inside an 82-file test migration would mix two kinds of change in one diff.
+- **P1** — `Input`, `Textarea` and `Autocomplete` shrink to content where Joy fills its container. These are component bugs, not test bugs; fixing them inside an 80-file test migration would mix two kinds of change in one diff.
 - **P3** — uncovered hover / focus / disabled states across ~20 components. Needs per-component investigation, not a mechanical pass.
 
 ### Consequence of folding P2 in without fixing P1
@@ -128,7 +146,7 @@ The three affected assertions must be listed in the Phase 2 report so the P1 fix
 | 1 | CLAUDE.md rules | — |
 | 2 | 58 remaining Flavour A retrofits, in batches: Buttons/Actions → Form controls → **Overlays/Portals** → Surfaces → Lists/Nav → Feedback/Data | `pnpm test:visual` green, no modified light PNGs, new dark PNGs listed for review, P2 `it.fails()` cases listed |
 | 3 | 3 remaining Flavour B retrofits: `DataGrid`, `Grid`, `RelativeTime` | as above |
-| 4 | 19 new files: the 18 uncovered components plus `ConfirmationDialog` | as above |
+| 4 | 17 new files for the components that have none | as above |
 
 Overlays/Portals goes early in Phase 2 because that is where the residual risk of the document-state mechanism sits.
 
@@ -137,6 +155,14 @@ Phase 4 is genuinely new work per component — understand the API, set up the J
 ### Execution note
 
 Phase 2–4 batches suit subagents, but Vitest browser mode must not write screenshots concurrently. Agents write tests; the suite run per batch is serialised.
+
+## Merge-time follow-up
+
+Work committed in parallel on other branches needs the same treatment once it lands, and is deliberately not attempted from here:
+
+- `ConfirmationDialog` — component plus a 205-line visual test, on `locale-provider-spec`. Flavour B.
+- The colour-scheme switcher family (`ColorSchemeToggle` and its siblings) — Flavour B, per its own design doc.
+- `DarkTokens` / `DarkVariant` / `DarkModeHarness` — already scheme-aware; the only action is adding the division-of-labour comment from "Both mechanisms coexist".
 
 ## Expected output
 

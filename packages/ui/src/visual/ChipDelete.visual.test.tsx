@@ -3,49 +3,58 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, ChipDelete as JoyChipDelete } from '@mui/joy';
 import { ChipDelete as HintoricChipDelete } from '../components/ChipDelete';
-import { settleTransitions } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 describe('ChipDelete visual parity with @mui/joy', () => {
-  it('default plain/neutral matches Joy UI', async () => {
-    render(
-      <JoyCssVarsProvider>
-        <JoyChipDelete data-testid="joy-d" aria-label="delete" />
-      </JoyCssVarsProvider>,
-    );
-    render(<HintoricChipDelete data-testid="hintoric-d" aria-label="delete" />);
+  for (const scheme of COLOR_SCHEMES) {
+    it(`default plain/neutral matches Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
 
-    const joyStyle = getComputedStyle(page.getByTestId('joy-d').element());
-    const hintoricStyle = getComputedStyle(page.getByTestId('hintoric-d').element());
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyChipDelete data-testid="joy-d" aria-label="delete" />
+        </JoyCssVarsProvider>,
+      );
+      render(<HintoricChipDelete data-testid="hintoric-d" aria-label="delete" />);
 
-    expect(hintoricStyle.color).toBe(joyStyle.color);
-    expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
-    expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+      const joyStyle = getComputedStyle(page.getByTestId('joy-d').element());
+      const hintoricStyle = getComputedStyle(page.getByTestId('hintoric-d').element());
 
-    await expect(page.getByTestId('joy-d')).toMatchScreenshot('chipdelete-joy');
-    await expect(page.getByTestId('hintoric-d')).toMatchScreenshot('chipdelete-hintoric');
-  });
+      expect(hintoricStyle.color).toBe(joyStyle.color);
+      expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
+      expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+      expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+      expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+      expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
 
-  it('shows the same focus-visible outline as Joy UI', async () => {
-    render(
-      <JoyCssVarsProvider>
-        <JoyChipDelete data-testid="joy-focus" aria-label="delete" />
-      </JoyCssVarsProvider>,
-    );
-    render(<HintoricChipDelete data-testid="hintoric-focus" aria-label="delete" />);
+      await expect(page.getByTestId('joy-d')).toMatchScreenshot(`chipdelete-joy-${scheme}`);
+      await expect(page.getByTestId('hintoric-d')).toMatchScreenshot(`chipdelete-hintoric-${scheme}`);
+    });
 
-    const joyEl = page.getByTestId('joy-focus').element() as HTMLElement;
-    const hintoricEl = page.getByTestId('hintoric-focus').element() as HTMLElement;
+    it(`shows the same focus-visible outline as Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
 
-    joyEl.focus();
-    await settleTransitions();
-    const joyOutline = getComputedStyle(joyEl).outline;
-    joyEl.blur();
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyChipDelete data-testid="joy-focus" aria-label="delete" />
+        </JoyCssVarsProvider>,
+      );
+      render(<HintoricChipDelete data-testid="hintoric-focus" aria-label="delete" />);
 
-    hintoricEl.focus();
-    await settleTransitions();
-    const hintoricOutline = getComputedStyle(hintoricEl).outline;
-    hintoricEl.blur();
+      const joyEl = page.getByTestId('joy-focus').element() as HTMLElement;
+      const hintoricEl = page.getByTestId('hintoric-focus').element() as HTMLElement;
 
-    expect(hintoricOutline).toBe(joyOutline);
-  });
+      joyEl.focus();
+      await settleTransitions();
+      const joyOutline = getComputedStyle(joyEl).outline;
+      joyEl.blur();
+
+      hintoricEl.focus();
+      await settleTransitions();
+      const hintoricOutline = getComputedStyle(hintoricEl).outline;
+      hintoricEl.blur();
+
+      expect(hintoricOutline).toBe(joyOutline);
+    });
+  }
 });

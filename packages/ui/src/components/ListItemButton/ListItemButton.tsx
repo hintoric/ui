@@ -24,7 +24,7 @@ export const ListItemButton = React.forwardRef<HTMLButtonElement, ListItemButton
       ref={ref}
       type={type}
       className={cx(
-        'flex min-h-9 w-full items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500',
+        'flex min-h-9 w-full items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500',
         INTERACTIVE_COLOR_CLASSES[variant][color],
         selected && cx(ACTIVE_BG_CLASS[variant][color], 'font-medium'),
         className,

@@ -15,12 +15,18 @@ export const AccordionSummary = React.forwardRef<HTMLButtonElement, AccordionSum
   { indicator, className, children, ...props },
   ref,
 ) {
+  // The focus-visible ring is not decoration: without it the trigger fell back
+  // to the browser's 1px default outline where Joy renders 2px, because Joy's
+  // summary is a StyledListItemButton and inherits that component's ring while
+  // ours is a bare BaseAccordion.Trigger. Measured 2026-09-07. Same treatment
+  // and inset offset as our own ListItemButton, which is the component Joy's
+  // summary is built from.
   return (
     <BaseAccordion.Header className="m-0">
       <BaseAccordion.Trigger
         ref={ref}
         className={cx(
-          'group flex min-h-9 w-full cursor-pointer items-center justify-between gap-3 rounded-[inherit] border-none bg-transparent px-3 py-2 text-left font-body font-medium text-neutral-plain-color transition-colors hover:bg-neutral-plain-hover-bg',
+          'group flex min-h-9 w-full cursor-pointer items-center justify-between gap-3 rounded-[inherit] border-none bg-transparent px-3 py-2 text-left font-body font-medium text-neutral-plain-color transition-colors hover:bg-neutral-plain-hover-bg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500',
           className,
         )}
         {...props}

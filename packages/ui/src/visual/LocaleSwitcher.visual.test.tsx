@@ -3,6 +3,8 @@ import { page } from 'vitest/browser';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
+import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
+import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 // LocaleSwitcher is exempt from this suite's usual "compare against real
 // @mui/joy" rule (see docs/superpowers/specs/2026-09-06-locale-switcher-design.md):
@@ -11,9 +13,12 @@ import { LocaleSwitcher } from '../components/LocaleSwitcher';
 // already carries full Joy-compared coverage. A second comparison would assert
 // the same computed styles twice.
 //
+// The exemption is from the *parity comparison*, not from colour-scheme
+// coverage: a composition can still override a token its parts got right.
+//
 // What a composition can still get wrong is passing things through, so that is
-// what these check: self-baseline screenshots, plus size actually reaching the
-// button.
+// what these check: self-baseline screenshots per scheme, an assertion that
+// dark actually differs from light, plus size actually reaching the button.
 
 const locales = [
   // `de-DE` derives its flag from its own region subtag; `en` deliberately
@@ -24,23 +29,69 @@ const locales = [
 ];
 
 describe('LocaleSwitcher visual (self-baseline)', () => {
-  it('closed state matches its own baseline screenshot', async () => {
-    render(<LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />);
+  for (const scheme of COLOR_SCHEMES) {
+    it(`closed state matches its own ${scheme} baseline screenshot`, async () => {
+      await setColorScheme(scheme);
+      render(
+        <ColorSchemeProvider defaultMode={scheme}>
+          <LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />
+        </ColorSchemeProvider>,
+      );
 
-    await expect(page.getByRole('button')).toMatchScreenshot('locale-switcher-closed');
-  });
+      await expect(page.getByRole('button')).toMatchScreenshot(
+        `locale-switcher-closed-${scheme}`,
+      );
+    });
 
-  it('open menu matches its own baseline screenshot', async () => {
-    const user = userEvent.setup();
-    render(<LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />);
+    it(`open menu matches its own ${scheme} baseline screenshot`, async () => {
+      await setColorScheme(scheme);
+      const user = userEvent.setup();
+      render(
+        <ColorSchemeProvider defaultMode={scheme}>
+          <LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />
+        </ColorSchemeProvider>,
+      );
 
-    await user.click(screen.getByRole('button'));
-    await screen.findByText('English');
+      await user.click(screen.getByRole('button'));
+      await screen.findByText('English');
 
-    // The popup lives in a portal, so the button's own box does not contain it
-    // — screenshotting the button would show a green test and no menu. The
-    // portal is still in the document, reachable by its role.
-    await expect(page.getByRole('menu')).toMatchScreenshot('locale-switcher-open');
+      // The popup lives in a portal, so the button's own box does not contain it
+      // — screenshotting the button would show a green test and no menu. The
+      // portal is still in the document, reachable by its role. It is also why
+      // the scheme is document state rather than a wrapper: a wrapper would not
+      // contain this element either, and the menu would render light.
+      await expect(page.getByRole('menu')).toMatchScreenshot(`locale-switcher-open-${scheme}`);
+    });
+  }
+
+  /**
+   * A committed screenshot only catches a regression once a human looks at it.
+   * This is the assertion a PNG cannot make: that the component reads scheme
+   * tokens at all. A hardcoded light colour passes every screenshot test on
+   * its own baseline and fails here.
+   *
+   * The component stays mounted across the flip — only the CSS custom
+   * properties change — so this compares the same element with itself.
+   */
+  it('reads colour-scheme tokens rather than fixed colours', async () => {
+    await setColorScheme('light');
+    render(
+      <ColorSchemeProvider defaultMode="light">
+        <LocaleSwitcher locales={locales} value="de-DE" onChange={() => {}} />
+      </ColorSchemeProvider>,
+    );
+
+    const button = screen.getByRole('button');
+    const read = () => {
+      const s = getComputedStyle(button);
+      return { bg: s.backgroundColor, fg: s.color, border: s.borderTopColor };
+    };
+
+    const light = read();
+    await setColorScheme('dark');
+    const dark = read();
+
+    expect([dark.bg, dark.fg, dark.border]).not.toEqual([light.bg, light.fg, light.border]);
   });
 
   /**

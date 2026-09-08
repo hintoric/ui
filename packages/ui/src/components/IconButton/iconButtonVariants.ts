@@ -9,8 +9,14 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
   JOY_COLORS.map((color) => ({ variant, color, class: INTERACTIVE_COLOR_CLASSES[variant][color] })),
 );
 
+// `font-body font-medium` measured against real @mui/joy 5.0.0-beta.52
+// (2026-09-07): its IconButton.js sets `fontFamily: fontFamily.body` and
+// `fontWeight: fontWeight.md` (500), and ours set neither, so any text child
+// inherited the page's 400 in the body font. Found the same way Button's type
+// scale was — by comparing font properties, which nothing in the suite did
+// until the colour-scheme retrofit added them.
 export const iconButtonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center rounded-sm transition-colors cursor-pointer disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+  'inline-flex shrink-0 items-center justify-center rounded-sm font-body font-medium transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
   {
     variants: {
       variant: { solid: '', soft: '', outlined: '', plain: '' },

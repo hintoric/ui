@@ -4,7 +4,7 @@ import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { settleTransitions, lastShadowLayer } from './helpers';
+import { COLOR_SCHEMES, settleTransitions, setColorScheme, lastShadowLayer } from './helpers';
 import type { JoyColor, JoyVariant } from '../utils/colorVariantClasses';
 
 /**
@@ -80,11 +80,16 @@ export function describeErrorParity(config: ErrorParityConfig): void {
     : [undefined];
 
   describe(`${config.slug} error-state parity with @mui/joy`, () => {
-    for (const variant of variants) {
-      for (const color of config.colors) {
-        const key = variant ? `${variant}-${color}` : color;
-        it(`${key} in error state matches Joy UI`, async () => {
-          await parkPointer(key);
+    // The scheme axis lives here rather than in each of the thirteen callers:
+    // an error state is a colour state, so it is exactly the kind of thing a
+    // light-only raster would pass while a dark page rendered it wrong.
+    for (const scheme of COLOR_SCHEMES) {
+      for (const variant of variants) {
+        for (const color of config.colors) {
+          const key = variant ? `${variant}-${color}` : color;
+          it(`${key} in error state matches Joy UI in ${scheme}`, async () => {
+            await setColorScheme(scheme);
+            await parkPointer(key);
 
           // Both wrappers are taken out of flow at fixed coordinates. In
           // flow, their sub-pixel position depends on however much content
@@ -96,12 +101,16 @@ export function describeErrorParity(config: ErrorParityConfig): void {
           // position-independent.)
           const { container: joyContainer } = render(
             <div data-testid={`joy-err-${key}`} style={JOY_BOX}>
-              <JoyCssVarsProvider>{config.renderJoy({ variant, color })}</JoyCssVarsProvider>
+              <JoyCssVarsProvider defaultMode={scheme}>
+                {config.renderJoy({ variant, color })}
+              </JoyCssVarsProvider>
             </div>,
           );
           const { container: hintoricContainer } = render(
             <div data-testid={`hintoric-err-${key}`} style={HINTORIC_BOX}>
-              <ColorSchemeProvider>{config.renderHintoric({ variant, color })}</ColorSchemeProvider>
+              <ColorSchemeProvider defaultMode={scheme}>
+                {config.renderHintoric({ variant, color })}
+              </ColorSchemeProvider>
             </div>,
           );
           await settleTransitions();
@@ -123,12 +132,13 @@ export function describeErrorParity(config: ErrorParityConfig): void {
           config.assertStyles?.(hintoricStyle, joyStyle);
 
           await expect(page.getByTestId(`joy-err-${key}`)).toMatchScreenshot(
-            `${config.slug}-error-${key}-joy`,
+            `${config.slug}-error-${key}-joy-${scheme}`,
           );
           await expect(page.getByTestId(`hintoric-err-${key}`)).toMatchScreenshot(
-            `${config.slug}-error-${key}-hintoric`,
+            `${config.slug}-error-${key}-hintoric-${scheme}`,
           );
-        });
+          });
+        }
       }
     }
   });

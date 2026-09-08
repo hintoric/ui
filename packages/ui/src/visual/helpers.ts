@@ -81,3 +81,63 @@ export async function setColorScheme(mode: ColorScheme): Promise<void> {
   root.setAttribute('data-joy-color-scheme', mode);
   await settleTransitions();
 }
+
+
+/**
+ * Joy expresses line-height as a unitless ratio, so its computed value carries
+ * the ratio's rounding: `lineHeight.sm` is 1.42858, and 1.42858 x 14px is
+ * 20.00012px, which the browser reports as `20.0001px`. A Tailwind class that
+ * states the same design intent lands on a clean `20px`.
+ *
+ * That 0.0001px is not a divergence anyone can see or should chase, so
+ * line-height is the one property compared with a tolerance rather than by
+ * string equality. Everything else in this suite stays exact - a loose
+ * comparison is how real divergences hide.
+ */
+export function expectSameLineHeight(ours: string, joy: string): void {
+  const a = parseFloat(ours);
+  const b = parseFloat(joy);
+  if (Number.isNaN(a) || Number.isNaN(b)) {
+    // `normal` and other keywords have no numeric value: compare as given.
+    if (ours !== joy) {
+      throw new Error(`line-height mismatch: ours ${ours}, Joy ${joy}`);
+    }
+    return;
+  }
+  if (Math.abs(a - b) > 0.01) {
+    throw new Error(`line-height mismatch: ours ${ours}, Joy ${joy}`);
+  }
+}
+
+/**
+ * Waits until a computed value stops changing, rather than guessing a delay.
+ *
+ * `settleTransitions`' fixed 200ms is enough for most state changes but not all
+ * of them under full-suite load: Select's disabled background read as an
+ * intermediate colour in roughly one run in three, which looks exactly like a
+ * real divergence and is not one. Polling for stability removes the guess.
+ *
+ * Returns the settled value. Gives up after `timeout` and returns whatever it
+ * last saw, so a genuinely animating element still fails its assertion rather
+ * than hanging the suite.
+ */
+export async function settleUntilStable(
+  read: () => string,
+  { timeout = 2000, stableFor = 100 }: { timeout?: number; stableFor?: number } = {},
+): Promise<string> {
+  const deadline = Date.now() + timeout;
+  let last = read();
+  let stableSince = Date.now();
+
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    const current = read();
+    if (current !== last) {
+      last = current;
+      stableSince = Date.now();
+    } else if (Date.now() - stableSince >= stableFor) {
+      return current;
+    }
+  }
+  return last;
+}
