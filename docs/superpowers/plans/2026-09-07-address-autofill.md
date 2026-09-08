@@ -1009,7 +1009,7 @@ git commit -m "Add AddressAutofill component"
 **Interfaces:**
 - Consumes: `AddressAutofill` (Task 5), `Autocomplete` (for the self-baseline comparison), `Form`.
 
-- [ ] **Step 1: Write the visual test**
+- [x] **Step 1: Write the visual test**
 
 Per the spec, this compares against `Autocomplete` itself (no `@mui/joy` equivalent exists), across
 every variant × color, plus the four content states as screenshots, plus focus-ring parity:
@@ -1024,6 +1024,7 @@ import { AddressAutofill } from '../components/AddressAutofill';
 import { Autocomplete } from '../components/Autocomplete';
 import { Form } from '../components/Form';
 import { fetchAddressSuggestions } from '../components/AddressAutofill/addressApi';
+import { settleTransitions } from './helpers';
 
 vi.mock('../components/AddressAutofill/addressApi', () => ({ fetchAddressSuggestions: vi.fn() }));
 const mockedFetch = vi.mocked(fetchAddressSuggestions);
@@ -1089,8 +1090,12 @@ describe('AddressAutofill visual parity with Autocomplete', () => {
       </Form>,
     );
     await user.click(page.getByTestId('address-below-min').element());
-    await screen.findByText(CONTENT_PROPS.belowMinLengthContent);
-    await expect(page.getByTestId('address-below-min')).toMatchScreenshot('address-autofill-below-min-length');
+    // Screenshotting the popup text itself, not the input — the input's
+    // data-testid lands on the bare <input> (same as Autocomplete's own),
+    // which never shows this message; the message renders in the portal-ed
+    // Combobox.Empty popup instead.
+    const message = await screen.findByText(CONTENT_PROPS.belowMinLengthContent);
+    await expect(message).toMatchScreenshot('address-autofill-below-min-length');
   });
 
   it('loading state', async () => {
@@ -1102,8 +1107,8 @@ describe('AddressAutofill visual parity with Autocomplete', () => {
       </Form>,
     );
     await user.type(page.getByTestId('address-loading').element(), 'acker');
-    await screen.findByText(CONTENT_PROPS.loadingContent);
-    await expect(page.getByTestId('address-loading')).toMatchScreenshot('address-autofill-loading');
+    const message = await screen.findByText(CONTENT_PROPS.loadingContent);
+    await expect(message).toMatchScreenshot('address-autofill-loading');
   });
 
   it('no-results state', async () => {
@@ -1115,8 +1120,8 @@ describe('AddressAutofill visual parity with Autocomplete', () => {
       </Form>,
     );
     await user.type(page.getByTestId('address-no-results').element(), 'qqqqq');
-    await screen.findByText(CONTENT_PROPS.noResultsContent);
-    await expect(page.getByTestId('address-no-results')).toMatchScreenshot('address-autofill-no-results');
+    const message = await screen.findByText(CONTENT_PROPS.noResultsContent);
+    await expect(message).toMatchScreenshot('address-autofill-no-results');
   });
 
   it('error state', async () => {
@@ -1128,13 +1133,12 @@ describe('AddressAutofill visual parity with Autocomplete', () => {
       </Form>,
     );
     await user.type(page.getByTestId('address-error').element(), 'acker');
-    await screen.findByText(CONTENT_PROPS.errorContent);
-    await expect(page.getByTestId('address-error')).toMatchScreenshot('address-autofill-error');
+    const message = await screen.findByText(CONTENT_PROPS.errorContent);
+    await expect(message).toMatchScreenshot('address-autofill-error');
   });
 
   it('focus ring matches Autocomplete', async () => {
     mockedFetch.mockResolvedValue([]);
-    const user = userEvent.setup();
     render(
       <Form onSubmit={vi.fn()}>
         <AddressAutofill name="address" data-testid="address-focus" {...CONTENT_PROPS} />
@@ -1142,12 +1146,24 @@ describe('AddressAutofill visual parity with Autocomplete', () => {
     );
     render(<Autocomplete options={[]} data-testid="autocomplete-focus" />);
 
-    await user.click(page.getByTestId('address-focus').element());
-    await user.click(page.getByTestId('autocomplete-focus').element());
+    // Direct .focus()/.blur(), captured one at a time — this file's own
+    // established pattern (see Button.visual.test.tsx, Checkbox.visual.test.tsx):
+    // only one element can hold focus at once, so both computed styles must be
+    // read before moving on to the next, not both read at the end.
+    const addressInput = page.getByTestId('address-focus').element() as HTMLElement;
+    const autocompleteInput = page.getByTestId('autocomplete-focus').element() as HTMLElement;
 
-    const addressRoot = page.getByTestId('address-focus').element().closest('div') as HTMLElement;
-    const autocompleteRoot = page.getByTestId('autocomplete-focus').element().closest('div') as HTMLElement;
-    expect(getComputedStyle(addressRoot).boxShadow).toBe(getComputedStyle(autocompleteRoot).boxShadow);
+    addressInput.focus();
+    await settleTransitions();
+    const addressBoxShadow = getComputedStyle(addressInput.closest('div') as HTMLElement).boxShadow;
+    addressInput.blur();
+
+    autocompleteInput.focus();
+    await settleTransitions();
+    const autocompleteBoxShadow = getComputedStyle(autocompleteInput.closest('div') as HTMLElement).boxShadow;
+    autocompleteInput.blur();
+
+    expect(addressBoxShadow).toBe(autocompleteBoxShadow);
   });
 });
 ```
@@ -1157,19 +1173,19 @@ is enough — no `AddressSuggestion` value needs constructing in this file. If a
 populated-list screenshot too, add one more case resolving `mockedFetch` with a suggestion and
 selecting it, mirroring Task 5's jsdom test — optional, not required for this task's acceptance.*
 
-- [ ] **Step 2: Run once to generate baselines**
+- [x] **Step 2: Run once to generate baselines**
 
 Run: `pnpm --filter @hintoric/ui test:visual -- AddressAutofill.visual.test.tsx`
 Expected: FAILS the first time with "no existing reference screenshot found" (expected).
 
-- [ ] **Step 3: Re-run to confirm and review**
+- [x] **Step 3: Re-run to confirm and review**
 
 Run: `pnpm --filter @hintoric/ui test:visual -- AddressAutofill.visual.test.tsx`
 Expected: PASS. Open every new PNG under
 `packages/ui/src/visual/__screenshots__/AddressAutofill.visual.test.tsx/` and confirm each state
 actually looks like what its name says before trusting it.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/ui/src/visual/AddressAutofill.visual.test.tsx packages/ui/src/visual/__screenshots__/AddressAutofill.visual.test.tsx
