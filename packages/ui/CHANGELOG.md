@@ -1,5 +1,163 @@
 # @hintoric/ui
 
+## 0.5.0
+
+### Minor Changes
+
+- 1aae34e: Add `<AddressAutofill>`, a combobox that searches German addresses (postal code, city, street)
+  against the free `autofill.api.hintoric.cloud` lookup as you type, and returns the matched address
+  as a structured object on selection. It always binds to a `name` inside a `<Form>` — there is no
+  standalone/uncontrolled mode — and requires four content props (`belowMinLengthContent`,
+  `loadingContent`, `noResultsContent`, `errorContent`) since the component ships no text of its own.
+
+  `<Autocomplete>` also gains `loading`, `loadingText` and `noOptionsText` — matching real `@mui/joy`
+  Autocomplete's own props of the same names, including its rule that `loadingText` only replaces
+  suggestions when there are none yet, so existing results stay visible while a new search is in
+  flight. A fourth new prop, `filter`, is Base UI-specific (no Joy equivalent): pass `null` to disable
+  Base UI's own client-side re-filtering of `options`, needed whenever `options` already reflects a
+  server-filtered result set for the current query.
+
+  `onInputChange` now receives a second `reason: 'input' | 'reset' | 'clear'` argument — again
+  matching `@mui/joy`'s own `AutocompleteInputChangeReason` exactly — so a consumer that re-fetches on
+  every input change can gate that on `reason === 'input'` and skip re-searching for an option's own
+  label right after it's selected (`AddressAutofill` does exactly this).
+
+- 3074d6b: Add `<MapImage>` and `<AnimatedMapImage>`, components that render a static map for a
+  given latitude/longitude by fetching it from `map-image.api.hintoric.cloud`. Both
+  handle the loading and error states themselves — pass coordinates (and optionally
+  `zoom`/`width`/`height`), get a sized box back that shows a spinner while the map
+  loads and a fallback if it fails.
+
+  `<AnimatedMapImage>` is the same component with a one-time entrance once the map
+  loads: the frame irises open from the center while a pin drops onto the coordinate
+  and an ink ring ripples out from under it. It respects `prefers-reduced-motion`
+  automatically, skipping straight to the settled state.
+
+### Patch Changes
+
+- fed99de: Fix `Button`'s type scale to match real `@mui/joy`. It rendered one step too
+  large at `size="md"` (16px instead of 14px) and `size="lg"` (18px instead of
+  16px), at `font-weight: 500` instead of 600, with line heights to match — so
+  every button in the library was visibly larger and lighter than the Joy UI
+  component it mirrors. `minHeight` and padding were already correct, which is
+  why the difference read as a font problem rather than a layout one.
+
+  Buttons will get slightly smaller, denser text. Layouts that packed buttons to
+  the pixel may shift.
+
+  Found while adding colour-scheme coverage to the visual regression suite: no
+  assertion in the suite compared a font property, so a 852-test green run had
+  never looked at this.
+
+- fed99de: Disabled controls no longer react to the pointer.
+
+  `Button`, `IconButton`, `ChipDelete`, `ListItemButton` and `Select` left
+  `pointer-events: auto` on a disabled control where Joy UI sets `none`. CSS
+  `:hover` matches a disabled `<button>` in Chrome, so a disabled control
+  repainted itself with its hover background whenever the pointer rested on it —
+  a disabled `outlined` or `plain` `Select` rendered `#171A1C` instead of
+  `#0B0D0E` in dark mode.
+
+  They also used `cursor: not-allowed` where Joy uses `default`.
+
+  This was the last failing test in the visual suite, and it had looked like a
+  token problem for a while: the symptom was intermittent, because it depended
+  on where the pointer happened to be left by whichever test ran before.
+
+- fed99de: Fix list-surface padding and row colour against real `@mui/joy`.
+
+  - `List` padded all four sides, where Joy's vertical list pads only the block
+    axis. Rows were inset by 4–6px per side and never spanned the list's width:
+    a `ListItem` in a 320px list measured 312px against Joy's 320px.
+  - `MenuList` had 4px of padding all round where Joy renders 6px vertical and
+    none horizontal. (This does not apply to `Menu`, the portalled popup — that
+    one is 4px all round in Joy too, so the two components differ by design.)
+  - `ListItem` inherited the page's text colour, so it rendered black on a dark
+    surface. It now uses the `ink-secondary` token, whose two values are exactly
+    what Joy renders in each scheme.
+  - `AccordionSummary` had no focus-visible ring and fell back to the browser's
+    1px outline, where Joy renders the 2px ring its summary inherits from
+    `ListItemButton`. Keyboard users had almost no focus indicator on an
+    accordion.
+
+  Rows will sit flush with their list's edges rather than inset, and lists get
+  slightly less vertical padding at `sm`/`md`.
+
+  Found by giving these components their first visual regression coverage —
+  `List` had a test, but `ListItem`, `MenuList` and `AccordionSummary` had none.
+
+- fed99de: Fix `Link` and `Divider` rendering their light colours in dark mode.
+
+  Joy UI remaps its "main" palette channel per colour scheme — palette step 500
+  in light, step 400 in dark (`extendTheme.js`). This project had no `main` token
+  at all, so components that want "the" colour rather than a variant slot
+  hardcoded step 500 and never changed when the scheme did. A variant-less
+  `Link` stayed at `#0B6BCB` on a dark page where Joy renders `#4393E4`, and the
+  `Divider` line kept the light neutral channel, so it read too dark against a
+  dark surface.
+
+  New `--color-{primary,neutral,danger,success,warning}-main` tokens carry the
+  remap, and `Link` and the divider token now read them.
+
+  Found by the first dark-mode assertions the visual regression suite has ever
+  had: until now every one of its 1248 screenshots and every computed-style
+  comparison ran in light mode only.
+
+- fed99de: `RelativeTime` now sets its own text colour instead of inheriting.
+
+  It rendered a bare `<time>` with no styling at all, so on a dark page it showed
+  the inherited near-black text on a near-black background and was invisible.
+  Its new dark-mode screenshots were solid black rectangles, which is how this
+  was found.
+
+  It now uses the `ink-primary` token, so it follows the colour scheme like every
+  other text in the library — `primary` rather than a muted step because nothing
+  in its design ever specified a muted timestamp. A caller's `className` still
+  overrides it.
+
+  In light mode the colour shifts from the browser default `#000000` to the
+  token's `#171A1C`, which is a barely perceptible darkening.
+
+- fed99de: Fix `Tab`'s selected state and the Stepper family's typography against real
+  `@mui/joy`.
+
+  - A selected `Tab` kept its resting background. Joy's Tab is built on its
+    `ListItemButton`, which reacts to `aria-selected`, so a selected solid
+    primary tab renders `#12467B` where ours rendered `#0B6BCB` — the selected
+    tab was only distinguishable by its underline. `Tab.tsx` had documented the
+    opposite, on the strength of reading Joy's `Tab.js`; the behaviour lives in
+    the base component that file builds on.
+  - `Stepper` did not set the `title-{size}` typography Joy applies to it, and
+    `StepIndicator` forced a fixed 16px instead of inheriting. Every Stepper size
+    rendered the same type; Joy renders 14px inside a `sm` Stepper.
+
+  Selected tabs now carry their variant's active background, and Stepper text
+  follows its size.
+
+- fed99de: Fix the type metrics of thirteen components against real `@mui/joy`.
+
+  Joy renders every `body-*` typography level at `line-height: 1.5`, and
+  Tailwind's size utilities each ship their own paired line-height — only
+  `text-base` happens to agree. So `Alert`, `Badge`, `Breadcrumbs`, `Chip`,
+  `ChipDelete`, `ListSubheader`, `Snackbar`, `Table` and `Tooltip` rendered text
+  one or two pixels tighter or looser than the Joy component they mirror.
+  Separately:
+
+  - `Checkbox` and `Radio` had a line-height from their text size where Joy
+    derives it from the control's own box dimension.
+  - `DialogContent`, `ModalClose` and `StepIndicator` used the wrong step of the
+    size scale.
+  - `IconButton`, `ChipDelete` and `ModalClose` are `<button>` elements, which
+    do not inherit `font-weight`; they took the browser's 400 where Joy renders 500. `StepIndicator` had the opposite problem — it forced 500 where Joy
+    inherits 400.
+
+  Text may shift by a pixel or two in tightly packed layouts.
+
+  Every value here was measured against the rendered package, not derived from
+  its source: the colour-scheme retrofit added `fontSize`, `fontWeight` and
+  `lineHeight` to the visual suite's comparisons, and these are what it found.
+  Nothing in the suite had ever compared a font property.
+
 ## 0.4.1
 
 ### Patch Changes
