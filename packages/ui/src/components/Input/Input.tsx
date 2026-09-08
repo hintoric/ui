@@ -46,7 +46,21 @@ const InputBase = React.forwardRef<HTMLInputElement, InputProps>(function InputB
           before removing it. */}
       <BaseInput
         ref={ref}
-        className="w-full min-w-0 border-none bg-transparent p-0 outline-none"
+        className={cx(
+          'w-full min-w-0 border-none bg-transparent p-0 outline-none',
+          // Browser autofill paints its own opaque background directly on
+          // this <input>, ignoring the transparent bg above — left alone it
+          // shows as a hard-edged rectangle sitting inside the rounded,
+          // padded pill. Bleeding the input to the pill's edge (and
+          // rounding whichever corners aren't already owned by a decorator)
+          // makes the autofill highlight fill the whole pill instead,
+          // matching @mui/joy's StyledInputHtml `:-webkit-autofill` rule.
+          '[&:-webkit-autofill]:[padding-inline:var(--input-padding-inline)]',
+          !startDecorator &&
+            '[&:-webkit-autofill]:[margin-inline-start:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-start-radius:var(--radius-sm)] [&:-webkit-autofill]:[border-end-start-radius:var(--radius-sm)]',
+          !endDecorator &&
+            '[&:-webkit-autofill]:[margin-inline-end:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-end-radius:var(--radius-sm)] [&:-webkit-autofill]:[border-end-end-radius:var(--radius-sm)]',
+        )}
         aria-invalid={hasError || undefined}
         {...props}
         disabled={disabled}

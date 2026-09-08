@@ -92,6 +92,10 @@ export { LocaleSwitcher } from './components/LocaleSwitcher';
 export type { LocaleSwitcherProps } from './components/LocaleSwitcher';
 export { ConfirmationDialog } from './components/ConfirmationDialog';
 export type { ConfirmationDialogProps } from './components/ConfirmationDialog';
+export { MapImage } from './components/MapImage';
+export type { MapImageProps } from './components/MapImage';
+export { AnimatedMapImage } from './components/AnimatedMapImage';
+export type { AnimatedMapImageProps } from './components/AnimatedMapImage';
 
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';

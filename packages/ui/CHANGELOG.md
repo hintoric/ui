@@ -1,5 +1,12 @@
 # @hintoric/ui
 
+## 0.4.1
+
+### Patch Changes
+
+- e50062b: Fixed `Skeleton` rendering with a hardcoded light-gray background (`neutral.200`) instead of the scheme-aware surface token real `@mui/joy` uses, so it stayed light-colored — and briefly flashed — in dark mode instead of matching the surrounding dark UI.
+- 27a84e9: Fixed `Input`'s browser autofill highlight showing as a hard-edged rectangle inside the field's rounded, padded pill. The native input now bleeds to the pill's edge under `:-webkit-autofill`, matching corner rounding on whichever side has no decorator, so the autofill background fills the whole control the way `@mui/joy` does.
+
 ## 0.4.0
 
 ### Minor Changes
