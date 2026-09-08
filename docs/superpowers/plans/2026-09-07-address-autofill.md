@@ -1204,7 +1204,7 @@ git commit -m "Add AddressAutofill visual regression tests"
 - Consumes: `AddressAutofill`, `AddressAutofillProps`, `AddressSuggestion` from
   `./components/AddressAutofill` (Task 5).
 
-- [ ] **Step 1: Export from the package root**
+- [x] **Step 1: Export from the package root**
 
 In `packages/ui/src/index.ts`, add right after the existing `AutocompleteOption` export block
 (`export { AutocompleteOption } from './components/AutocompleteOption'; export type {
@@ -1215,12 +1215,12 @@ export { AddressAutofill } from './components/AddressAutofill';
 export type { AddressAutofillProps, AddressSuggestion } from './components/AddressAutofill';
 ```
 
-- [ ] **Step 2: Verify it builds and typechecks**
+- [x] **Step 2: Verify it builds and typechecks**
 
 Run: `pnpm --filter @hintoric/ui build && pnpm typecheck`
 Expected: no errors; `packages/ui/dist/index.js` now contains `AddressAutofill`.
 
-- [ ] **Step 3: Write the changeset**
+- [x] **Step 3: Write the changeset**
 
 ```md
 ---
@@ -1244,7 +1244,7 @@ server-filtered result set for the current query.
 (File name only needs to be unique under `.changeset/` — `pnpm changeset` would normally generate a
 random one; a descriptive name works identically.)
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add packages/ui/src/index.ts .changeset/address-autofill.md
