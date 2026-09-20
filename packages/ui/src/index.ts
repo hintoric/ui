@@ -100,6 +100,8 @@ export type { AnimatedMapImageProps } from './components/AnimatedMapImage';
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';
 
+export { FileInput } from './components/FileInput';
+export type { FileInputProps } from './components/FileInput';
 export { FormControl, FormControlContext } from './components/FormControl';
 export type { FormControlProps, FormControlContextValue } from './components/FormControl';
 
