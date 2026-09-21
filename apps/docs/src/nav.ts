@@ -62,6 +62,7 @@ export const NAV: NavGroup[] = [
       { to: '/avatar', label: 'Avatar' },
       { to: '/badge', label: 'Badge' },
       { to: '/skeleton', label: 'Skeleton' },
+      { to: '/blurhash-image', label: 'BlurhashImage' },
       { to: '/relative-time', label: 'RelativeTime' },
     ],
   },

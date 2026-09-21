@@ -17,6 +17,7 @@ import { ButtonPage } from './pages/ButtonPage';
 import { ButtonGroupPage } from './pages/ButtonGroupPage';
 import { IconButtonPage } from './pages/IconButtonPage';
 import { FileInputPage } from './pages/FileInputPage';
+import { BlurhashImagePage } from './pages/BlurhashImagePage';
 import { InputPage } from './pages/InputPage';
 import { TextareaPage } from './pages/TextareaPage';
 import { CheckboxPage } from './pages/CheckboxPage';
@@ -94,6 +95,7 @@ export function App() {
             <Route path="/autocomplete" element={<AutocompletePage />} />
             <Route path="/address-autofill" element={<AddressAutofillPage />} />
             <Route path="/file-input" element={<FileInputPage />} />
+            <Route path="/blurhash-image" element={<BlurhashImagePage />} />
             <Route path="/slider" element={<SliderPage />} />
             <Route path="/toggle-button-group" element={<ToggleButtonGroupPage />} />
             <Route path="/form-control" element={<FormControlPage />} />

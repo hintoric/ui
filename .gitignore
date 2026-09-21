@@ -6,3 +6,5 @@ dist
 .DS_Store
 .vitest-attachments
 .vercel
+test-results
+playwright-report

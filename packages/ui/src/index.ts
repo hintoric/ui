@@ -316,4 +316,13 @@ export type { ColorSchemeSwitchProps } from './components/ColorSchemeSwitch';
 export { ColorSchemeSelect } from './components/ColorSchemeSelect';
 export type { ColorSchemeSelectProps } from './components/ColorSchemeSelect';
 
+export { Blurhash } from './components/Blurhash';
+export type { BlurhashProps } from './components/Blurhash';
+
+export { BlurhashImage } from './components/BlurhashImage';
+export type { BlurhashImageProps } from './components/BlurhashImage';
+
+export { encodeBlurhash } from './utils/blurhash';
+export type { EncodeBlurhashOptions } from './utils/blurhash';
+
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
