@@ -54,3 +54,12 @@ export function setSystemDark(dark: boolean): void {
     listener({ matches: dark } as MediaQueryListEvent);
   }
 }
+
+/*
+ * jsdom has no 2D canvas, and calling getContext() logs a "Not implemented"
+ * notice per call that buries real test output. Returning null is what jsdom
+ * does anyway; this only silences the notice — and it keeps components that
+ * paint (Blurhash) on their no-context path, which is the path jsdom can
+ * honestly exercise. The pixels themselves are asserted in the browser suite.
+ */
+HTMLCanvasElement.prototype.getContext = (() => null) as unknown as typeof HTMLCanvasElement.prototype.getContext;

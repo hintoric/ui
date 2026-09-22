@@ -100,6 +100,8 @@ export type { AnimatedMapImageProps } from './components/AnimatedMapImage';
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';
 
+export { FileInput } from './components/FileInput';
+export type { FileInputProps } from './components/FileInput';
 export { FormControl, FormControlContext } from './components/FormControl';
 export type { FormControlProps, FormControlContextValue } from './components/FormControl';
 
@@ -313,5 +315,14 @@ export type { ColorSchemeSwitchProps } from './components/ColorSchemeSwitch';
 
 export { ColorSchemeSelect } from './components/ColorSchemeSelect';
 export type { ColorSchemeSelectProps } from './components/ColorSchemeSelect';
+
+export { Blurhash } from './components/Blurhash';
+export type { BlurhashProps } from './components/Blurhash';
+
+export { BlurhashImage } from './components/BlurhashImage';
+export type { BlurhashImageProps } from './components/BlurhashImage';
+
+export { encodeBlurhash } from './utils/blurhash';
+export type { EncodeBlurhashOptions } from './utils/blurhash';
 
 export type { JoyColor, JoyVariant } from './utils/colorVariantClasses';
