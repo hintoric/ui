@@ -1,11 +1,23 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeMenu, useColorScheme } from '@hintoric/ui';
 import { NAV } from './nav';
+import { DocsSearch } from './search/DocsSearch.tsx';
+import { applyHeadingIds, scrollToAnchor } from './search/anchors.ts';
 
 export function Layout() {
   // resolvedMode, not mode: mode can now be 'system', which would fall
   // through to the black logo on a dark background.
   const { resolvedMode } = useColorScheme();
+  const { pathname, hash } = useLocation();
+  const content = useRef<HTMLDivElement>(null);
+
+  // After the page has rendered, not before: the headings the ids go on are
+  // the outlet's children, and the hash cannot be jumped to until they exist.
+  useEffect(() => {
+    if (content.current) applyHeadingIds(content.current);
+    scrollToAnchor(hash);
+  }, [pathname, hash]);
 
   return (
     <div className="docs-shell">
@@ -35,9 +47,10 @@ export function Layout() {
       </aside>
       <div className="docs-main">
         <div className="docs-topbar">
+          <DocsSearch />
           <ColorSchemeMenu />
         </div>
-        <div className="docs-content">
+        <div className="docs-content" ref={content}>
           <Outlet />
         </div>
       </div>

@@ -18,6 +18,7 @@ import { ButtonGroupPage } from './pages/ButtonGroupPage';
 import { IconButtonPage } from './pages/IconButtonPage';
 import { FileInputPage } from './pages/FileInputPage';
 import { BlurhashImagePage } from './pages/BlurhashImagePage';
+import { FloatingBarPage } from './pages/FloatingBarPage';
 import { InputPage } from './pages/InputPage';
 import { TextareaPage } from './pages/TextareaPage';
 import { CheckboxPage } from './pages/CheckboxPage';
@@ -86,6 +87,7 @@ export function App() {
             <Route path="/button" element={<ButtonPage />} />
             <Route path="/button-group" element={<ButtonGroupPage />} />
             <Route path="/icon-button" element={<IconButtonPage />} />
+            <Route path="/floating-bar" element={<FloatingBarPage />} />
             <Route path="/input" element={<InputPage />} />
             <Route path="/textarea" element={<TextareaPage />} />
             <Route path="/checkbox" element={<CheckboxPage />} />

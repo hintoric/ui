@@ -1,4 +1,5 @@
 import { IconButton } from '@hintoric/ui';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import type { JoyColor, JoyVariant } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { VariantColorGrid } from '../components/VariantColorGrid';
@@ -20,21 +21,27 @@ export function IconButtonPage() {
           colors={COLORS}
           renderCell={(variant, color) => (
             <IconButton variant={variant} color={color} aria-label={color}>
-              +
+              <DeleteRoundedIcon fontSize="small" />
             </IconButton>
           )}
         />
       </Demo>
       <Code>{`<IconButton variant="soft" color="danger" aria-label="Delete">
-  <TrashIcon />
+  <DeleteRoundedIcon fontSize="small" />
 </IconButton>`}</Code>
 
       <h2>Sizes</h2>
       <Demo>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <IconButton size="sm" aria-label="small">+</IconButton>
-          <IconButton size="md" aria-label="medium">+</IconButton>
-          <IconButton size="lg" aria-label="large">+</IconButton>
+          <IconButton size="sm" aria-label="small">
+            <DeleteRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton size="md" aria-label="medium">
+            <DeleteRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton size="lg" aria-label="large">
+            <DeleteRoundedIcon />
+          </IconButton>
         </div>
       </Demo>
 

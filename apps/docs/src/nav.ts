@@ -23,6 +23,7 @@ export const NAV: NavGroup[] = [
       { to: '/box', label: 'Box' },
       { to: '/stack', label: 'Stack' },
       { to: '/sheet', label: 'Sheet' },
+      { to: '/floating-bar', label: 'FloatingBar' },
       { to: '/card', label: 'Card' },
       { to: '/container', label: 'Container' },
       { to: '/grid', label: 'Grid' },
