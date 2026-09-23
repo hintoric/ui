@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Dropdown } from '../Dropdown';
+import { Menu } from '../Menu';
+import { MenuItem } from '../MenuItem';
 import { FloatingBar } from './FloatingBar';
 import { FloatingBarButton } from './FloatingBarButton';
+import { FloatingBarMenuButton } from './FloatingBarMenuButton';
 
 describe('FloatingBar', () => {
   it('renders its children in a toolbar', () => {
@@ -110,5 +115,26 @@ describe('FloatingBar', () => {
       </FloatingBar>,
     );
     expect(screen.getByRole('button', { name: 'Print' })).toHaveClass('size-11');
+  });
+
+  it('lets a menu button sit in the bar as a circle of the bar\'s size, and opens its menu', async () => {
+    render(
+      <FloatingBar aria-label="Actions" size="lg">
+        <FloatingBarButton aria-label="Print">P</FloatingBarButton>
+        <Dropdown>
+          <FloatingBarMenuButton aria-label="More">…</FloatingBarMenuButton>
+          <Menu>
+            <MenuItem>Duplicate</MenuItem>
+          </Menu>
+        </Dropdown>
+      </FloatingBar>,
+    );
+    const more = screen.getByRole('button', { name: 'More' });
+    expect(more).toHaveClass('rounded-full', 'size-11');
+    expect(more).not.toHaveClass('rounded-sm');
+    expect(more).not.toHaveAttribute('aria-pressed');
+
+    await userEvent.click(more);
+    expect(await screen.findByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument();
   });
 });

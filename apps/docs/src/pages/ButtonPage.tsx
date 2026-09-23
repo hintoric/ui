@@ -36,6 +36,26 @@ export function ButtonPage() {
         </div>
       </Demo>
 
+      <h2>Pill</h2>
+      <p>
+        <code>pill</code> rounds the ends fully. It is not a Joy prop — Joy gets there through{' '}
+        <code>sx</code>, which this library does not have. Reach for it where a button stands next
+        to a pill-shaped neighbour, a <code>FloatingBar</code> or a search field with rounded ends,
+        and Joy&rsquo;s square corner would be the odd one out.
+      </p>
+      <Demo>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Button pill>Create</Button>
+          <Button pill variant="soft" color="neutral" size="lg">
+            Create
+          </Button>
+          <Button pill variant="outlined" color="neutral">
+            Create
+          </Button>
+        </div>
+      </Demo>
+      <Code>{`<Button pill variant="soft" color="neutral" size="lg">Create</Button>`}</Code>
+
       <h2>Loading &amp; disabled</h2>
       <Demo>
         <div style={{ display: 'flex', gap: 12 }}>
@@ -50,6 +70,7 @@ export function ButtonPage() {
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'solid'", description: 'Visual style of the button.' },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'primary'", description: 'Color palette applied to the variant.' },
           { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Controls height, padding and font size.' },
+          { name: 'pill', type: 'boolean', default: 'false', description: 'Fully rounded ends instead of the default corner. Not a Joy prop.' },
           { name: 'loading', type: 'boolean', default: 'false', description: 'Shows a loading state and disables interaction.' },
           { name: 'startDecorator', type: 'React.ReactNode', description: 'Element rendered before the label.' },
           { name: 'endDecorator', type: 'React.ReactNode', description: 'Element rendered after the label.' },

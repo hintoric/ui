@@ -5,4 +5,10 @@ export interface MenuButtonProps extends Omit<React.ComponentPropsWithoutRef<'bu
   variant?: JoyVariant;
   color?: JoyColor;
   size?: 'sm' | 'md' | 'lg';
+  /** Fully rounded ends, as on `Button`. */
+  pill?: boolean;
+  /** Shows a spinner in place of the label and disables the trigger, as on `Button`. */
+  loading?: boolean;
+  startDecorator?: React.ReactNode;
+  endDecorator?: React.ReactNode;
 }

@@ -45,12 +45,33 @@ export function IconButtonPage() {
         </div>
       </Demo>
 
+      <h2>Pill</h2>
+      <p>
+        <code>pill</code> makes the square a circle. Not a Joy prop; see <code>Button</code> for
+        why it exists. Inside a <code>FloatingBar</code> use <code>FloatingBarButton</code>, which
+        is this circle with a selected state.
+      </p>
+      <Demo>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <IconButton pill variant="soft" aria-label="delete">
+            <DeleteRoundedIcon fontSize="small" />
+          </IconButton>
+          <IconButton pill variant="outlined" size="lg" aria-label="delete">
+            <DeleteRoundedIcon />
+          </IconButton>
+        </div>
+      </Demo>
+      <Code>{`<IconButton pill variant="soft" aria-label="Delete">
+  <DeleteRoundedIcon fontSize="small" />
+</IconButton>`}</Code>
+
       <h2>Props</h2>
       <PropsTable
         rows={[
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'solid'", description: 'Visual style of the button.' },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'primary'", description: 'Color palette applied to the variant.' },
           { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Controls the square dimensions.' },
+          { name: 'pill', type: 'boolean', default: 'false', description: 'A circle instead of a rounded square. Not a Joy prop.' },
           { name: 'disabled', type: 'boolean', default: 'false', description: 'Native disabled state.' },
         ]}
       />

@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { FloatingBar, FloatingBarButton, Typography } from '@hintoric/ui';
+import { Dropdown, FloatingBar, FloatingBarButton, FloatingBarMenuButton, Menu, MenuItem, Typography } from '@hintoric/ui';
 import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import MoreVertRoundedIcon from '@mui/icons-material/MoreVertRounded';
 import GridViewRoundedIcon from '@mui/icons-material/GridViewRounded';
 import PrintRoundedIcon from '@mui/icons-material/PrintRounded';
 import ViewListRoundedIcon from '@mui/icons-material/ViewListRounded';
@@ -112,6 +113,43 @@ export function FloatingBarPage() {
   </FloatingBarButton>
 </FloatingBar>`}</Code>
 
+      <h2>A menu at the end</h2>
+      <p>
+        <code>FloatingBarMenuButton</code> is the same circle as a trigger: inside a{' '}
+        <code>Dropdown</code>, it opens a <code>Menu</code>. It exists because a{' '}
+        <code>MenuButton</code> cannot be a <code>FloatingBarButton</code> — one is a Base UI menu
+        trigger, the other a Base UI button — and a square trigger at the end of a pill reads as a
+        mistake. It has no <code>selected</code>: open or closed is the menu&rsquo;s to announce.
+      </p>
+      <Demo>
+        <FloatingBar aria-label="Aktionen">
+          <FloatingBarButton aria-label="Bearbeiten">
+            <EditRoundedIcon fontSize="small" />
+          </FloatingBarButton>
+          <FloatingBarButton aria-label="Drucken">
+            <PrintRoundedIcon fontSize="small" />
+          </FloatingBarButton>
+          <Dropdown>
+            <FloatingBarMenuButton aria-label="Mehr">
+              <MoreVertRoundedIcon fontSize="small" />
+            </FloatingBarMenuButton>
+            <Menu size="sm">
+              <MenuItem>Duplizieren</MenuItem>
+              <MenuItem>Umbenennen</MenuItem>
+            </Menu>
+          </Dropdown>
+        </FloatingBar>
+      </Demo>
+      <Code>{`<FloatingBar aria-label="Aktionen">
+  <FloatingBarButton aria-label="Bearbeiten"><EditRoundedIcon fontSize="small" /></FloatingBarButton>
+  <Dropdown>
+    <FloatingBarMenuButton aria-label="Mehr"><MoreVertRoundedIcon fontSize="small" /></FloatingBarMenuButton>
+    <Menu size="sm">
+      <MenuItem>Duplizieren</MenuItem>
+    </Menu>
+  </Dropdown>
+</FloatingBar>`}</Code>
+
       <h2>Placement</h2>
       <p>
         A <code>placement</code> pins the bar to an edge of the nearest positioned ancestor, and the
@@ -208,6 +246,14 @@ export function FloatingBarPage() {
           { name: 'selected', type: 'boolean', description: 'Draws the button active and announces it pressed. Omit it entirely for a plain action.' },
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: "Also picks the token the selected background comes from." },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'As on IconButton.' },
+          { name: 'size', type: "'sm' | 'md' | 'lg'", description: "Falls back to the bar's." },
+        ]}
+      />
+      <h3>FloatingBarMenuButton</h3>
+      <PropsTable
+        rows={[
+          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: 'As on FloatingBarButton.' },
+          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'As on FloatingBarButton.' },
           { name: 'size', type: "'sm' | 'md' | 'lg'", description: "Falls back to the bar's." },
         ]}
       />
