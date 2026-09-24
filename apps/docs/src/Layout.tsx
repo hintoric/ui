@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeMenu, useColorScheme } from '@hintoric/ui';
 import { NAV } from './nav';
@@ -11,6 +11,7 @@ export function Layout() {
   const { resolvedMode } = useColorScheme();
   const { pathname, hash } = useLocation();
   const content = useRef<HTMLDivElement>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // After the page has rendered, not before: the headings the ids go on are
   // the outlet's children, and the hash cannot be jumped to until they exist.
@@ -19,9 +20,27 @@ export function Layout() {
     scrollToAnchor(hash);
   }, [pathname, hash]);
 
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileNavOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileNavOpen]);
+
   return (
     <div className="docs-shell">
-      <aside className="docs-sidebar">
+      <aside
+        id="docs-navigation"
+        className={`docs-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}
+      >
         <NavLink to="/" className="docs-sidebar-brand">
           <img
             src={`https://cdn.hintoric.com/assets/logo/ui/${resolvedMode === 'dark' ? 'white' : 'black'}.svg`}
@@ -45,8 +64,26 @@ export function Layout() {
           </div>
         ))}
       </aside>
+      {mobileNavOpen && (
+        <button
+          type="button"
+          className="docs-nav-backdrop"
+          aria-label="Close navigation"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      )}
       <div className="docs-main">
         <div className="docs-topbar">
+          <button
+            type="button"
+            className="docs-menu-button"
+            aria-label={mobileNavOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileNavOpen}
+            aria-controls="docs-navigation"
+            onClick={() => setMobileNavOpen((open) => !open)}
+          >
+            <span aria-hidden="true">{mobileNavOpen ? '×' : '☰'}</span>
+          </button>
           <DocsSearch />
           <ColorSchemeMenu />
         </div>
