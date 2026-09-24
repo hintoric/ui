@@ -68,4 +68,11 @@ describe('Button', () => {
     render(<Button>Click me</Button>);
     expect(screen.getByRole('button')).toHaveClass('cursor-pointer');
   });
+
+  it('rounds its ends fully as a pill, dropping the default corner', () => {
+    render(<Button pill>Create</Button>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('rounded-full');
+    expect(button).not.toHaveClass('rounded-sm');
+  });
 });

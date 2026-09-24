@@ -6,13 +6,14 @@ import { iconButtonVariants } from './iconButtonVariants';
 import type { IconButtonProps } from './types';
 
 export const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { variant = 'plain', color = 'neutral', size = 'md', className, ...props },
+  { variant = 'plain', color = 'neutral', size = 'md', pill = false, className, ...props },
   ref,
 ) {
   return (
     <BaseButton
       ref={ref}
-      className={cx(iconButtonVariants({ variant, color, size }), className)}
+      // After the variants, so twMerge drops their `rounded-sm`.
+      className={cx(iconButtonVariants({ variant, color, size }), pill && 'rounded-full', className)}
       {...props}
     />
   );

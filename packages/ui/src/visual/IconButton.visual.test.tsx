@@ -91,3 +91,60 @@ describe('IconButton visual parity with @mui/joy', () => {
     });
   }
 });
+
+/** See Button's pill block for why this runs over variants and schemes only. */
+describe('IconButton pill parity with @mui/joy', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`pill/${variant} keeps Joy UI's styles and is a circle in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyIconButton
+              data-testid={`joy-pill-${variant}`}
+              variant={variant}
+              color="neutral"
+              sx={{ borderRadius: '9999px' }}
+            >
+              +
+            </JoyIconButton>
+          </JoyCssVarsProvider>,
+        );
+        render(
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricIconButton
+              data-testid={`hintoric-pill-${variant}`}
+              variant={variant}
+              color="neutral"
+              pill
+              aria-label={`pill-${variant}`}
+            >
+              +
+            </HintoricIconButton>
+          </ColorSchemeProvider>,
+        );
+
+        const joyLocator = page.getByTestId(`joy-pill-${variant}`);
+        const hintoricLocator = page.getByTestId(`hintoric-pill-${variant}`);
+        const hintoricEl = hintoricLocator.element();
+        const joyStyle = getComputedStyle(joyLocator.element());
+        const hintoricStyle = getComputedStyle(hintoricEl);
+
+        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+        expect(hintoricStyle.color).toBe(joyStyle.color);
+        expect(hintoricStyle.width).toBe(joyStyle.width);
+        expect(hintoricStyle.height).toBe(joyStyle.height);
+
+        const { width, height } = hintoricEl.getBoundingClientRect();
+        expect(width).toBeCloseTo(height, 1);
+        expect(parseFloat(hintoricStyle.borderTopLeftRadius)).toBeGreaterThanOrEqual(height / 2);
+        expect(parseFloat(joyStyle.borderTopLeftRadius)).toBeGreaterThanOrEqual(height / 2);
+
+        await expect(joyLocator).toMatchScreenshot(`iconbutton-pill-${variant}-joy-${scheme}`);
+        await expect(hintoricLocator).toMatchScreenshot(`iconbutton-pill-${variant}-hintoric-${scheme}`);
+      });
+    }
+  }
+});
+

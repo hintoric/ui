@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { FloatingBar, FloatingBarButton } from '../components/FloatingBar';
+import { FloatingBar, FloatingBarButton, FloatingBarMenuButton } from '../components/FloatingBar';
+import { Dropdown } from '../components/Dropdown';
+import { Menu } from '../components/Menu';
+import { MenuItem } from '../components/MenuItem';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 /**
@@ -88,4 +91,45 @@ describe('FloatingBar', () => {
       await expect(page.getByTestId('frame')).toMatchScreenshot(`floating-bar-straddle-${scheme}`);
     });
   }
+
+  for (const scheme of COLOR_SCHEMES) {
+    it(`ends the bar in a menu button that is the same circle, and opens it, in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      render(
+        // Room below for the popup: it is portalled to body and positioned
+        // under the trigger, so the frame has to reach down to where it opens
+        // for the shot to show it.
+        <div data-testid="frame" style={{ padding: 24, paddingRight: 140, paddingBottom: 120, width: 'max-content' }}>
+          <FloatingBar aria-label="Aktionen">
+            <FloatingBarButton aria-label="Bearbeiten">B</FloatingBarButton>
+            <Dropdown>
+              <FloatingBarMenuButton aria-label="Mehr">…</FloatingBarMenuButton>
+              <Menu size="sm">
+                <MenuItem>Duplizieren</MenuItem>
+              </Menu>
+            </Dropdown>
+          </FloatingBar>
+        </div>,
+      );
+
+      const plain = page.getByRole('button', { name: 'Bearbeiten' }).element();
+      const trigger = page.getByRole('button', { name: 'Mehr' }).element();
+      const plainStyle = getComputedStyle(plain);
+      const triggerStyle = getComputedStyle(trigger);
+
+      // Indistinguishable from its neighbour at rest: same size, same
+      // radius, same paint. Only what it does on click differs.
+      expect(triggerStyle.width).toBe(plainStyle.width);
+      expect(triggerStyle.height).toBe(plainStyle.height);
+      expect(triggerStyle.borderTopLeftRadius).toBe(plainStyle.borderTopLeftRadius);
+      expect(triggerStyle.backgroundColor).toBe(plainStyle.backgroundColor);
+      expect(triggerStyle.color).toBe(plainStyle.color);
+
+      await page.getByRole('button', { name: 'Mehr' }).click();
+      await expect.element(page.getByRole('menuitem', { name: 'Duplizieren' })).toBeVisible();
+
+      await expect(page.getByTestId('frame')).toMatchScreenshot(`floating-bar-menu-${scheme}`);
+    });
+  }
 });
+

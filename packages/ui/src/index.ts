@@ -49,10 +49,11 @@ export type { ButtonProps } from './components/Button';
 export { IconButton } from './components/IconButton';
 export type { IconButtonProps } from './components/IconButton';
 
-export { FloatingBar, FloatingBarButton } from './components/FloatingBar';
+export { FloatingBar, FloatingBarButton, FloatingBarMenuButton } from './components/FloatingBar';
 export type {
   FloatingBarAlign,
   FloatingBarButtonProps,
+  FloatingBarMenuButtonProps,
   FloatingBarPlacement,
   FloatingBarProps,
   FloatingBarSize,

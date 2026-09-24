@@ -292,3 +292,64 @@ describe('Button visual parity with @mui/joy', () => {
   }
 
 });
+
+/**
+ * `pill` is a shape, not a colour: it sets one property, `border-radius`, and
+ * leaves the whole colour matrix above untouched. So the loop here runs over
+ * variants and schemes with one colour, and checks that everything *but* the
+ * radius still equals Joy — that the shape came with no side effects — while
+ * the radius itself is checked as "at least a semicircle" on both sides. Joy
+ * is given `9999px`; ours is Tailwind's `rounded-full`, which computes to a
+ * different huge number, and the two are never byte-equal.
+ */
+describe('Button pill parity with @mui/joy', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`pill/${variant} keeps Joy UI's styles and rounds fully in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyButton
+              data-testid={`joy-pill-${variant}`}
+              variant={variant}
+              color="neutral"
+              sx={{ borderRadius: '9999px' }}
+            >
+              Create
+            </JoyButton>
+          </JoyCssVarsProvider>,
+        );
+        render(
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricButton data-testid={`hintoric-pill-${variant}`} variant={variant} color="neutral" pill>
+              Create
+            </HintoricButton>
+          </ColorSchemeProvider>,
+        );
+
+        const joyLocator = page.getByTestId(`joy-pill-${variant}`);
+        const hintoricLocator = page.getByTestId(`hintoric-pill-${variant}`);
+        const joyEl = joyLocator.element();
+        const hintoricEl = hintoricLocator.element();
+        const joyStyle = getComputedStyle(joyEl);
+        const hintoricStyle = getComputedStyle(hintoricEl);
+
+        expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+        expect(hintoricStyle.color).toBe(joyStyle.color);
+        expect(hintoricStyle.minHeight).toBe(joyStyle.minHeight);
+        expect(hintoricStyle.paddingLeft).toBe(joyStyle.paddingLeft);
+        expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+        expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+
+        const half = hintoricEl.getBoundingClientRect().height / 2;
+        expect(parseFloat(hintoricStyle.borderTopLeftRadius)).toBeGreaterThanOrEqual(half);
+        expect(parseFloat(joyStyle.borderTopLeftRadius)).toBeGreaterThanOrEqual(half);
+
+        await expect(joyLocator).toMatchScreenshot(`button-pill-${variant}-joy-${scheme}`);
+        await expect(hintoricLocator).toMatchScreenshot(`button-pill-${variant}-hintoric-${scheme}`);
+      });
+    }
+  }
+});
+

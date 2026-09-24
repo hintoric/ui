@@ -1,4 +1,5 @@
 import { Dropdown, Menu, MenuButton, MenuItem, MenuList, ListDivider } from '@hintoric/ui';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import type { JoyColor, JoyVariant } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { VariantColorGrid } from '../components/VariantColorGrid';
@@ -148,6 +149,40 @@ export function MenuPage() {
   </Menu>
 </Dropdown>`}</Code>
 
+      <h2>Decorators, loading and pill</h2>
+      <p>
+        <code>MenuButton</code> takes <code>startDecorator</code>, <code>endDecorator</code>,{' '}
+        <code>loading</code> and <code>pill</code> exactly as <code>Button</code> does — in Joy the
+        trigger reuses Button&rsquo;s whole formula, slots included, and so does this one.
+      </p>
+      <Demo>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <Dropdown>
+            <MenuButton pill variant="soft" size="lg" startDecorator={<AddRoundedIcon />}>
+              Create
+            </MenuButton>
+            <Menu>
+              <MenuItem>Upload a document</MenuItem>
+              <MenuItem>From a template</MenuItem>
+            </Menu>
+          </Dropdown>
+          <Dropdown>
+            <MenuButton loading>Create</MenuButton>
+            <Menu>
+              <MenuItem>Upload a document</MenuItem>
+            </Menu>
+          </Dropdown>
+        </div>
+      </Demo>
+      <Code>{`<Dropdown>
+  <MenuButton pill variant="soft" size="lg" startDecorator={<AddRoundedIcon />}>
+    Create
+  </MenuButton>
+  <Menu>
+    <MenuItem>Upload a document</MenuItem>
+  </Menu>
+</Dropdown>`}</Code>
+
       <h2>Dropdown props</h2>
       <PropsTable
         rows={[
@@ -165,6 +200,10 @@ export function MenuPage() {
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'outlined'", description: 'Visual style of the trigger.' },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
           { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Trigger height, padding and font size.' },
+          { name: 'pill', type: 'boolean', default: 'false', description: 'Fully rounded ends, as on Button.' },
+          { name: 'loading', type: 'boolean', default: 'false', description: 'Spinner in place of the label; the trigger is disabled meanwhile.' },
+          { name: 'startDecorator', type: 'React.ReactNode', description: 'Element rendered before the label.' },
+          { name: 'endDecorator', type: 'React.ReactNode', description: 'Element rendered after the label.' },
         ]}
       />
 

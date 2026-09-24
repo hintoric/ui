@@ -37,3 +37,13 @@ export interface FloatingBarButtonProps extends Omit<React.ComponentPropsWithout
    */
   selected?: boolean;
 }
+
+/**
+ * A `FloatingBarButton` that opens a menu. Same look, same size from the bar,
+ * no `selected` — the open state is the menu's to announce.
+ */
+export interface FloatingBarMenuButtonProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> {
+  variant?: JoyVariant;
+  color?: JoyColor;
+  size?: FloatingBarSize;
+}

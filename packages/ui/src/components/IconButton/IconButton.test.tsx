@@ -44,4 +44,15 @@ describe('IconButton', () => {
     );
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
+
+  it('is a circle as a pill, dropping the default corner', () => {
+    render(
+      <IconButton pill aria-label="more">
+        …
+      </IconButton>,
+    );
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('rounded-full');
+    expect(button).not.toHaveClass('rounded-sm');
+  });
 });
