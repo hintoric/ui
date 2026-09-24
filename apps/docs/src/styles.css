@@ -13,7 +13,9 @@
      at the cost of occasionally not showing Montserrat on a cold first load. */
   font-display: optional;
   src: url('/fonts/montserrat-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Montserrat';
@@ -28,7 +30,10 @@
      at the cost of occasionally not showing Montserrat on a cold first load. */
   font-display: optional;
   src: url('/fonts/montserrat-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
 }
 
 /* A metric-adjusted stand-in for Montserrat, used while it loads (or
@@ -111,7 +116,8 @@ a {
  */
 .docs-shell {
   display: flex;
-  min-height: 100%;
+  min-height: 100dvh;
+  overflow-x: hidden;
   background-color: var(--color-canvas);
   color: var(--color-ink-primary);
 }
@@ -193,10 +199,31 @@ a {
   z-index: 1;
 }
 
+.docs-menu-button {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink-primary);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.docs-nav-backdrop {
+  display: none;
+}
+
 .docs-content {
   max-width: 880px;
   padding: 32px;
   margin: 0 auto;
+  overflow-wrap: anywhere;
 }
 
 /* The topbar is sticky, so a heading jumped to from the palette would land
@@ -294,6 +321,7 @@ a {
   padding: 24px;
   margin: 16px 0 24px;
   background-color: var(--color-surface);
+  overflow-x: auto;
 }
 
 .docs-demo-grid {
@@ -304,6 +332,10 @@ a {
 .docs-grid-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.docs-table-scroll {
+  max-width: 100%;
 }
 
 .docs-grid-table th,
@@ -490,7 +522,6 @@ a {
   color: var(--color-ink-tertiary);
 }
 
-
 /* --- Command palette ------------------------------------------------------
    Styled here, not with Tailwind utilities: this app ships @hintoric/ui's
    compiled stylesheet and runs no Tailwind of its own, so a utility class
@@ -520,4 +551,110 @@ a {
 
 .docs-palette-kbd {
   margin-left: 8px;
+}
+
+@media (max-width: 760px) {
+  .docs-sidebar {
+    position: fixed;
+    z-index: 3;
+    width: min(280px, calc(100vw - 40px));
+    height: 100dvh;
+    padding: 20px 14px;
+    background-color: var(--color-canvas);
+    transform: translateX(-100%);
+    transition: transform 180ms ease;
+    box-shadow: 8px 0 24px rgb(0 0 0 / 12%);
+  }
+
+  .docs-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .docs-nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    border: 0;
+    padding: 0;
+    background: rgb(0 0 0 / 40%);
+    cursor: pointer;
+  }
+
+  .docs-topbar {
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+
+  .docs-menu-button {
+    display: inline-flex;
+  }
+
+  .docs-topbar > :nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .docs-search-button,
+  .docs-color-scheme-menu {
+    min-height: 40px;
+  }
+
+  .docs-color-scheme-menu {
+    width: 40px;
+    min-width: 40px;
+    padding-inline: 0;
+    font-size: 0;
+  }
+
+  .docs-color-scheme-menu svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .docs-content {
+    padding: 24px 16px 40px;
+  }
+
+  .docs-content h1 {
+    font-size: var(--text-3xl);
+  }
+
+  .docs-content h2 {
+    font-size: var(--text-xl);
+  }
+
+  .docs-content h3 {
+    font-size: var(--text-lg);
+  }
+
+  .docs-demo {
+    padding: 16px;
+  }
+
+  .docs-table-scroll {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-gutter: stable both-edges;
+  }
+
+  .docs-table-scroll > .docs-grid-table {
+    min-width: 560px;
+  }
+
+  .docs-table-scroll > .docs-props-table {
+    min-width: 720px;
+  }
+
+  .docs-code {
+    font-size: 0.8rem;
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-sidebar {
+    transition: none;
+  }
 }

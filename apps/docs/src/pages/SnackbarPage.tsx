@@ -30,7 +30,13 @@ function TriggerSnackbar({
         open={open}
         onClose={() => setOpen(false)}
         endDecorator={
-          <IconButton size="sm" variant="plain" color="neutral" aria-label="Dismiss" onClick={() => setOpen(false)}>
+          <IconButton
+            size="sm"
+            variant="plain"
+            color="neutral"
+            aria-label="Dismiss"
+            onClick={() => setOpen(false)}
+          >
             ✕
           </IconButton>
         }
@@ -93,30 +99,32 @@ export function SnackbarPage() {
 
       <h2>Variants &amp; colors</h2>
       <Demo>
-        <table className="docs-grid-table">
-          <thead>
-            <tr>
-              <th />
-              {COLORS.map((color) => (
-                <th key={color}>{color}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {VARIANTS.map((variant) => (
-              <tr key={variant}>
-                <th scope="row">{variant}</th>
+        <div className="docs-table-scroll" tabIndex={0}>
+          <table className="docs-grid-table">
+            <thead>
+              <tr>
+                <th />
                 {COLORS.map((color) => (
-                  <td key={color}>
-                    <TriggerSnackbar label={color.slice(0, 4)} variant={variant} color={color}>
-                      {variant} / {color}
-                    </TriggerSnackbar>
-                  </td>
+                  <th key={color}>{color}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {VARIANTS.map((variant) => (
+                <tr key={variant}>
+                  <th scope="row">{variant}</th>
+                  {COLORS.map((color) => (
+                    <td key={color}>
+                      <TriggerSnackbar label={color.slice(0, 4)} variant={variant} color={color}>
+                        {variant} / {color}
+                      </TriggerSnackbar>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Demo>
       <Code>{`<Snackbar open={open} onClose={close} variant="solid" color="success">
   Deployed.
@@ -142,15 +150,53 @@ export function SnackbarPage() {
       <PropsTable
         rows={[
           { name: 'open', type: 'boolean', description: 'Whether the message is shown. Required.' },
-          { name: 'onClose', type: '() => void', description: 'Called when the auto-hide timer elapses. Wire your own dismiss control to it too.' },
+          {
+            name: 'onClose',
+            type: '() => void',
+            description:
+              'Called when the auto-hide timer elapses. Wire your own dismiss control to it too.',
+          },
           { name: 'children', type: 'React.ReactNode', description: 'The message content.' },
-          { name: 'autoHideDuration', type: 'number | null', default: 'null', description: 'Milliseconds before onClose fires. null keeps it open indefinitely.' },
-          { name: 'anchorOrigin', type: '{ vertical: "top" | "bottom"; horizontal: "left" | "center" | "right" }', default: "{ vertical: 'bottom', horizontal: 'right' }", description: 'Corner or edge the message is pinned to.' },
-          { name: 'startDecorator', type: 'React.ReactNode', description: 'Content rendered before the message.' },
-          { name: 'endDecorator', type: 'React.ReactNode', description: 'Content rendered after the message — usually a dismiss button.' },
-          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'outlined'", description: 'Visual style of the surface.' },
-          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
-          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Padding, font size and distance from the viewport edge.' },
+          {
+            name: 'autoHideDuration',
+            type: 'number | null',
+            default: 'null',
+            description: 'Milliseconds before onClose fires. null keeps it open indefinitely.',
+          },
+          {
+            name: 'anchorOrigin',
+            type: '{ vertical: "top" | "bottom"; horizontal: "left" | "center" | "right" }',
+            default: "{ vertical: 'bottom', horizontal: 'right' }",
+            description: 'Corner or edge the message is pinned to.',
+          },
+          {
+            name: 'startDecorator',
+            type: 'React.ReactNode',
+            description: 'Content rendered before the message.',
+          },
+          {
+            name: 'endDecorator',
+            type: 'React.ReactNode',
+            description: 'Content rendered after the message — usually a dismiss button.',
+          },
+          {
+            name: 'variant',
+            type: "'solid' | 'soft' | 'outlined' | 'plain'",
+            default: "'outlined'",
+            description: 'Visual style of the surface.',
+          },
+          {
+            name: 'color',
+            type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'",
+            default: "'neutral'",
+            description: 'Color palette applied to the variant.',
+          },
+          {
+            name: 'size',
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: 'Padding, font size and distance from the viewport edge.',
+          },
         ]}
       />
     </>
