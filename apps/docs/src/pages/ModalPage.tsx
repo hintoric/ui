@@ -28,9 +28,7 @@ function BasicModal() {
         <ModalDialog>
           <ModalClose onClick={() => setOpen(false)} />
           <DialogTitle>Delete this project?</DialogTitle>
-          <DialogContent>
-            Everything inside it goes too. This cannot be undone.
-          </DialogContent>
+          <DialogContent>Everything inside it goes too. This cannot be undone.</DialogContent>
           <DialogActions>
             <Button variant="plain" color="neutral" onClick={() => setOpen(false)}>
               Cancel
@@ -149,28 +147,30 @@ export function ModalPage() {
         no visual props of its own.
       </p>
       <Demo>
-        <table className="docs-grid-table">
-          <thead>
-            <tr>
-              <th />
-              {COLORS.map((color) => (
-                <th key={color}>{color}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {VARIANTS.map((variant) => (
-              <tr key={variant}>
-                <th scope="row">{variant}</th>
+        <div className="docs-table-scroll" tabIndex={0}>
+          <table className="docs-grid-table">
+            <thead>
+              <tr>
+                <th />
                 {COLORS.map((color) => (
-                  <td key={color}>
-                    <VariantModal variant={variant} color={color} />
-                  </td>
+                  <th key={color}>{color}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {VARIANTS.map((variant) => (
+                <tr key={variant}>
+                  <th scope="row">{variant}</th>
+                  {COLORS.map((color) => (
+                    <td key={color}>
+                      <VariantModal variant={variant} color={color} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Demo>
       <Code>{`<ModalDialog variant="soft" color="danger">…</ModalDialog>`}</Code>
 
@@ -197,10 +197,27 @@ export function ModalPage() {
       <h2>Modal props</h2>
       <PropsTable
         rows={[
-          { name: 'open', type: 'boolean', description: 'Whether the dialog is shown. Required — Modal is always controlled.' },
-          { name: 'onClose', type: '() => void', description: 'Called on backdrop click, Escape, or any other dismissal.' },
-          { name: 'children', type: 'React.ReactNode', description: 'Usually a single ModalDialog. Required.' },
-          { name: 'keepMounted', type: 'boolean', default: 'false', description: 'Keeps the content in the DOM while closed.' },
+          {
+            name: 'open',
+            type: 'boolean',
+            description: 'Whether the dialog is shown. Required — Modal is always controlled.',
+          },
+          {
+            name: 'onClose',
+            type: '() => void',
+            description: 'Called on backdrop click, Escape, or any other dismissal.',
+          },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'Usually a single ModalDialog. Required.',
+          },
+          {
+            name: 'keepMounted',
+            type: 'boolean',
+            default: 'false',
+            description: 'Keeps the content in the DOM while closed.',
+          },
         ]}
       />
 
@@ -208,18 +225,47 @@ export function ModalPage() {
       <PropsTable
         rows={[
           { name: 'children', type: 'React.ReactNode', description: 'The dialog content.' },
-          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'outlined'", description: 'Visual style of the dialog surface.' },
-          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
-          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Padding and gap inside the dialog.' },
-          { name: 'layout', type: "'center' | 'fullscreen'", default: "'center'", description: 'Centred box, or filling the whole viewport.' },
+          {
+            name: 'variant',
+            type: "'solid' | 'soft' | 'outlined' | 'plain'",
+            default: "'outlined'",
+            description: 'Visual style of the dialog surface.',
+          },
+          {
+            name: 'color',
+            type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'",
+            default: "'neutral'",
+            description: 'Color palette applied to the variant.',
+          },
+          {
+            name: 'size',
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: 'Padding and gap inside the dialog.',
+          },
+          {
+            name: 'layout',
+            type: "'center' | 'fullscreen'",
+            default: "'center'",
+            description: 'Centred box, or filling the whole viewport.',
+          },
         ]}
       />
 
       <h2>DialogTitle props</h2>
       <PropsTable
         rows={[
-          { name: 'children', type: 'React.ReactNode', description: 'The heading text. Renders an <h2>.' },
-          { name: 'level', type: 'TypographyLevel', default: "'title-lg'", description: 'Typography level applied to the heading.' },
+          {
+            name: 'children',
+            type: 'React.ReactNode',
+            description: 'The heading text. Renders an <h2>.',
+          },
+          {
+            name: 'level',
+            type: 'TypographyLevel',
+            default: "'title-lg'",
+            description: 'Typography level applied to the heading.',
+          },
         ]}
       />
 

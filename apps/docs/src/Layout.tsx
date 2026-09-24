@@ -37,10 +37,7 @@ export function Layout() {
 
   return (
     <div className="docs-shell">
-      <aside
-        id="docs-navigation"
-        className={`docs-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}
-      >
+      <aside id="docs-navigation" className={`docs-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
         <NavLink to="/" className="docs-sidebar-brand">
           <img
             src={`https://cdn.hintoric.com/assets/logo/ui/${resolvedMode === 'dark' ? 'white' : 'black'}.svg`}
@@ -85,7 +82,7 @@ export function Layout() {
             <span aria-hidden="true">{mobileNavOpen ? '×' : '☰'}</span>
           </button>
           <DocsSearch />
-          <ColorSchemeMenu />
+          <ColorSchemeMenu className="docs-color-scheme-menu" />
         </div>
         <div className="docs-content" ref={content}>
           <Outlet />

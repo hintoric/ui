@@ -9,25 +9,27 @@ export interface VariantColorGridProps {
 
 export function VariantColorGrid({ variants, colors, renderCell }: VariantColorGridProps) {
   return (
-    <table className="docs-grid-table">
-      <thead>
-        <tr>
-          <th />
-          {colors.map((color) => (
-            <th key={color}>{color}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {variants.map((variant) => (
-          <tr key={variant}>
-            <th scope="row">{variant}</th>
+    <div className="docs-table-scroll" tabIndex={0}>
+      <table className="docs-grid-table">
+        <thead>
+          <tr>
+            <th />
             {colors.map((color) => (
-              <td key={color}>{renderCell(variant, color)}</td>
+              <th key={color}>{color}</th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {variants.map((variant) => (
+            <tr key={variant}>
+              <th scope="row">{variant}</th>
+              {colors.map((color) => (
+                <td key={color}>{renderCell(variant, color)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

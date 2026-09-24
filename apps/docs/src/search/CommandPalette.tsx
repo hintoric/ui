@@ -1,6 +1,16 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Chip, Input, List, ListItemButton, ListItemContent, Modal, ModalDialog, Typography } from '@hintoric/ui';
+import {
+  Button,
+  Chip,
+  Input,
+  List,
+  ListItemButton,
+  ListItemContent,
+  Modal,
+  ModalDialog,
+  Typography,
+} from '@hintoric/ui';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { search } from './search.ts';
 import type { SearchEntry } from './types.ts';
@@ -80,6 +90,7 @@ export function CommandPalette({ entries }: CommandPaletteProps) {
         variant="outlined"
         color="neutral"
         size="sm"
+        className="docs-search-button"
         startDecorator={<SearchRoundedIcon fontSize="small" />}
         onClick={show}
       >
@@ -115,7 +126,13 @@ export function CommandPalette({ entries }: CommandPaletteProps) {
           ) : (
             // component="div": a listbox's children are options, and an <li>
             // between them is a role the pattern does not allow.
-            <List component="div" id={listId} role="listbox" aria-label="Results" className="docs-palette-list">
+            <List
+              component="div"
+              id={listId}
+              role="listbox"
+              aria-label="Results"
+              className="docs-palette-list"
+            >
               {hits.map((hit, position) => (
                 <ListItemButton
                   key={`${hit.path}#${hit.hash ?? ''}`}
