@@ -12,6 +12,12 @@ export function Layout() {
   const { pathname, hash } = useLocation();
   const content = useRef<HTMLDivElement>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Closing on navigation lives on each NavLink's own onClick below, not in
+  // a pathname-watching effect: react-hooks/set-state-in-effect forbids
+  // calling setState synchronously from an effect body, and the render-time
+  // ref-comparison alternative is itself forbidden by react-hooks/refs. A
+  // click handler at the actual point of navigation needs neither.
+  const closeMobileNav = () => setMobileNavOpen(false);
 
   // After the page has rendered, not before: the headings the ids go on are
   // the outlet's children, and the hash cannot be jumped to until they exist.
@@ -19,10 +25,6 @@ export function Layout() {
     if (content.current) applyHeadingIds(content.current);
     scrollToAnchor(hash);
   }, [pathname, hash]);
-
-  useEffect(() => {
-    setMobileNavOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!mobileNavOpen) return;
@@ -38,7 +40,7 @@ export function Layout() {
   return (
     <div className="docs-shell">
       <aside id="docs-navigation" className={`docs-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
-        <NavLink to="/" className="docs-sidebar-brand">
+        <NavLink to="/" className="docs-sidebar-brand" onClick={closeMobileNav}>
           <img
             src={`https://cdn.hintoric.com/assets/logo/ui/${resolvedMode === 'dark' ? 'white' : 'black'}.svg`}
             alt="hintoric/ui"
@@ -54,6 +56,7 @@ export function Layout() {
                 to={link.to}
                 end={link.to === '/'}
                 className={({ isActive }) => `docs-nav-link${isActive ? ' active' : ''}`}
+                onClick={closeMobileNav}
               >
                 {link.label}
               </NavLink>
