@@ -53,6 +53,7 @@ import { MenuPage } from './pages/MenuPage';
 import { StepperPage } from './pages/StepperPage';
 import { AccordionPage } from './pages/AccordionPage';
 import { ColorSchemeProviderPage } from './pages/ColorSchemeProviderPage';
+import { ReducedMotionProviderPage } from './pages/ReducedMotionProviderPage';
 import { ColorSchemeMenuPage } from './pages/ColorSchemeMenuPage';
 import { ColorSchemeTogglePage } from './pages/ColorSchemeTogglePage';
 import { ColorSchemeToggleGroupPage } from './pages/ColorSchemeToggleGroupPage';
@@ -128,6 +129,7 @@ export function App() {
             <Route path="/accordion" element={<AccordionPage />} />
 
             <Route path="/color-scheme-provider" element={<ColorSchemeProviderPage />} />
+            <Route path="/reduced-motion-provider" element={<ReducedMotionProviderPage />} />
             <Route path="/color-scheme-menu" element={<ColorSchemeMenuPage />} />
             <Route path="/color-scheme-toggle" element={<ColorSchemeTogglePage />} />
             <Route path="/color-scheme-toggle-group" element={<ColorSchemeToggleGroupPage />} />

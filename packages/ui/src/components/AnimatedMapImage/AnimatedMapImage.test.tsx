@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { AnimatedMapImage } from './AnimatedMapImage';
 
 function setReducedMotion(matches: boolean) {
@@ -44,6 +45,18 @@ describe('AnimatedMapImage', () => {
   it('skips the reveal animation and the pin when the user prefers reduced motion', () => {
     setReducedMotion(true);
     render(<AnimatedMapImage lat={52.52} lng={13.4} alt="Berlin" data-testid="map" />);
+    fireEvent.load(screen.getByRole('img', { name: 'Berlin', hidden: true }));
+    expect(screen.getByTestId('map')).not.toHaveClass('animate-map-reveal');
+    expect(screen.queryByTestId('map-pin')).not.toBeInTheDocument();
+  });
+
+  it('uses the app-provided reduced motion preference when present', () => {
+    setReducedMotion(false);
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <AnimatedMapImage lat={52.52} lng={13.4} alt="Berlin" data-testid="map" />
+      </ReducedMotionProvider>,
+    );
     fireEvent.load(screen.getByRole('img', { name: 'Berlin', hidden: true }));
     expect(screen.getByTestId('map')).not.toHaveClass('animate-map-reveal');
     expect(screen.queryByTestId('map-pin')).not.toBeInTheDocument();

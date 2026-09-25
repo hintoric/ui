@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen, renderHook } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { DataGridContext } from './DataGridContext';
 import { DataGridHeaderCell } from './DataGridHeaderCell';
 import { useDataGrid } from './useDataGrid';
@@ -17,19 +18,21 @@ const columns: DataGridColumnDef<Person>[] = [
 
 const data: Person[] = [{ name: 'Alpha', age: 1 }];
 
-function renderHeaderCell(columnId: 'name' | 'age') {
+function renderHeaderCell(columnId: 'name' | 'age', reducedMotion = false) {
   const { result } = renderHook(() => useDataGrid<Person>({ columns, data }));
   const header = result.current.table.getHeaderGroups()[0]!.headers.find((h) => h.column.id === columnId)!;
   render(
-    <DataGridContext.Provider value={{ variant: 'plain', color: 'neutral', size: 'md', borderAxis: 'xBetween' }}>
-      <table>
-        <thead>
-          <tr>
-            <DataGridHeaderCell header={header} />
-          </tr>
-        </thead>
-      </table>
-    </DataGridContext.Provider>,
+    <ReducedMotionProvider reducedMotion={reducedMotion}>
+      <DataGridContext.Provider value={{ variant: 'plain', color: 'neutral', size: 'md', borderAxis: 'xBetween' }}>
+        <table>
+          <thead>
+            <tr>
+              <DataGridHeaderCell header={header} />
+            </tr>
+          </thead>
+        </table>
+      </DataGridContext.Provider>
+    </ReducedMotionProvider>,
   );
   return header;
 }
@@ -64,5 +67,11 @@ describe('DataGridHeaderCell', () => {
     const cell = screen.getByRole('columnheader', { name: 'Name' });
     expect(cell.className).toContain('hover:bg-neutral-plain-hover-bg');
     expect(cell.className).not.toContain(' bg-neutral-plain-hover-bg');
+  });
+
+  it('does not animate the sort icon when reduced motion is provided', () => {
+    renderHeaderCell('name', true);
+    const icon = screen.getByRole('columnheader', { name: 'Name' }).querySelector('[aria-hidden="true"]');
+    expect(icon).not.toHaveClass('transition-transform');
   });
 });

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { DISABLED_TEXT_CLASSES } from '../../utils/colorVariantClasses';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 
@@ -33,6 +34,8 @@ export function buttonLoadingClasses(loading: boolean): string | false {
  * two copies of this drifted the moment the first one changed.
  */
 export function ButtonBody({ variant, color, loading, startDecorator, endDecorator, children }: ButtonBodyProps) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <>
       {loading && (
@@ -40,7 +43,12 @@ export function ButtonBody({ variant, color, loading, startDecorator, endDecorat
           aria-hidden="true"
           className={cx('absolute inset-0 flex items-center justify-center', DISABLED_TEXT_CLASSES[variant][color])}
         >
-          <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          <span
+            className={cx(
+              'size-4 rounded-full border-2 border-current border-t-transparent',
+              !reducedMotion && 'animate-spin',
+            )}
+          />
         </span>
       )}
       {startDecorator && <span className="inline-flex items-center">{startDecorator}</span>}

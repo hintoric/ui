@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import type { SkeletonProps } from './types';
 
 // text/rectangular radius (2.4px) and circular's literal 50% (not Tailwind's
@@ -20,6 +21,8 @@ export const Skeleton = React.forwardRef<HTMLSpanElement, SkeletonProps>(functio
   { variant = 'overlay', animation = 'pulse', width, height, className, style, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <span
       ref={ref}
@@ -27,7 +30,7 @@ export const Skeleton = React.forwardRef<HTMLSpanElement, SkeletonProps>(functio
       className={cx(
         'inline-block bg-surface-3',
         VARIANT_CLASS[variant],
-        animation === 'pulse' && 'animate-pulse',
+        animation === 'pulse' && !reducedMotion && 'animate-pulse',
         className,
       )}
       style={{ width, height, ...style }}

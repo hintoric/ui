@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { CircularProgress } from './CircularProgress';
 
 describe('CircularProgress', () => {
@@ -20,6 +21,15 @@ describe('CircularProgress', () => {
 
   it('does not spin when determinate', () => {
     render(<CircularProgress determinate value={50} />);
+    expect(screen.getByRole('progressbar').querySelector('svg')).not.toHaveClass('animate-spin');
+  });
+
+  it('does not spin when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <CircularProgress />
+      </ReducedMotionProvider>,
+    );
     expect(screen.getByRole('progressbar').querySelector('svg')).not.toHaveClass('animate-spin');
   });
 

@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { Typography } from '../Typography';
 import type { MapImageStatus } from './useMapImage';
 
@@ -28,6 +29,8 @@ export const MapImageFrame = React.forwardRef<HTMLDivElement, MapImageFrameProps
   { src, status, alt, width, height, errorLabel, onLoad, onError, children, className, style, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <div
       ref={ref}
@@ -49,7 +52,12 @@ export const MapImageFrame = React.forwardRef<HTMLDivElement, MapImageFrameProps
       )}
       {status === 'loading' && (
         <div data-testid="map-loading" className="absolute inset-0 flex items-center justify-center">
-          <span className="size-6 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+          <span
+            className={cx(
+              'size-6 rounded-full border-2 border-white/20 border-t-white',
+              !reducedMotion && 'animate-spin',
+            )}
+          />
         </div>
       )}
       {status === 'error' && (

@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { CIRCULAR_PROGRESS_VARS, CIRCULAR_PROGRESS_SIZE } from './circularProgressColors';
 import type { CircularProgressProps } from './types';
 
@@ -24,6 +25,7 @@ export const CircularProgress = React.forwardRef<HTMLSpanElement, CircularProgre
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference * (1 - value / 100);
   const { track, progress } = CIRCULAR_PROGRESS_VARS[variant][color];
+  const reducedMotion = useReducedMotion();
 
   return (
     <span
@@ -40,7 +42,7 @@ export const CircularProgress = React.forwardRef<HTMLSpanElement, CircularProgre
         width={boxSize}
         height={boxSize}
         viewBox={`0 0 ${boxSize} ${boxSize}`}
-        className={cx(!determinate && 'animate-spin')}
+        className={cx(!determinate && !reducedMotion && 'animate-spin')}
       >
         <circle cx={boxSize / 2} cy={boxSize / 2} r={radius} fill="none" stroke={track} strokeWidth={thickness} />
         <circle

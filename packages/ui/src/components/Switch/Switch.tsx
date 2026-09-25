@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Switch as BaseSwitch } from '@base-ui/react/switch';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { SWITCH_SOLID_VARS, SWITCH_SIZE } from './switchColors';
 import { useFormContext } from 'react-hook-form';
 import { FormControlContext } from '../FormControl/FormControlContext';
@@ -50,6 +51,7 @@ const SwitchBase = React.forwardRef<HTMLElement, SwitchProps>(function SwitchBas
   const { track, thumb } = SWITCH_SOLID_VARS[effectiveColor];
   const { trackWidth, trackHeight, thumbSize } = SWITCH_SIZE[size];
   const padding = (trackHeight - thumbSize) / 2;
+  const reducedMotion = useReducedMotion();
 
   return (
     <span className="inline-flex items-center gap-2">
@@ -78,7 +80,7 @@ const SwitchBase = React.forwardRef<HTMLElement, SwitchProps>(function SwitchBas
         {...props}
       >
         <BaseSwitch.Thumb
-          className="rounded-[50%] shadow-sm transition-transform"
+          className={cx('rounded-[50%] shadow-sm', !reducedMotion && 'transition-transform')}
           style={{
             width: thumbSize,
             height: thumbSize,

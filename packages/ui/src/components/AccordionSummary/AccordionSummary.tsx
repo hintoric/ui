@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Accordion as BaseAccordion } from '@base-ui/react/accordion';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { UnfoldIcon } from '../../internal/svg-icons/UnfoldIcon';
 import type { AccordionSummaryProps } from './types';
 
@@ -15,6 +16,8 @@ export const AccordionSummary = React.forwardRef<HTMLButtonElement, AccordionSum
   { indicator, className, children, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   // The focus-visible ring is not decoration: without it the trigger fell back
   // to the browser's 1px default outline where Joy renders 2px, because Joy's
   // summary is a StyledListItemButton and inherits that component's ring while
@@ -32,7 +35,12 @@ export const AccordionSummary = React.forwardRef<HTMLButtonElement, AccordionSum
         {...props}
       >
         <span className="min-w-0 flex-1">{children}</span>
-        <span className="inline-flex items-center text-xl text-ink-icon transition-transform duration-200 group-data-[panel-open]:rotate-180">
+        <span
+          className={cx(
+            'inline-flex items-center text-xl text-ink-icon group-data-[panel-open]:rotate-180',
+            !reducedMotion && 'transition-transform duration-200',
+          )}
+        >
           {indicator ?? <UnfoldIcon />}
         </span>
       </BaseAccordion.Trigger>

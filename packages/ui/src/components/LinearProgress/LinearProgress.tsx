@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { LINEAR_PROGRESS_VARS, LINEAR_PROGRESS_THICKNESS } from './linearProgressColors';
 import type { LinearProgressProps } from './types';
 
@@ -19,6 +20,7 @@ export const LinearProgress = React.forwardRef<HTMLDivElement, LinearProgressPro
 ) {
   const thickness = thicknessProp ?? LINEAR_PROGRESS_THICKNESS[size];
   const { track, bar } = LINEAR_PROGRESS_VARS[variant][color];
+  const reducedMotion = useReducedMotion();
 
   return (
     <div
@@ -34,7 +36,7 @@ export const LinearProgress = React.forwardRef<HTMLDivElement, LinearProgressPro
       <div
         className={cx(
           'absolute inset-y-0 left-0 rounded-[inherit]',
-          determinate ? '' : 'animate-pulse',
+          !determinate && !reducedMotion && 'animate-pulse',
         )}
         style={{
           backgroundColor: bar,

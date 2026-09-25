@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Radio } from './Radio';
 import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
 import { Form } from '../Form';
@@ -43,6 +44,15 @@ describe('Radio', () => {
   it('renders label text', () => {
     render(<Radio label="Option A" />);
     expect(screen.getByText('Option A')).toBeInTheDocument();
+  });
+
+  it('does not animate the icon when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Radio aria-label="option" defaultChecked />
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByRole('radio').firstElementChild).not.toHaveClass('transition-transform');
   });
 
   it('works within a RadioGroup, making options mutually exclusive', async () => {

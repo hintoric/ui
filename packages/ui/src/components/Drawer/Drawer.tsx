@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { SURFACE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import { DRAWER_HORIZONTAL_SIZE, DRAWER_VERTICAL_SIZE } from './drawerSizes';
 import type { DrawerProps } from './types';
@@ -28,6 +29,7 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
   ref,
 ) {
   const isHorizontal = anchor === 'left' || anchor === 'right';
+  const reducedMotion = useReducedMotion();
   const dimension = isHorizontal
     ? { width: `min(100vw, ${DRAWER_HORIZONTAL_SIZE[size]})`, height: '100%' }
     : { height: `min(100vh, ${DRAWER_VERTICAL_SIZE[size]})`, width: '100vw' };
@@ -35,12 +37,19 @@ export const Drawer = React.forwardRef<HTMLDivElement, DrawerProps>(function Dra
   return (
     <BaseDialog.Root open={open} onOpenChange={(next) => !next && onClose?.()}>
       <BaseDialog.Portal>
-        <BaseDialog.Backdrop className="fixed inset-0 z-40 bg-black/50 transition-opacity data-[starting-style]:opacity-0 data-[ending-style]:opacity-0" />
+        <BaseDialog.Backdrop
+          className={cx(
+            'fixed inset-0 z-40 bg-black/50',
+            !reducedMotion && 'transition-opacity data-[starting-style]:opacity-0 data-[ending-style]:opacity-0',
+          )}
+        />
         <BaseDialog.Popup
           ref={ref}
           className={cx(
-            'fixed z-50 flex flex-col gap-2 p-4 font-body shadow-[var(--shadow-md)] outline-none transition-transform',
-            ANCHOR_CLASS[anchor],
+            'fixed z-50 flex flex-col gap-2 p-4 font-body shadow-[var(--shadow-md)] outline-none',
+            !reducedMotion && 'transition-transform',
+            !reducedMotion && ANCHOR_CLASS[anchor],
+            reducedMotion && ANCHOR_CLASS[anchor].split(' ').filter((token) => !token.includes('data-[')).join(' '),
             SIZE_CLASS[size],
             SURFACE_COLOR_CLASSES[variant][color],
             className,
