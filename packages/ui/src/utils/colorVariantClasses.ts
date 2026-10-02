@@ -29,7 +29,7 @@ export const INTERACTIVE_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, stri
   },
   plain: {
     primary: 'text-primary-plain-color bg-transparent hover:bg-primary-plain-hover-bg active:bg-primary-plain-active-bg disabled:text-primary-plain-disabled-color',
-    neutral: 'text-neutral-plain-color bg-transparent hover:bg-neutral-plain-hover-bg active:bg-neutral-plain-active-bg disabled:text-neutral-plain-disabled-color',
+    neutral: 'text-neutral-plain-color bg-transparent hover:bg-neutral-plain-hover-bg hover:text-neutral-plain-hover-color active:bg-neutral-plain-active-bg disabled:text-neutral-plain-disabled-color',
     danger: 'text-danger-plain-color bg-transparent hover:bg-danger-plain-hover-bg active:bg-danger-plain-active-bg disabled:text-danger-plain-disabled-color',
     success: 'text-success-plain-color bg-transparent hover:bg-success-plain-hover-bg active:bg-success-plain-active-bg disabled:text-success-plain-disabled-color',
     warning: 'text-warning-plain-color bg-transparent hover:bg-warning-plain-hover-bg active:bg-warning-plain-active-bg disabled:text-warning-plain-disabled-color',
@@ -112,6 +112,47 @@ export const ACTIVE_BG_CLASS: Record<JoyVariant, Record<JoyColor, string>> = {
     danger: 'bg-danger-plain-active-bg',
     success: 'bg-success-plain-active-bg',
     warning: 'bg-warning-plain-active-bg',
+  },
+};
+
+// ACTIVE_BG_CLASS behind `aria-pressed:` — Joy's Button.js and IconButton.js
+// style `&:active, &[aria-pressed="true"]` with the same `${variant}Active`
+// tokens, which is how a ToggleButtonGroup's selected button gets its fill.
+// Spelled out rather than derived from ACTIVE_BG_CLASS so Tailwind's scanner
+// sees every class literally.
+//
+// solid/soft are `enabled:`-gated because Joy's `.Mui-disabled` rule comes
+// after the pressed one and its solid/soft Disabled tokens repaint the
+// background. outlinedDisabled/plainDisabled set no background, so a disabled
+// selected outlined/plain button keeps its pressed fill in Joy — and here.
+export const PRESSED_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'enabled:aria-pressed:bg-primary-solid-active-bg',
+    neutral: 'enabled:aria-pressed:bg-neutral-solid-active-bg',
+    danger: 'enabled:aria-pressed:bg-danger-solid-active-bg',
+    success: 'enabled:aria-pressed:bg-success-solid-active-bg',
+    warning: 'enabled:aria-pressed:bg-warning-solid-active-bg',
+  },
+  soft: {
+    primary: 'enabled:aria-pressed:bg-primary-soft-active-bg enabled:aria-pressed:text-primary-soft-active-color',
+    neutral: 'enabled:aria-pressed:bg-neutral-soft-active-bg enabled:aria-pressed:text-neutral-soft-active-color',
+    danger: 'enabled:aria-pressed:bg-danger-soft-active-bg enabled:aria-pressed:text-danger-soft-active-color',
+    success: 'enabled:aria-pressed:bg-success-soft-active-bg enabled:aria-pressed:text-success-soft-active-color',
+    warning: 'enabled:aria-pressed:bg-warning-soft-active-bg enabled:aria-pressed:text-warning-soft-active-color',
+  },
+  outlined: {
+    primary: 'aria-pressed:bg-primary-outlined-active-bg',
+    neutral: 'aria-pressed:bg-neutral-outlined-active-bg',
+    danger: 'aria-pressed:bg-danger-outlined-active-bg',
+    success: 'aria-pressed:bg-success-outlined-active-bg',
+    warning: 'aria-pressed:bg-warning-outlined-active-bg',
+  },
+  plain: {
+    primary: 'aria-pressed:bg-primary-plain-active-bg',
+    neutral: 'aria-pressed:bg-neutral-plain-active-bg',
+    danger: 'aria-pressed:bg-danger-plain-active-bg',
+    success: 'aria-pressed:bg-success-plain-active-bg',
+    warning: 'aria-pressed:bg-warning-plain-active-bg',
   },
 };
 

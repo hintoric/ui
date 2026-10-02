@@ -41,14 +41,27 @@ describe('ToggleButtonGroup', () => {
     expect(onChange).toHaveBeenCalledWith(expect.anything(), []);
   });
 
-  it('respects a controlled value, applying the persistent active background to the selected button', () => {
+  it('respects a controlled value, marking only the selected button aria-pressed', () => {
     render(
       <ToggleButtonGroup value={['a']} variant="outlined" color="neutral">
         <Button value="a">A</Button>
         <Button value="b">B</Button>
       </ToggleButtonGroup>,
     );
-    expect(screen.getByText('A')).toHaveClass('bg-neutral-outlined-active-bg');
-    expect(screen.getByText('B')).not.toHaveClass('bg-neutral-outlined-active-bg');
+    expect(screen.getByText('A')).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByText('B')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it("hands its variant/color/size down to buttons that don't set their own, like Joy", () => {
+    render(
+      <ToggleButtonGroup variant="soft" color="danger" size="sm">
+        <Button value="a">A</Button>
+        <Button value="b" variant="solid">
+          B
+        </Button>
+      </ToggleButtonGroup>,
+    );
+    expect(screen.getByText('A')).toHaveClass('bg-danger-soft-bg', 'min-h-8');
+    expect(screen.getByText('B')).toHaveClass('bg-danger-solid-bg');
   });
 });

@@ -32,6 +32,13 @@ export function Layout() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { pathname, hash } = useLocation();
   const content = useRef<HTMLDivElement>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // Closing on navigation lives on each NavLink's own onClick below, not in
+  // a pathname-watching effect: react-hooks/set-state-in-effect forbids
+  // calling setState synchronously from an effect body, and the render-time
+  // ref-comparison alternative is itself forbidden by react-hooks/refs. A
+  // click handler at the actual point of navigation needs neither.
+  const closeMobileNav = () => setMobileNavOpen(false);
 
   // After the page has rendered, not before: the headings the ids go on are
   // the outlet's children, and the hash cannot be jumped to until they exist.
@@ -40,11 +47,22 @@ export function Layout() {
     scrollToAnchor(hash);
   }, [pathname, hash]);
 
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileNavOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileNavOpen]);
+
   return (
     <ReducedMotionProvider reducedMotion={reducedMotion}>
       <div className="docs-shell">
-        <aside className="docs-sidebar">
-          <NavLink to="/" className="docs-sidebar-brand">
+        <aside id="docs-navigation" className={`docs-sidebar${mobileNavOpen ? ' mobile-open' : ''}`}>
+          <NavLink to="/" className="docs-sidebar-brand" onClick={closeMobileNav}>
             <img
               src={`https://cdn.hintoric.com/assets/logo/ui/${resolvedMode === 'dark' ? 'white' : 'black'}.svg`}
               alt="hintoric/ui"
@@ -60,6 +78,7 @@ export function Layout() {
                   to={link.to}
                   end={link.to === '/'}
                   className={({ isActive }) => `docs-nav-link${isActive ? ' active' : ''}`}
+                  onClick={closeMobileNav}
                 >
                   {link.label}
                 </NavLink>
@@ -67,8 +86,26 @@ export function Layout() {
             </div>
           ))}
         </aside>
+        {mobileNavOpen && (
+          <button
+            type="button"
+            className="docs-nav-backdrop"
+            aria-label="Close navigation"
+            onClick={() => setMobileNavOpen(false)}
+          />
+        )}
         <div className="docs-main">
           <div className="docs-topbar">
+            <button
+              type="button"
+              className="docs-menu-button"
+              aria-label={mobileNavOpen ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={mobileNavOpen}
+              aria-controls="docs-navigation"
+              onClick={() => setMobileNavOpen((open) => !open)}
+            >
+              <span aria-hidden="true">{mobileNavOpen ? '×' : '☰'}</span>
+            </button>
             <DocsSearch />
             <IconButton
               aria-label="Settings"
@@ -80,7 +117,6 @@ export function Layout() {
             >
               <SettingsIcon className="size-5" />
             </IconButton>
-            <ColorSchemeMenu />
             <Modal open={settingsOpen} onClose={() => setSettingsOpen(false)}>
               <ModalDialog size="sm" data-testid="docs-settings-dialog">
                 <DialogTitle>Settings</DialogTitle>
@@ -101,6 +137,7 @@ export function Layout() {
                 </DialogContent>
               </ModalDialog>
             </Modal>
+            <ColorSchemeMenu className="docs-color-scheme-menu" />
           </div>
           <div className="docs-content" ref={content}>
             <Outlet />

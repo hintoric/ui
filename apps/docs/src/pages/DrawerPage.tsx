@@ -98,41 +98,71 @@ export function DrawerPage() {
 
       <h2>Variants &amp; colors</h2>
       <Demo>
-        <table className="docs-grid-table">
-          <thead>
-            <tr>
-              <th />
-              {COLORS.map((color) => (
-                <th key={color}>{color}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {VARIANTS.map((variant) => (
-              <tr key={variant}>
-                <th scope="row">{variant}</th>
+        <div className="docs-table-scroll" tabIndex={0}>
+          <table className="docs-grid-table">
+            <thead>
+              <tr>
+                <th />
                 {COLORS.map((color) => (
-                  <td key={color}>
-                    <StyledDrawer variant={variant} color={color} />
-                  </td>
+                  <th key={color}>{color}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {VARIANTS.map((variant) => (
+                <tr key={variant}>
+                  <th scope="row">{variant}</th>
+                  {COLORS.map((color) => (
+                    <td key={color}>
+                      <StyledDrawer variant={variant} color={color} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Demo>
       <Code>{`<Drawer open={open} onClose={close} variant="soft" color="primary">…</Drawer>`}</Code>
 
       <h2>Props</h2>
       <PropsTable
         rows={[
-          { name: 'open', type: 'boolean', description: 'Whether the drawer is shown. Required — Drawer is always controlled.' },
-          { name: 'onClose', type: '() => void', description: 'Called on backdrop click, Escape, or any other dismissal.' },
+          {
+            name: 'open',
+            type: 'boolean',
+            description: 'Whether the drawer is shown. Required — Drawer is always controlled.',
+          },
+          {
+            name: 'onClose',
+            type: '() => void',
+            description: 'Called on backdrop click, Escape, or any other dismissal.',
+          },
           { name: 'children', type: 'React.ReactNode', description: 'The panel content.' },
-          { name: 'anchor', type: "'left' | 'right' | 'top' | 'bottom'", default: "'left'", description: 'Edge the panel slides in from.' },
-          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: 'Visual style of the panel surface.' },
-          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
-          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Width (left/right) or height (top/bottom) of the panel.' },
+          {
+            name: 'anchor',
+            type: "'left' | 'right' | 'top' | 'bottom'",
+            default: "'left'",
+            description: 'Edge the panel slides in from.',
+          },
+          {
+            name: 'variant',
+            type: "'solid' | 'soft' | 'outlined' | 'plain'",
+            default: "'plain'",
+            description: 'Visual style of the panel surface.',
+          },
+          {
+            name: 'color',
+            type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'",
+            default: "'neutral'",
+            description: 'Color palette applied to the variant.',
+          },
+          {
+            name: 'size',
+            type: "'sm' | 'md' | 'lg'",
+            default: "'md'",
+            description: 'Width (left/right) or height (top/bottom) of the panel.',
+          },
         ]}
       />
     </>

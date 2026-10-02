@@ -51,59 +51,63 @@ export function RelativeTimePage() {
         elapsed span, and <code>micro</code> is the shortest possible form.
       </p>
       <Demo>
-        <table className="docs-props-table">
-          <thead>
-            <tr>
-              <th>format</th>
-              <th>3 days ago</th>
-              <th>400 days ago</th>
-            </tr>
-          </thead>
-          <tbody>
-            {MODES.map((mode) => (
-              <tr key={mode}>
-                <td>
-                  <code>{mode}</code>
-                </td>
-                <td>
-                  <RelativeTime date={DAYS_AGO} format={mode} />
-                </td>
-                <td>
-                  <RelativeTime date={LAST_YEAR} format={mode} />
-                </td>
+        <div className="docs-table-scroll" tabIndex={0}>
+          <table className="docs-props-table">
+            <thead>
+              <tr>
+                <th>format</th>
+                <th>3 days ago</th>
+                <th>400 days ago</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {MODES.map((mode) => (
+                <tr key={mode}>
+                  <td>
+                    <code>{mode}</code>
+                  </td>
+                  <td>
+                    <RelativeTime date={DAYS_AGO} format={mode} />
+                  </td>
+                  <td>
+                    <RelativeTime date={LAST_YEAR} format={mode} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Demo>
       <Code>{`<RelativeTime date={date} format="micro" />`}</Code>
 
       <h2>Format style</h2>
       <Demo>
-        <table className="docs-props-table">
-          <thead>
-            <tr>
-              <th>formatStyle</th>
-              <th>8 minutes ago</th>
-              <th>3 days ago</th>
-            </tr>
-          </thead>
-          <tbody>
-            {STYLES.map((style) => (
-              <tr key={style}>
-                <td>
-                  <code>{style}</code>
-                </td>
-                <td>
-                  <RelativeTime date={MINUTES_AGO} formatStyle={style} />
-                </td>
-                <td>
-                  <RelativeTime date={DAYS_AGO} formatStyle={style} />
-                </td>
+        <div className="docs-table-scroll" tabIndex={0}>
+          <table className="docs-props-table">
+            <thead>
+              <tr>
+                <th>formatStyle</th>
+                <th>8 minutes ago</th>
+                <th>3 days ago</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {STYLES.map((style) => (
+                <tr key={style}>
+                  <td>
+                    <code>{style}</code>
+                  </td>
+                  <td>
+                    <RelativeTime date={MINUTES_AGO} formatStyle={style} />
+                  </td>
+                  <td>
+                    <RelativeTime date={DAYS_AGO} formatStyle={style} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Demo>
       <Code>{`<RelativeTime date={date} formatStyle="short" />`}</Code>
 
@@ -148,8 +152,8 @@ export function RelativeTimePage() {
 
       <h2>Locale and time zone</h2>
       <p>
-        Values come from <code>DateTimeProvider</code>. The language falls back one step further,
-        to a <a href="/locale-provider">LocaleProvider</a> and then to the runtime default. Props on
+        Values come from <code>DateTimeProvider</code>. The language falls back one step further, to
+        a <a href="/locale-provider">LocaleProvider</a> and then to the runtime default. Props on
         the component override all of them — useful for a single date that must be shown in a fixed
         zone.
       </p>
@@ -204,16 +208,65 @@ export function RelativeTimePage() {
       <h2>Props</h2>
       <PropsTable
         rows={[
-          { name: 'date', type: 'Date | string', description: 'The timestamp. Strings go through new Date(...). Required.' },
-          { name: 'format', type: "'auto' | 'relative' | 'datetime' | 'duration' | 'micro'", default: "'auto'", description: 'How the timestamp is phrased.' },
-          { name: 'formatStyle', type: "'long' | 'short' | 'narrow'", description: 'Verbosity of the unit names.' },
-          { name: 'tense', type: "'auto' | 'past' | 'future'", default: "'auto'", description: 'Forces past or future phrasing.' },
-          { name: 'threshold', type: 'string', default: "'P30D'", description: 'ISO-8601 duration after which auto/relative fall back to an absolute date.' },
-          { name: 'precision', type: "'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second'", default: "'second'", description: 'Smallest unit the output uses.' },
-          { name: 'locale', type: 'string', default: 'DateTimeProvider, then the runtime default', description: 'BCP 47 locale tag.' },
-          { name: 'timeZone', type: 'string', default: 'DateTimeProvider, then the runtime default', description: 'IANA time zone name.' },
-          { name: 'hourCycle', type: "'h11' | 'h12' | 'h23' | 'h24'", default: 'DateTimeProvider, then the runtime default', description: 'Clock convention for absolute output.' },
-          { name: 'noTitle', type: 'boolean', default: 'false', description: 'Removes the native title tooltip with the absolute time.' },
+          {
+            name: 'date',
+            type: 'Date | string',
+            description: 'The timestamp. Strings go through new Date(...). Required.',
+          },
+          {
+            name: 'format',
+            type: "'auto' | 'relative' | 'datetime' | 'duration' | 'micro'",
+            default: "'auto'",
+            description: 'How the timestamp is phrased.',
+          },
+          {
+            name: 'formatStyle',
+            type: "'long' | 'short' | 'narrow'",
+            description: 'Verbosity of the unit names.',
+          },
+          {
+            name: 'tense',
+            type: "'auto' | 'past' | 'future'",
+            default: "'auto'",
+            description: 'Forces past or future phrasing.',
+          },
+          {
+            name: 'threshold',
+            type: 'string',
+            default: "'P30D'",
+            description:
+              'ISO-8601 duration after which auto/relative fall back to an absolute date.',
+          },
+          {
+            name: 'precision',
+            type: "'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second'",
+            default: "'second'",
+            description: 'Smallest unit the output uses.',
+          },
+          {
+            name: 'locale',
+            type: 'string',
+            default: 'DateTimeProvider, then the runtime default',
+            description: 'BCP 47 locale tag.',
+          },
+          {
+            name: 'timeZone',
+            type: 'string',
+            default: 'DateTimeProvider, then the runtime default',
+            description: 'IANA time zone name.',
+          },
+          {
+            name: 'hourCycle',
+            type: "'h11' | 'h12' | 'h23' | 'h24'",
+            default: 'DateTimeProvider, then the runtime default',
+            description: 'Clock convention for absolute output.',
+          },
+          {
+            name: 'noTitle',
+            type: 'boolean',
+            default: 'false',
+            description: 'Removes the native title tooltip with the absolute time.',
+          },
         ]}
       />
     </>

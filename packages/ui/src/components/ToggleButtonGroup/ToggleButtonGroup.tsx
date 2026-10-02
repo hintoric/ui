@@ -1,34 +1,38 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
-import { ACTIVE_BG_CLASS } from '../../utils/colorVariantClasses';
+import { ButtonGroupContext } from '../ButtonGroup/ButtonGroupContext';
+import { buttonGroupClasses, groupGap, isConnected } from '../ButtonGroup/buttonGroupClasses';
+import { ToggleButtonGroupContext } from './ToggleButtonGroupContext';
 import type { ToggleButtonGroupProps } from './types';
-
-interface ToggleChildProps {
-  value?: unknown;
-  className?: string;
-  onClick?: React.MouseEventHandler;
-  disabled?: boolean;
-}
 
 // Scope note: Joy UI's ToggleButtonGroup supports both a single-value
 // "exclusive" mode and a multi-value array mode via the same `value` prop;
-// this v1 only implements the multi-select array mode (a reasonable, simpler
-// subset — render a RadioGroup-backed single-select UI instead for the
-// exclusive case). Selection styling reuses the same persistent "Active"
-// background ListItemButton's `selected` state uses, not a color/variant
-// switch — matching Joy UI's own mechanism for both.
+// this v1 only implements the multi-select array mode.
+//
+// Everything else follows Joy's own mechanism (ToggleButtonGroup.js +
+// ButtonGroup.js, @mui/joy 5.0.0-beta.52): the group hands variant/color/size/
+// disabled down through ButtonGroupContext, so bare Buttons inside it render
+// outlined/neutral; selection reaches each button as `aria-pressed`, which
+// Button and IconButton style with their variant's Active tokens; and the
+// connected look comes from per-child separator borders and corner radii (see
+// buttonGroupClasses.ts). An earlier version cloned an Active background onto
+// the selected child and approximated the rest with `overflow-hidden` +
+// `divide-x`, leaving the buttons at solid/primary — a visual test that only
+// compared the group root never noticed.
 export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGroupProps>(function ToggleButtonGroup(
   {
     variant = 'outlined',
     color = 'neutral',
+    size = 'md',
     orientation = 'horizontal',
     spacing = 0,
-    disabled,
+    disabled = false,
     value,
     defaultValue = [],
     onChange,
     className,
+    style,
     children,
     ...props
   },
@@ -36,42 +40,49 @@ export const ToggleButtonGroup = React.forwardRef<HTMLDivElement, ToggleButtonGr
 ) {
   const [uncontrolledValue, setUncontrolledValue] = React.useState<unknown[]>(defaultValue);
   const selectedValues = value ?? uncontrolledValue;
-  const connected = spacing === 0 || spacing === '0px';
+  const connected = isConnected(spacing);
 
+  const buttonGroupContext = React.useMemo(
+    () => ({ variant, color, size, disabled }),
+    [variant, color, size, disabled],
+  );
+  const toggleContext = React.useMemo(
+    () => ({
+      value: selectedValues,
+      onClick: (event: React.MouseEvent<HTMLButtonElement>, childValue: unknown) => {
+        if (childValue === undefined) return;
+        const next = selectedValues.includes(childValue)
+          ? selectedValues.filter((v) => v !== childValue)
+          : [...selectedValues, childValue];
+        setUncontrolledValue(next);
+        onChange?.(event, next);
+      },
+    }),
+    [selectedValues, onChange],
+  );
+
+  const count = React.Children.count(children);
   return (
     <div
       ref={ref}
-      className={cx(
-        'flex rounded-sm',
-        orientation === 'vertical' ? 'flex-col' : 'flex-row',
-        connected &&
-          (orientation === 'vertical'
-            ? 'divide-y divide-neutral-outlined-border overflow-hidden'
-            : 'divide-x divide-neutral-outlined-border overflow-hidden'),
-        className,
-      )}
-      style={{ gap: connected ? undefined : spacing }}
+      role="group"
+      className={cx(buttonGroupClasses({ variant, color, orientation, connected }), className)}
+      style={{ gap: groupGap(spacing), ...style }}
       {...props}
     >
-      {React.Children.map(children, (child) => {
-        if (!React.isValidElement<ToggleChildProps>(child)) {
-          return child;
-        }
-        const childValue = child.props.value;
-        const isSelected = selectedValues.includes(childValue);
-        return React.cloneElement(child, {
-          disabled: disabled || child.props.disabled,
-          className: cx(child.props.className, isSelected && cx(ACTIVE_BG_CLASS[variant][color], 'font-medium')),
-          onClick: (event: React.MouseEvent) => {
-            child.props.onClick?.(event);
-            const next = isSelected
-              ? selectedValues.filter((v) => v !== childValue)
-              : [...selectedValues, childValue];
-            setUncontrolledValue(next);
-            onChange?.(event, next);
-          },
-        });
-      })}
+      <ToggleButtonGroupContext.Provider value={toggleContext}>
+        <ButtonGroupContext.Provider value={buttonGroupContext}>
+          {React.Children.map(children, (child, index) => {
+            if (!React.isValidElement(child)) {
+              return child;
+            }
+            return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
+              ...(index === 0 && { 'data-first-child': '' }),
+              ...(index === count - 1 && { 'data-last-child': '' }),
+            });
+          })}
+        </ButtonGroupContext.Provider>
+      </ToggleButtonGroupContext.Provider>
     </div>
   );
 });
