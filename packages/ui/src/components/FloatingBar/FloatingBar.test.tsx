@@ -114,7 +114,7 @@ describe('FloatingBar', () => {
         <FloatingBarButton aria-label="Print">P</FloatingBarButton>
       </FloatingBar>,
     );
-    expect(screen.getByRole('button', { name: 'Print' })).toHaveClass('size-11');
+    expect(screen.getByRole('button', { name: 'Print' })).toHaveClass('min-w-11', 'min-h-11');
   });
 
   it('lets a menu button sit in the bar as a circle of the bar\'s size, and opens its menu', async () => {
@@ -130,7 +130,7 @@ describe('FloatingBar', () => {
       </FloatingBar>,
     );
     const more = screen.getByRole('button', { name: 'More' });
-    expect(more).toHaveClass('rounded-full', 'size-11');
+    expect(more).toHaveClass('rounded-full', 'min-w-11', 'min-h-11');
     expect(more).not.toHaveClass('rounded-sm');
     expect(more).not.toHaveAttribute('aria-pressed');
 

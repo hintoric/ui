@@ -1,12 +1,12 @@
 import { cva } from 'class-variance-authority';
-import { INTERACTIVE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
+import { INTERACTIVE_COLOR_CLASSES, PRESSED_CLASSES } from '../../utils/colorVariantClasses';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 
 const JOY_VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const JOY_COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
 
 const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
-  JOY_COLORS.map((color) => ({ variant, color, class: INTERACTIVE_COLOR_CLASSES[variant][color] })),
+  JOY_COLORS.map((color) => ({ variant, color, class: [INTERACTIVE_COLOR_CLASSES[variant][color], PRESSED_CLASSES[variant][color]] })),
 );
 
 // Typography measured against real @mui/joy 5.0.0-beta.52 (2026-09-07), after
@@ -33,9 +33,9 @@ export const buttonVariants = cva(
       variant: { solid: '', soft: '', outlined: '', plain: '' },
       color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
       size: {
-        sm: 'min-h-8 px-3 text-sm/[1.5]',
-        md: 'min-h-9 px-4 text-sm/[1.5]',
-        lg: 'min-h-11 px-6 text-base/[1.5]',
+        sm: 'min-h-8 px-3 py-1 text-sm/[1.5]',
+        md: 'min-h-9 px-4 py-1.5 text-sm/[1.5]',
+        lg: 'min-h-11 px-6 py-2 text-base/[1.5]',
       },
     },
     compoundVariants,

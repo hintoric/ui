@@ -1,12 +1,12 @@
 import { cva } from 'class-variance-authority';
-import { INTERACTIVE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
+import { INTERACTIVE_COLOR_CLASSES, PRESSED_CLASSES } from '../../utils/colorVariantClasses';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 
 const JOY_VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const JOY_COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
 
 const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
-  JOY_COLORS.map((color) => ({ variant, color, class: INTERACTIVE_COLOR_CLASSES[variant][color] })),
+  JOY_COLORS.map((color) => ({ variant, color, class: [INTERACTIVE_COLOR_CLASSES[variant][color], PRESSED_CLASSES[variant][color]] })),
 );
 
 // `font-body font-medium` measured against real @mui/joy 5.0.0-beta.52
@@ -22,9 +22,9 @@ export const iconButtonVariants = cva(
       variant: { solid: '', soft: '', outlined: '', plain: '' },
       color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
       size: {
-        sm: 'size-8',
-        md: 'size-9',
-        lg: 'size-11',
+        sm: 'min-w-8 min-h-8 px-0.5',
+        md: 'min-w-9 min-h-9 px-1',
+        lg: 'min-w-11 min-h-11 px-1.5',
       },
     },
     compoundVariants,
