@@ -23,7 +23,7 @@ describe('Email.Card parity with Card', () => {
       for (const color of EMAIL_COLORS) {
         it(`${variant} / ${color} matches in ${scheme}`, async () => {
           await setColorScheme(scheme);
-          const { web, email } = renderPair(
+          const { web, email } = await renderPair(
             <Card variant={variant} color={color}>
               {content}
             </Card>,
@@ -38,26 +38,34 @@ describe('Email.Card parity with Card', () => {
       }
     }
 
-    it(`variants match their baselines in ${scheme}`, async () => {
+    // Every variant × colour, one row per variant — the baseline a human
+    // reviews, next to the computed-style assertions above.
+    it(`grid matches its baselines in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      renderPair(
-        <div style={{ display: 'grid', gap: 8 }}>
-          {EMAIL_VARIANTS.map((variant) => (
-            <Card key={variant} variant={variant} color="primary">
-              {variant}
-            </Card>
-          ))}
+      const grid = { display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6 } as const;
+      await renderPair(
+        <div style={grid}>
+          {EMAIL_VARIANTS.flatMap((variant) =>
+            EMAIL_COLORS.map((color) => (
+              <Card key={`${variant}-${color}`} variant={variant} color={color}>
+                {color[0]!.toUpperCase()}
+              </Card>
+            )),
+          )}
         </div>,
-        <div style={{ display: 'grid', gap: 8 }}>
-          {EMAIL_VARIANTS.map((variant) => (
-            <Email.Card key={variant} variant={variant} color="primary">
-              {variant}
-            </Email.Card>
-          ))}
+        <div style={grid}>
+          {EMAIL_VARIANTS.flatMap((variant) =>
+            EMAIL_COLORS.map((color) => (
+              <Email.Card key={`${variant}-${color}`} variant={variant} color={color}>
+                {color[0]!.toUpperCase()}
+              </Email.Card>
+            )),
+          )}
         </div>,
+        340,
       );
-      await expect(page.getByTestId('web')).toMatchScreenshot(`email-card-variants-web-${scheme}`);
-      await expect(page.getByTestId('email')).toMatchScreenshot(`email-card-variants-email-${scheme}`);
+      await expect(page.getByTestId('web')).toMatchScreenshot(`email-card-grid-web-${scheme}`);
+      await expect(page.getByTestId('email')).toMatchScreenshot(`email-card-grid-email-${scheme}`);
     });
   }
 });

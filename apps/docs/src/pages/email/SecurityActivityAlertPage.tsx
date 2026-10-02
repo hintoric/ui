@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useColorScheme } from '@hintoric/ui';
 import {
   SecurityActivityAlertEmail,
@@ -20,28 +20,83 @@ const shared = {
   legalNotice: 'Muster GmbH · Musterstraße 1 · 79098 Freiburg',
 };
 
-const EXAMPLES: Record<'workspace' | 'account', Example> = {
-  workspace: {
-    ...shared,
-    activity: {
-      title: 'Bankverbindung geändert',
-      actorName: 'Erika Mustermann',
-      occurredAt: new Date('2026-09-28T17:31:00Z'),
-      description: 'Erika Mustermann hat am 28. September 2026 um 19:31 die IBAN des Geschäftskontos geändert.',
+const occurredAt = new Date('2026-09-28T17:31:00Z');
+
+// The activity's own texts come from the caller, so they are per language
+// too — the messages switch alone would leave a German heading in an
+// English mail.
+const EXAMPLES: Record<'de' | 'en', Record<'workspace' | 'account', Example>> = {
+  de: {
+    workspace: {
+      ...shared,
+      activity: {
+        title: 'Bankverbindung geändert',
+        actorName: 'Erika Mustermann',
+        occurredAt,
+        description: 'Erika Mustermann hat am 28. September 2026 um 19:31 die IBAN des Geschäftskontos geändert.',
+      },
+      target: { type: 'workspace', workspaceName: 'Muster GmbH' },
     },
-    target: { type: 'workspace', workspaceName: 'Muster GmbH' },
+    account: {
+      ...shared,
+      activity: {
+        title: 'Passwort geändert',
+        actorName: 'Max Mustermann',
+        occurredAt,
+        description: 'Das Passwort deines Kontos wurde am 28. September 2026 um 19:31 geändert.',
+      },
+      target: { type: 'account', email: 'max@muster.de' },
+    },
   },
-  account: {
-    ...shared,
-    activity: {
-      title: 'Passwort geändert',
-      actorName: 'Max Mustermann',
-      occurredAt: new Date('2026-09-28T17:31:00Z'),
-      description: 'Das Passwort deines Kontos wurde am 28. September 2026 um 19:31 geändert.',
+  en: {
+    workspace: {
+      ...shared,
+      activity: {
+        title: 'Bank details changed',
+        actorName: 'Erika Mustermann',
+        occurredAt,
+        description: 'Erika Mustermann changed the IBAN of the business account on 28 September 2026 at 19:31.',
+      },
+      target: { type: 'workspace', workspaceName: 'Muster GmbH' },
     },
-    target: { type: 'account', email: 'max@muster.de' },
+    account: {
+      ...shared,
+      activity: {
+        title: 'Password changed',
+        actorName: 'Max Mustermann',
+        occurredAt,
+        description: 'The password of your account was changed on 28 September 2026 at 19:31.',
+      },
+      target: { type: 'account', email: 'max@muster.de' },
+    },
   },
 };
+
+/**
+ * The rendered mail in an iframe, written with document.write rather than
+ * `srcDoc`: a srcdoc document is always in no-quirks mode, while the mail's
+ * own doctype puts it in limited-quirks mode — the layout readers get.
+ * `allow-same-origin` and nothing else: the page can write into the frame,
+ * scripts in it stay blocked.
+ */
+function EmailPreview({ html }: { html: string }) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    const doc = frame.current?.contentDocument;
+    if (!doc) return;
+    doc.open();
+    doc.write(html);
+    doc.close();
+  }, [html]);
+  return (
+    <iframe
+      ref={frame}
+      title="Security activity alert preview"
+      sandbox="allow-same-origin"
+      style={{ width: '100%', height: 720, border: 0, display: 'block' }}
+    />
+  );
+}
 
 export function SecurityActivityAlertPage() {
   const { resolvedMode } = useColorScheme();
@@ -54,7 +109,7 @@ export function SecurityActivityAlertPage() {
     let current = true;
     renderEmail(
       <SecurityActivityAlertEmail
-        {...EXAMPLES[kind]}
+        {...EXAMPLES[lang][kind]}
         messages={lang === 'de' ? securityActivityAlertMessagesDe : securityActivityAlertMessagesEn}
         colorScheme={resolvedMode}
       />,
@@ -98,18 +153,7 @@ export function SecurityActivityAlertPage() {
             onChange={setLang}
           />
         </div>
-        {/* allow-same-origin and nothing else: scripts stay blocked. An empty
-            sandbox left the frame blank after srcDoc changed. Keyed on the
-            HTML so each render gets a fresh document. */}
-        {html && (
-          <iframe
-            key={html}
-            title="Security activity alert preview"
-            srcDoc={html}
-            sandbox="allow-same-origin"
-            style={{ width: '100%', height: 720, border: 0, display: 'block' }}
-          />
-        )}
+        {html && <EmailPreview key={html} html={html} />}
       </Demo>
 
       <h2>Sending</h2>

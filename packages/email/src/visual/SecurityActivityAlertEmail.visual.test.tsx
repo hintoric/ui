@@ -3,13 +3,14 @@ import { page } from 'vitest/browser';
 import { render, screen } from '@testing-library/react';
 import { SecurityActivityAlertEmail, renderEmail, securityActivityAlertMessagesDe, type SecurityActivityAlertProps } from '../index';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { writeEmailDocument } from './parity';
 
 /*
  * The template has no @mui/joy or web counterpart, so this is a self-baseline
  * test like RelativeTime's — but of the real output: the HTML renderEmail
- * produces, loaded into an iframe, exactly as a mail client receives it. Its
- * parts carry their own parity tests against the web components, next to
- * this file.
+ * produces, written into an iframe so its doctype puts the frame in the same
+ * (limited-quirks) mode a mail client shows it in. Its parts carry their own
+ * parity tests against the web components, next to this file.
  */
 
 const props: SecurityActivityAlertProps = {
@@ -22,19 +23,22 @@ const props: SecurityActivityAlertProps = {
   legalNotice: 'Muster GmbH · Musterstraße 1 · 79098 Freiburg',
 };
 
-// Wider than 600px on purpose: at 600 and below the stylesheet's phone rule
-// takes the card's border, radius and padding away, as AuthScreen does.
-async function renderAlert(scheme: 'light' | 'dark') {
+/**
+ * `width` above 600px is the desktop layout; at 600 and below the stylesheet's
+ * phone rule turns the card into a full-width sheet, as AuthScreen does.
+ */
+async function renderAlert(scheme: 'light' | 'dark', width = 640) {
   const { html } = await renderEmail(<SecurityActivityAlertEmail {...props} colorScheme={scheme} />);
-  const testId = `email-${scheme}`;
-  render(<iframe data-testid={testId} title="email" srcDoc={html} style={{ width: 640, height: 720, border: 0 }} />);
-  const frame = screen.getByTestId(testId) as HTMLIFrameElement;
-  await new Promise<void>((resolve) => {
-    if (frame.contentDocument?.readyState === 'complete' && frame.contentDocument.body.childElementCount) resolve();
-    else frame.addEventListener('load', () => resolve(), { once: true });
-  });
-  const doc = frame.contentDocument!;
-  return { doc, card: doc.querySelector('.hx-layout-card') as HTMLElement, heading: doc.querySelector('h1') as HTMLElement };
+  const testId = `email-${scheme}-${width}`;
+  render(<iframe data-testid={testId} title="email" style={{ width, border: 0, display: 'block' }} />);
+  const doc = await writeEmailDocument(screen.getByTestId(testId) as HTMLIFrameElement, html);
+  return {
+    testId,
+    doc,
+    card: doc.querySelector('.hx-layout-card') as HTMLElement,
+    heading: doc.querySelector('h1') as HTMLElement,
+    button: [...doc.querySelectorAll('a')].find((a) => a.textContent === 'Aktivität prüfen')!,
+  };
 }
 
 describe('SecurityActivityAlertEmail visual (self-baseline)', () => {
@@ -50,8 +54,14 @@ describe('SecurityActivityAlertEmail visual (self-baseline)', () => {
   for (const scheme of COLOR_SCHEMES) {
     it(`matches its own baseline screenshot in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      await renderAlert(scheme);
-      await expect(page.getByTestId(`email-${scheme}`)).toMatchScreenshot(`security-activity-alert-${scheme}`);
+      const { testId } = await renderAlert(scheme);
+      await expect(page.getByTestId(testId)).toMatchScreenshot(`security-activity-alert-${scheme}`);
+    });
+
+    it(`matches its own phone baseline screenshot in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      const { testId } = await renderAlert(scheme, 375);
+      await expect(page.getByTestId(testId)).toMatchScreenshot(`security-activity-alert-phone-${scheme}`);
     });
   }
 
@@ -73,15 +83,31 @@ describe('SecurityActivityAlertEmail visual (self-baseline)', () => {
     expect(dark.ink).not.toBe(light.ink);
   });
 
-  it('lays the card out like AuthScreen: 440px, 20px radius, 48px padding', async () => {
+  it('lays the card out like AuthScreen: 440px, 20px radius, 48px inset', async () => {
     const { doc, card, heading } = await renderAlert('light');
-    const style = doc.defaultView!.getComputedStyle(card);
     expect(card.getBoundingClientRect().width).toBe(440);
-    expect(style.borderTopLeftRadius).toBe('20px');
-    // Measured as the content's actual inset rather than read off one
-    // element's `padding`: react-email 6's Container carries the style onto an
-    // inner cell, and which element holds it is its business. 1px border + 48.
-    const inset = heading.getBoundingClientRect().left - card.getBoundingClientRect().left;
-    expect(inset).toBe(49);
+    expect(doc.defaultView!.getComputedStyle(card).borderTopLeftRadius).toBe('20px');
+    // The content's actual inset, not one element's `padding`: 1px border + 48.
+    expect(heading.getBoundingClientRect().left - card.getBoundingClientRect().left).toBe(49);
   });
+
+  it('sends a 44px button — Button lg — in the mode the mail is shown in', async () => {
+    const { doc, button } = await renderAlert('light');
+    // limited-quirks: react-email's XHTML 1.0 Transitional doctype.
+    expect(doc.doctype?.publicId).toBe('-//W3C//DTD XHTML 1.0 Transitional//EN');
+    expect(button.getBoundingClientRect().height).toBe(44);
+  });
+
+  for (const scheme of COLOR_SCHEMES) {
+    it(`fills a 375px phone with a 24px inset and the card's colour around it in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      const { doc, card, heading } = await renderAlert(scheme, 375);
+      const view = doc.defaultView!;
+      expect(card.getBoundingClientRect().width).toBe(375);
+      expect(heading.getBoundingClientRect().left - card.getBoundingClientRect().left).toBe(24);
+      expect(view.getComputedStyle(card).borderTopWidth).toBe('0px');
+      expect(view.getComputedStyle(card).borderTopLeftRadius).toBe('0px');
+      expect(view.getComputedStyle(doc.querySelector('body > table td')!).backgroundColor).toBe(view.getComputedStyle(card).backgroundColor);
+    });
+  }
 });
