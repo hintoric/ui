@@ -7,87 +7,102 @@ export function ButtonGroupPage() {
     <>
       <h1>ButtonGroup</h1>
       <p className="docs-lede">
-        Lays out related buttons as one connected control. This is a layout wrapper only — unlike
-        Joy UI, it does not push <code>variant</code>, <code>color</code> or <code>size</code> down
-        to its children through context, so pass those to each button yourself.
+        Joins related buttons into one control. Like Joy UI, the group passes its{' '}
+        <code>variant</code>, <code>color</code>, <code>size</code> and <code>disabled</code> down to
+        every Button and IconButton inside it, so the buttons themselves usually need no props.
       </p>
 
       <h2>Connected buttons</h2>
       <p>
-        With the default <code>spacing={'{0}'}</code> the children sit flush against each other and
-        the group clips their outer corners into a single rounded shape.
+        With the default <code>spacing={'{0}'}</code> the buttons touch: the outer corners stay
+        rounded, the inner ones go square, and a separator line sits between neighbours. Buttons
+        default to <code>outlined</code> / <code>neutral</code> / <code>md</code>.
       </p>
       <Demo>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
           <ButtonGroup>
-            <Button variant="outlined" color="neutral">
-              Cut
-            </Button>
-            <Button variant="outlined" color="neutral">
-              Copy
-            </Button>
-            <Button variant="outlined" color="neutral">
-              Paste
-            </Button>
+            <Button>Cut</Button>
+            <Button>Copy</Button>
+            <Button>Paste</Button>
           </ButtonGroup>
-          <ButtonGroup>
-            <Button variant="solid" color="primary">
-              Save
-            </Button>
-            <Button variant="solid" color="primary">
-              Save as…
-            </Button>
+          <ButtonGroup variant="solid" color="primary">
+            <Button>Save</Button>
+            <Button>Save as…</Button>
           </ButtonGroup>
         </div>
       </Demo>
       <Code>{`<ButtonGroup>
-  <Button variant="outlined" color="neutral">Cut</Button>
-  <Button variant="outlined" color="neutral">Copy</Button>
-</ButtonGroup>`}</Code>
+  <Button>Cut</Button>
+  <Button>Copy</Button>
+</ButtonGroup>
+<ButtonGroup variant="solid" color="primary">…</ButtonGroup>`}</Code>
 
-      <h2>Spacing</h2>
-      <p>
-        Any non-zero <code>spacing</code> detaches the children: the dividers and corner clipping
-        drop away and the value becomes a plain flex gap.
-      </p>
+      <h2>Variants and colors</h2>
+      <p>A button that sets its own prop keeps it; the rest follow the group.</p>
       <Demo>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <ButtonGroup spacing={8}>
-            <Button variant="soft" color="neutral">
-              One
-            </Button>
-            <Button variant="soft" color="neutral">
-              Two
-            </Button>
-            <Button variant="soft" color="neutral">
-              Three
-            </Button>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <ButtonGroup variant="soft" color="success">
+            <Button>One</Button>
+            <Button>Two</Button>
+            <Button>Three</Button>
           </ButtonGroup>
-          <ButtonGroup spacing="1.5rem">
-            <Button variant="plain" color="primary">
-              One
-            </Button>
-            <Button variant="plain" color="primary">
-              Two
-            </Button>
+          <ButtonGroup variant="plain" color="danger">
+            <Button>One</Button>
+            <Button>Two</Button>
+          </ButtonGroup>
+          <ButtonGroup variant="outlined" color="primary">
+            <Button>Edit</Button>
+            <Button variant="solid">Publish</Button>
           </ButtonGroup>
         </div>
       </Demo>
-      <Code>{`<ButtonGroup spacing={8}>…</ButtonGroup>
+      <Code>{`<ButtonGroup variant="soft" color="success">…</ButtonGroup>
+<ButtonGroup variant="outlined" color="primary">
+  <Button>Edit</Button>
+  <Button variant="solid">Publish</Button>
+</ButtonGroup>`}</Code>
+
+      <h2>Sizes</h2>
+      <Demo>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+          {(['sm', 'md', 'lg'] as const).map((size) => (
+            <ButtonGroup key={size} size={size}>
+              <Button>One</Button>
+              <Button>Two</Button>
+            </ButtonGroup>
+          ))}
+        </div>
+      </Demo>
+      <Code>{`<ButtonGroup size="sm">…</ButtonGroup>`}</Code>
+
+      <h2>Spacing</h2>
+      <p>
+        Any non-zero <code>spacing</code> detaches the buttons and rounds every corner. A number is a
+        multiple of 8px, as in Joy UI; a string is used as-is. Outlined buttons keep their border;
+        the other variants lose the separator.
+      </p>
+      <Demo>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <ButtonGroup spacing={1} variant="soft">
+            <Button>One</Button>
+            <Button>Two</Button>
+            <Button>Three</Button>
+          </ButtonGroup>
+          <ButtonGroup spacing="1.5rem" variant="plain" color="primary">
+            <Button>One</Button>
+            <Button>Two</Button>
+          </ButtonGroup>
+        </div>
+      </Demo>
+      <Code>{`<ButtonGroup spacing={1}>…</ButtonGroup>      {/* 8px */}
 <ButtonGroup spacing="1.5rem">…</ButtonGroup>`}</Code>
 
       <h2>Vertical orientation</h2>
       <Demo>
         <ButtonGroup orientation="vertical">
-          <Button variant="outlined" color="neutral">
-            Top
-          </Button>
-          <Button variant="outlined" color="neutral">
-            Middle
-          </Button>
-          <Button variant="outlined" color="neutral">
-            Bottom
-          </Button>
+          <Button>Top</Button>
+          <Button>Middle</Button>
+          <Button>Bottom</Button>
         </ButtonGroup>
       </Demo>
       <Code>{`<ButtonGroup orientation="vertical">…</ButtonGroup>`}</Code>
@@ -95,52 +110,42 @@ export function ButtonGroupPage() {
       <h2>With icon buttons</h2>
       <Demo>
         <ButtonGroup>
-          <IconButton variant="outlined" color="neutral" aria-label="Bold">
-            B
-          </IconButton>
-          <IconButton variant="outlined" color="neutral" aria-label="Italic">
-            I
-          </IconButton>
-          <IconButton variant="outlined" color="neutral" aria-label="Underline">
-            U
-          </IconButton>
+          <IconButton aria-label="Bold">B</IconButton>
+          <IconButton aria-label="Italic">I</IconButton>
+          <IconButton aria-label="Underline">U</IconButton>
         </ButtonGroup>
       </Demo>
 
       <h2>Disabling the whole group</h2>
       <p>
-        <code>disabled</code> sets <code>aria-disabled</code> on the container for assistive
-        technology. It does not disable the children — pass <code>disabled</code> to each button to
-        actually block clicks.
+        <code>disabled</code> disables every button in the group. A button can opt back in with{' '}
+        <code>disabled={'{false}'}</code>.
       </p>
       <Demo>
         <ButtonGroup disabled>
-          <Button variant="outlined" color="neutral" disabled>
-            Cut
-          </Button>
-          <Button variant="outlined" color="neutral" disabled>
-            Copy
-          </Button>
+          <Button>Cut</Button>
+          <Button>Copy</Button>
         </ButtonGroup>
       </Demo>
+      <Code>{`<ButtonGroup disabled>…</ButtonGroup>`}</Code>
 
       <h2>Props</h2>
       <PropsTable
         rows={[
           { name: 'children', type: 'React.ReactNode', description: 'The buttons to group.' },
+          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'outlined'", description: 'Variant for every button that does not set its own.' },
+          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color for every button that does not set its own.' },
+          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size for every button that does not set its own.' },
           { name: 'orientation', type: "'horizontal' | 'vertical'", default: "'horizontal'", description: 'Layout direction of the group.' },
-          { name: 'spacing', type: 'number | string', default: '0', description: 'Gap between children. 0 renders them connected with dividers.' },
-          { name: 'disabled', type: 'boolean', default: 'false', description: 'Sets aria-disabled on the container. Does not disable the children.' },
+          { name: 'spacing', type: 'number | string', default: '0', description: 'Gap between buttons: a number is a multiple of 8px, a string is used as-is. 0 connects them.' },
+          { name: 'disabled', type: 'boolean', default: 'false', description: 'Disables every button that does not set its own disabled.' },
         ]}
       />
 
       <h2>Differences from Joy UI</h2>
       <p>
-        Joy UI&apos;s ButtonGroup shares a context that gives every child button its{' '}
-        <code>variant</code>, <code>color</code>, <code>size</code> and <code>disabled</code>
-        , and suppresses the inner border radii per child. This build keeps Button&apos;s contract
-        untouched and approximates the connected look with <code>overflow: hidden</code> plus
-        divider borders instead.
+        Joy UI&apos;s <code>buttonFlex</code> prop, its special handling of <code>Divider</code>{' '}
+        children, and responsive (breakpoint-object) <code>spacing</code> are not supported.
       </p>
     </>
   );

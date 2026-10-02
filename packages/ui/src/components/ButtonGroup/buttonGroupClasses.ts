@@ -11,7 +11,8 @@ import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 // The CSS variable names are Joy's own, so these rules can be read against
 // ButtonGroup.js line by line. The children are tagged `data-first-child` /
 // `data-last-child` by the group, exactly as Joy does; a middle child has
-// neither, an only child has both.
+// neither. ButtonGroup leaves an only child untagged, as Joy does, which is
+// why the middle-child and overlap rules also exclude `:only-child`.
 //
 // `--ButtonGroup-childRadius` stands in for Joy's `--unstable_childRadius`,
 // `calc((1 - connected) * radius - var(--variant-borderWidth, 0px))`. That
@@ -36,24 +37,24 @@ const HORIZONTAL = [
   'flex-row',
   '[&>[data-first-child]]:[border-right:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
   '[&>[data-last-child]]:[border-left:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-left:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-right:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-left:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-right:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
   '[&>[data-first-child]:not([data-last-child])]:[border-radius:var(--radius-sm)_var(--ButtonGroup-childRadius)_var(--ButtonGroup-childRadius)_var(--radius-sm)]',
   '[&>[data-last-child]:not([data-first-child])]:[border-radius:var(--ButtonGroup-childRadius)_var(--radius-sm)_var(--radius-sm)_var(--ButtonGroup-childRadius)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-radius:var(--ButtonGroup-childRadius)]',
-  '[&>:not([data-first-child])]:[margin-left:calc(var(--ButtonGroup-separatorSize)*-1)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-radius:var(--ButtonGroup-childRadius)]',
+  '[&>:not([data-first-child]):not(:only-child)]:[margin-left:calc(var(--ButtonGroup-separatorSize)*-1)]',
 ].join(' ');
 
 const VERTICAL = [
   'flex-col',
   '[&>[data-first-child]]:[border-bottom:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
   '[&>[data-last-child]]:[border-top:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-top:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-bottom:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-top:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-bottom:var(--ButtonGroup-separatorSize)_solid_var(--ButtonGroup-separatorColor)]',
   '[&>[data-first-child]:not([data-last-child])]:[border-radius:var(--radius-sm)_var(--radius-sm)_var(--ButtonGroup-childRadius)_var(--ButtonGroup-childRadius)]',
   '[&>[data-last-child]:not([data-first-child])]:[border-radius:var(--ButtonGroup-childRadius)_var(--ButtonGroup-childRadius)_var(--radius-sm)_var(--radius-sm)]',
-  '[&>:not([data-first-child]):not([data-last-child])]:[border-radius:var(--ButtonGroup-childRadius)]',
-  '[&>:not([data-first-child])]:[margin-top:calc(var(--ButtonGroup-separatorSize)*-1)]',
+  '[&>:not([data-first-child]):not([data-last-child]):not(:only-child)]:[border-radius:var(--ButtonGroup-childRadius)]',
+  '[&>:not([data-first-child]):not(:only-child)]:[margin-top:calc(var(--ButtonGroup-separatorSize)*-1)]',
 ].join(' ');
 
 /** `spacing` 0 / "0px" / "0rem" connects the buttons — Joy's `/^0(?!\.)/` test. */
