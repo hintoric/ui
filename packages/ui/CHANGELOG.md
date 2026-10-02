@@ -1,5 +1,20 @@
 # @hintoric/ui
 
+## 0.8.0
+
+### Minor Changes
+
+- 5db1699: `ButtonGroup` now works and looks like Joy UI's. The new `variant`, `color` and `size` props, and `disabled`, are passed to every `Button`/`IconButton` inside the group that doesn't set its own. A group of bare buttons therefore renders outlined/neutral/md, as Joy's does. `disabled` now really disables those buttons; before, it only set `aria-disabled` on the container. The buttons join with Joy's separator borders, square inner corners and 1px overlap, replacing the old `overflow: hidden` + divider approximation. The group has `role="group"`.
+
+  Behaviour changes to check when upgrading:
+
+  - A numeric `spacing` now counts in Joy's 8px steps: `spacing={1}` is 8px, where `spacing={8}` used to mean 8px. A string such as `"1.5rem"` is still used as-is.
+  - Buttons that relied on Button's own solid/primary default now pick up the group's outlined/neutral. Pass `variant`/`color` to the group, or to the button, to keep the old look.
+
+- 5db1699: `ToggleButtonGroup` now looks like Joy UI's. Its `variant`, `color`, new `size` and `disabled` props reach every `Button`/`IconButton` inside it that doesn't set its own, so a group of bare buttons renders outlined/neutral rather than solid/primary. The buttons join seamlessly, with Joy's separator borders and square inner corners. A selected button is marked `aria-pressed="true"` and keeps its pressed fill at the same font weight as its neighbours. A numeric `spacing` now counts in Joy's 8px steps (`spacing={1}` is 8px, not 1px). Selection now also works for buttons wrapped in another element, such as a Tooltip.
+
+  Smaller Joy-parity fixes that come with it: `Button` gets Joy's vertical padding, `IconButton` uses a minimum size plus horizontal padding instead of a fixed square, and `plain`/`neutral` buttons darken their text on hover as Joy's do. Both `Button` and `IconButton` now style `aria-pressed="true"` with their variant's active colours.
+
 ## 0.7.0
 
 ### Minor Changes

@@ -64,6 +64,15 @@ import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 import { MapImagePage } from './pages/MapImagePage';
+import { EmailOverviewPage } from './pages/email/EmailOverviewPage';
+import { EmailTypographyPage } from './pages/email/EmailTypographyPage';
+import { EmailButtonPage } from './pages/email/EmailButtonPage';
+import { EmailLinkPage } from './pages/email/EmailLinkPage';
+import { EmailDividerPage } from './pages/email/EmailDividerPage';
+import { EmailCardPage } from './pages/email/EmailCardPage';
+import { EmailAvatarPage } from './pages/email/EmailAvatarPage';
+import { EmailChipPage } from './pages/email/EmailChipPage';
+import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
 
 export function App() {
   return (
@@ -140,6 +149,17 @@ export function App() {
             <Route path="/forms" element={<FormsPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
             <Route path="/map-image" element={<MapImagePage />} />
+
+            {/* The email section — its own navigation, see EMAIL_NAV. */}
+            <Route path="/email" element={<EmailOverviewPage />} />
+            <Route path="/email/typography" element={<EmailTypographyPage />} />
+            <Route path="/email/button" element={<EmailButtonPage />} />
+            <Route path="/email/link" element={<EmailLinkPage />} />
+            <Route path="/email/divider" element={<EmailDividerPage />} />
+            <Route path="/email/card" element={<EmailCardPage />} />
+            <Route path="/email/avatar" element={<EmailAvatarPage />} />
+            <Route path="/email/chip" element={<EmailChipPage />} />
+            <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
