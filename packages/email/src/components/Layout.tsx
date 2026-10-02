@@ -43,10 +43,11 @@ export function Layout({ lang, preview, footer, colorScheme, children }: LayoutP
             backgroundColor: t.surface,
             border: `1px solid ${variantTokens('light', 'outlined', 'neutral').borderColor}`,
             borderRadius: '20px',
-            padding: '48px',
           }}
         >
-          {children}
+          <div className={emailClass.layoutCardBody} style={{ padding: '48px' }}>
+            {children}
+          </div>
         </Container>
         {footer && <Container style={{ maxWidth: '440px', padding: '24px 24px 0', textAlign: 'center' }}>{footer}</Container>}
       </Body>

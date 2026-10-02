@@ -13,14 +13,14 @@ describe('Email.Divider parity with Divider', () => {
   for (const scheme of COLOR_SCHEMES) {
     it(`matches in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      const { web, email } = renderPair(<Divider />, <Email.Divider />);
+      const { web, email } = await renderPair(<Divider />, <Email.Divider />);
       expectSameStyles(web, email, [...PROPS]);
       expectSameBox(web, email);
     });
 
     it(`matches its baseline in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      renderPair(
+      await renderPair(
         <div style={{ padding: 12 }}>
           <Divider />
         </div>,

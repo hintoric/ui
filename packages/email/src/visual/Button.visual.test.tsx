@@ -17,7 +17,7 @@ describe('Email.Button parity with Button', () => {
       for (const color of EMAIL_COLORS) {
         it(`${variant} / ${color} matches in ${scheme}`, async () => {
           await setColorScheme(scheme);
-          const { web, email } = renderPair(
+          const { web, email } = await renderPair(
             <Button variant={variant} color={color}>
               Aktivität prüfen
             </Button>,
@@ -34,14 +34,14 @@ describe('Email.Button parity with Button', () => {
     for (const size of ['sm', 'md', 'lg'] as const) {
       it(`size ${size} matches in ${scheme}`, async () => {
         await setColorScheme(scheme);
-        const { web, email } = renderPair(<Button size={size}>Label</Button>, <Email.Button href="https://example.com" size={size}>Label</Email.Button>);
+        const { web, email } = await renderPair(<Button size={size}>Label</Button>, <Email.Button href="https://example.com" size={size}>Label</Email.Button>);
         expectSameStyles(web, email, [...PROPS]);
         expectSameBox(web, email);
       });
 
       it(`outlined size ${size} matches in ${scheme}`, async () => {
         await setColorScheme(scheme);
-        const { web, email } = renderPair(
+        const { web, email } = await renderPair(
           <Button size={size} variant="outlined">
             Label
           </Button>,
@@ -51,11 +51,31 @@ describe('Email.Button parity with Button', () => {
         );
         expectSameBox(web, email);
       });
+
+      // A webmail that drops the doctype shows the mail in full quirks mode,
+      // where a line's height comes from its content alone.
+      for (const variant of ['solid', 'outlined'] as const) {
+        it(`${variant} size ${size} keeps its height without a doctype (quirks) in ${scheme}`, async () => {
+          await setColorScheme(scheme);
+          const { web, email, emailDocument } = await renderPair(
+            <Button size={size} variant={variant}>
+              Label
+            </Button>,
+            <Email.Button href="https://example.com" size={size} variant={variant}>
+              Label
+            </Email.Button>,
+            320,
+            { quirks: true },
+          );
+          expect(emailDocument.compatMode).toBe('BackCompat');
+          expectSameBox(web, email);
+        });
+      }
     }
 
     it(`fullWidth matches a full-width Button in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      const { web, email } = renderPair(
+      const { web, email } = await renderPair(
         <Button style={{ width: '100%' }}>Label</Button>,
         <Email.Button href="https://example.com" fullWidth>
           Label
@@ -66,7 +86,7 @@ describe('Email.Button parity with Button', () => {
 
     it(`grid matches its baselines in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      renderPair(
+      await renderPair(
         <div style={{ display: 'grid', gap: 8 }}>
           {EMAIL_VARIANTS.map((variant) => (
             <div key={variant} style={{ display: 'flex', gap: 8 }}>

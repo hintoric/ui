@@ -33,6 +33,11 @@ export function buildEntries(index: DocsPage[], nav: NavGroupLike[]): SearchEntr
   return entries;
 }
 
+/** The same nav with every group title prefixed — to tell two sections' groups apart in results. */
+export function withGroupPrefix<T extends NavGroupLike>(nav: T[], prefix: string): T[] {
+  return nav.map((group) => ({ ...group, title: `${prefix}${group.title}` }));
+}
+
 /** Ranked matches. An empty query offers the pages, which is the sidebar in a list. */
 export function search(entries: SearchEntry[], query: string): SearchEntry[] {
   const needle = query.trim().toLowerCase();
