@@ -5,6 +5,8 @@ export interface ToggleButtonGroupProps
   extends Omit<React.ComponentPropsWithoutRef<'div'>, 'onChange' | 'value' | 'defaultValue'> {
   variant?: JoyVariant;
   color?: JoyColor;
+  /** Passed down to every Button/IconButton in the group, as in Joy. */
+  size?: 'sm' | 'md' | 'lg';
   orientation?: 'horizontal' | 'vertical';
   spacing?: number | string;
   disabled?: boolean;
