@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { ColorSchemeMenu, useColorScheme } from '@hintoric/ui';
-import { NAV } from './nav';
+import { ColorSchemeStyles } from '@hintoric/email';
+import { EMAIL_NAV, NAV } from './nav';
+import { PlatformToggle, usePlatform } from './platform';
 import { DocsSearch } from './search/DocsSearch.tsx';
 import { applyHeadingIds, scrollToAnchor } from './search/anchors.ts';
 
@@ -10,6 +12,8 @@ export function Layout() {
   // through to the black logo on a dark background.
   const { resolvedMode } = useColorScheme();
   const { pathname, hash } = useLocation();
+  const platform = usePlatform();
+  const nav = platform === 'email' ? EMAIL_NAV : NAV;
   const content = useRef<HTMLDivElement>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // Closing on navigation lives on each NavLink's own onClick below, not in
@@ -47,14 +51,14 @@ export function Layout() {
             className="docs-sidebar-logo"
           />
         </NavLink>
-        {NAV.map((group) => (
+        {nav.map((group) => (
           <div className="docs-nav-group" key={group.title}>
             <p className="docs-nav-group-title">{group.title}</p>
             {group.links.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
-                end={link.to === '/'}
+                end={link.to === '/' || link.to === '/email'}
                 className={({ isActive }) => `docs-nav-link${isActive ? ' active' : ''}`}
                 onClick={closeMobileNav}
               >
@@ -85,9 +89,12 @@ export function Layout() {
             <span aria-hidden="true">{mobileNavOpen ? '×' : '☰'}</span>
           </button>
           <DocsSearch />
+          <PlatformToggle />
           <ColorSchemeMenu className="docs-color-scheme-menu" />
         </div>
         <div className="docs-content" ref={content}>
+          {/* Once for the email section, so its demos follow the docs' colour scheme. */}
+          {platform === 'email' && <ColorSchemeStyles />}
           <Outlet />
         </div>
       </div>
