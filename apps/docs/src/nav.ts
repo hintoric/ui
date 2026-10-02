@@ -114,3 +114,47 @@ export const NAV: NavGroup[] = [
     ],
   },
 ];
+
+/**
+ * The E-Mail side of the docs' Web / E-Mail switch — a separate section under
+ * `/email`, with nothing from the web navigation in it. A web page with an
+ * email counterpart is the same path behind `/email` (see `counterpartPath`).
+ */
+export const EMAIL_NAV: NavGroup[] = [
+  {
+    title: 'Getting started',
+    links: [{ to: '/email', label: 'Overview' }],
+  },
+  {
+    title: 'Components',
+    links: [
+      { to: '/email/typography', label: 'Typography' },
+      { to: '/email/button', label: 'Button' },
+      { to: '/email/link', label: 'Link' },
+      { to: '/email/divider', label: 'Divider' },
+      { to: '/email/card', label: 'Card' },
+      { to: '/email/avatar', label: 'Avatar' },
+      { to: '/email/chip', label: 'Chip' },
+    ],
+  },
+  {
+    title: 'Templates',
+    links: [{ to: '/email/templates/security-activity-alert', label: 'Security activity alert' }],
+  },
+];
+
+export function isEmailPath(pathname: string): boolean {
+  return pathname === '/email' || pathname.startsWith('/email/');
+}
+
+const EMAIL_PATHS = new Set(EMAIL_NAV.flatMap((group) => group.links.map((link) => link.to)));
+
+/** Where the switch goes from `pathname`: the counterpart page if there is one, else the other side's overview. */
+export function counterpartPath(pathname: string): string {
+  if (isEmailPath(pathname)) {
+    const web = pathname.slice('/email'.length) || '/';
+    return NAV.some((group) => group.links.some((link) => link.to === web)) ? web : '/';
+  }
+  const email = `/email${pathname}`;
+  return EMAIL_PATHS.has(email) ? email : '/email';
+}

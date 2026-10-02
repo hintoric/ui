@@ -1,0 +1,62 @@
+{
+  "name": "@hintoric/email",
+  "version": "0.0.0",
+  "description": "Transactional email components in @hintoric/ui's look, built on react-email.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://ui.hintoric.dev/email",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hintoric/ui.git",
+    "directory": "packages/email"
+  },
+  "bugs": "https://github.com/hintoric/ui/issues",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0 || ^19.0.0",
+    "react-dom": "^18.3.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@hintoric/ui": "workspace:*",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@typescript/typescript6": "^6.0.2",
+    "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/browser-playwright": "^4.1.11",
+    "jsdom": "^30.0.1",
+    "playwright": "^1.62.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.1.0",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest run",
+    "test:visual": "vitest run --config vitest.visual.config.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-email/render": "^2.1.0",
+    "react-email": "^6.11.0"
+  }
+}

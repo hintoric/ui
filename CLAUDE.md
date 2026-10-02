@@ -45,6 +45,31 @@ Delete those, re-run, and look at the diffs. If a Joy baseline moves and you can
 
 Our light tokens live in Tailwind's `@theme { }` block, which compiles to `:root`; there is no `[data-color-scheme="light"]` block. A light-mode island nested inside a dark region therefore stays dark. Joy supports this and we deliberately don't — the alternative is duplicating every light value into a second hand-maintained block. Consequence for tests: **never nest scopes.** The scheme is document state and there is only one.
 
+## `@hintoric/email` (`packages/email`)
+
+Transactional email components on react-email — a separate package so the web library never pulls
+in react-email's CLI. Mail clients understand neither Tailwind nor CSS variables, so every component
+paints with inline styles from `src/tokens.ts` (a hex copy of `theme.css`'s formula) and dark mode is
+a generated stylesheet (`src/styles.ts`).
+
+The parity rule mirrors the one above, with **`@hintoric/ui` as the oracle** instead of `@mui/joy`:
+every component (`Button`, `Typography`, … — same names as in `@hintoric/ui`) needs a `src/visual/<Component>.visual.test.tsx` that renders it next to its
+web counterpart for every variant × colour × scheme and asserts `getComputedStyle()` equality
+(`src/visual/parity.tsx`), plus web/email screenshot baselines. What email cannot do — flexbox,
+`:hover`/`:focus`, `gap` — is left out with the reason in the test. The web side is
+`@hintoric/ui`'s built `dist/`, so build it before `pnpm --filter @hintoric/email test:visual`.
+Changing a `@hintoric/ui` token therefore means updating `tokens.ts` too; the parity suite is what
+tells you.
+
+Images in emails are linked https PNGs at twice their display size, never SVG (Gmail and desktop
+Outlook drop it) and not `cid:` attachments. Parity tests import the email side as a namespace
+(`import * as Email from '../index'`), since both packages now use the same component names.
+
+## Registry
+
+Install from the public registry only — the repo's `.npmrc` pins `registry.npmjs.org`, overriding
+any company mirror in a developer's global `~/.npmrc`. Both packages are public.
+
 ## Everyday commands (from `packages/ui/`)
 
 - `pnpm test` — jsdom unit tests (fast, no real CSS rendering)
