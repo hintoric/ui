@@ -63,7 +63,14 @@ export function Button({ href, variant = 'solid', color = 'primary', size = 'md'
         ...style,
       }}
     >
-      {children}
+      {/* react-email wraps the label in its own inline-block span at
+          line-height 120%. In the modes mail is actually shown in — the
+          limited-quirks mode its XHTML doctype yields, or full quirks where a
+          webmail drops the doctype — the link's own line-height no longer
+          props the line up, so the button shrank to 120% of the font plus
+          padding: 4–5px short at every size. This span carries the full
+          line-height itself, so the box no longer depends on the mode. */}
+      <span style={{ display: 'inline-block', lineHeight: `${s.lineHeight}px` }}>{children}</span>
     </ReactEmailButton>
   );
 }

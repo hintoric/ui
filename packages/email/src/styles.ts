@@ -37,6 +37,10 @@ export const emailClass = {
   // Layout's AuthScreen shell: page and card swap surfaces in dark.
   layoutCanvas: 'hx-layout-canvas',
   layoutCard: 'hx-layout-card',
+  // The card's inner area, which carries its padding. A div of our own rather
+  // than react-email's cell: Container moves its `padding` onto an inner <td>,
+  // so a rule on the card itself added to it instead of replacing it.
+  layoutCardBody: 'hx-layout-card-body',
   // A logo pair: the light one shows by default, the dark one only once the
   // dark rules apply — clients without <style> support keep the light logo.
   logoLight: 'hx-logo-light',
@@ -82,11 +86,30 @@ function darkRules(scope: string): string {
   return rules.join('');
 }
 
+/*
+ * AuthScreen's phone layout: the card stops being a card. It fills the width,
+ * loses border and radius, insets its content by 24px, and the page around it
+ * takes the card's colour — surface in light, surface-1 in dark. Last in the
+ * sheet so it wins over the dark rules at equal specificity.
+ */
+function phoneRules(): string {
+  const canvas = (scope: string) => `${scope}.${emailClass.layoutCanvas},${scope}.${emailClass.layoutCanvas}>table>tbody>tr>td`;
+  const dark = (scope: string) => `${canvas(scope)}{background-color:${emailSchemes.dark.surface1}!important;}`;
+  return [
+    `@media only screen and (max-width:600px){`,
+    `.${emailClass.layoutCard}{max-width:100%!important;border:0!important;border-radius:0!important;}`,
+    `.${emailClass.layoutCardBody}{padding:32px 24px!important;}`,
+    `${canvas('')}{padding:0!important;background-color:${emailSchemes.light.surface}!important;}`,
+    dark('[data-color-scheme="dark"] '),
+    `}`,
+    `@media only screen and (max-width:600px) and (prefers-color-scheme:dark){${dark(':root:not([data-color-scheme="light"]) ')}}`,
+  ].join('');
+}
+
 export const emailStylesheet = [
   // iOS turns dates and addresses into blue links that ignore the text colour.
   'a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;}',
-  // AuthScreen's phone layout: the card stops being a card and fills the screen.
-  `@media only screen and (max-width:600px){.${emailClass.layoutCard}{padding:32px 24px!important;border-radius:0!important;border:0!important;}}`,
   `@media (prefers-color-scheme:dark){${darkRules(':root:not([data-color-scheme="light"])')}}`,
   darkRules('[data-color-scheme="dark"]'),
+  phoneRules(),
 ].join('\n');

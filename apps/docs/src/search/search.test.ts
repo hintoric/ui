@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildEntries, search } from './search.ts';
+import { EMAIL_NAV, NAV as SITE_NAV } from '../nav.ts';
+import { buildEntries, search, withGroupPrefix } from './search.ts';
 import type { DocsPage } from './types.ts';
 
 const INDEX: DocsPage[] = [
@@ -30,6 +31,28 @@ describe('buildEntries', () => {
   it('leaves out a page the nav does not list, because nothing links to it', () => {
     const orphan: DocsPage[] = [{ path: '/scratch', title: 'Scratch', sections: [] }];
     expect(buildEntries(orphan, NAV)).toEqual([]);
+  });
+});
+
+describe('the docs’ own navs', () => {
+  // A page in a nav the palette is not built from is reachable from the
+  // sidebar and invisible to search — what happened to the email section
+  // until DocsSearch read EMAIL_NAV too.
+  it('make every listed page of both sections searchable', () => {
+    const navs = [...SITE_NAV, ...withGroupPrefix(EMAIL_NAV, 'E-Mail · ')];
+    const paths = navs.flatMap((group) => group.links.map((link) => link.to));
+    const index: DocsPage[] = paths.map((path) => ({ path, title: path, sections: [] }));
+    const searchable = new Set([...buildEntries(index, SITE_NAV), ...buildEntries(index, withGroupPrefix(EMAIL_NAV, 'E-Mail · '))].map((e) => e.path));
+    expect(paths.filter((path) => !searchable.has(path))).toEqual([]);
+  });
+
+  it('tells the web Button from the email one by its group', () => {
+    const index: DocsPage[] = [
+      { path: '/button', title: 'Button', sections: [] },
+      { path: '/email/button', title: 'Button', sections: [] },
+    ];
+    const groups = [...buildEntries(index, SITE_NAV), ...buildEntries(index, withGroupPrefix(EMAIL_NAV, 'E-Mail · '))].map((e) => e.group);
+    expect(groups).toEqual(['Inputs', 'E-Mail · Components']);
   });
 });
 

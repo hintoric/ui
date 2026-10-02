@@ -58,6 +58,15 @@ web counterpart for every variant × colour × scheme and asserts `getComputedSt
 (`src/visual/parity.tsx`), plus web/email screenshot baselines. What email cannot do — flexbox,
 `:hover`/`:focus`, `gap` — is left out with the reason in the test. The web side is
 `@hintoric/ui`'s built `dist/`, so build it before `pnpm --filter @hintoric/email test:visual`.
+
+**Measure the email side in a real email document, written with `document.write` — never in the
+test page and never via `srcdoc`.** `renderPair` renders it through `renderEmail` and writes it into
+an iframe, because the rendering mode decides the layout: react-email's XHTML 1.0 Transitional
+doctype gives *limited-quirks* mode (which still reports `compatMode === 'CSS1Compat'`), a webmail
+that drops the doctype gives full quirks, and a `srcdoc` frame is always no-quirks whatever its
+doctype. `Button` passed every parity test in the HTML5 test page while every sent button was 4–5px
+short — a line's height stopped coming from the link's own `line-height`. Box-sensitive components
+also run a `{ quirks: true }` variant.
 Changing a `@hintoric/ui` token therefore means updating `tokens.ts` too; the parity suite is what
 tells you.
 

@@ -14,12 +14,24 @@ describe('Email.Typography parity with Typography', () => {
     for (const level of LEVELS) {
       it(`${level} matches in ${scheme}`, async () => {
         await setColorScheme(scheme);
-        const { web, email } = renderPair(
+        const { web, email } = await renderPair(
           <Typography level={level}>Bankverbindung geändert</Typography>,
           <Email.Typography level={level}>Bankverbindung geändert</Email.Typography>,
         );
         expect(email.tagName).toBe(web.tagName);
         expectSameStyles(web, email, [...PROPS]);
+        expectSameBox(web, email);
+      });
+
+      it(`${level} keeps its box without a doctype (quirks) in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+        const { web, email, emailDocument } = await renderPair(
+          <Typography level={level}>Bankverbindung geändert</Typography>,
+          <Email.Typography level={level}>Bankverbindung geändert</Email.Typography>,
+          320,
+          { quirks: true },
+        );
+        expect(emailDocument.compatMode).toBe('BackCompat');
         expectSameBox(web, email);
       });
     }
@@ -29,7 +41,7 @@ describe('Email.Typography parity with Typography', () => {
     for (const textColor of ['primary', 'secondary', 'tertiary', 'icon'] as const) {
       it(`textColor ${textColor} is --color-ink-${textColor} in ${scheme}`, async () => {
         await setColorScheme(scheme);
-        const { web, email } = renderPair(
+        const { web, email } = await renderPair(
           <Typography level="body-xs" style={{ color: `var(--color-ink-${textColor})` }}>
             Fine print
           </Typography>,
@@ -43,7 +55,7 @@ describe('Email.Typography parity with Typography', () => {
 
     it(`levels match their baselines in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      renderPair(
+      await renderPair(
         <div>
           {LEVELS.map((level) => (
             <Typography key={level} level={level} component="div">

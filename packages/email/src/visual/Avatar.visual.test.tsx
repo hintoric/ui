@@ -16,7 +16,7 @@ describe('Email.Avatar parity with Avatar', () => {
       for (const color of EMAIL_COLORS) {
         it(`${variant} / ${color} matches in ${scheme}`, async () => {
           await setColorScheme(scheme);
-          const { web, email } = renderPair(
+          const { web, email } = await renderPair(
             <Avatar variant={variant} color={color}>
               MG
             </Avatar>,
@@ -33,32 +33,42 @@ describe('Email.Avatar parity with Avatar', () => {
     for (const size of ['sm', 'md', 'lg'] as const) {
       it(`size ${size} matches in ${scheme}`, async () => {
         await setColorScheme(scheme);
-        const { web, email } = renderPair(<Avatar size={size}>MG</Avatar>, <Email.Avatar size={size}>MG</Email.Avatar>);
+        const { web, email } = await renderPair(<Avatar size={size}>MG</Avatar>, <Email.Avatar size={size}>MG</Email.Avatar>);
         expectSameStyles(web, email, [...PROPS]);
         expectSameBox(web, email);
       });
     }
 
-    it(`variants match their baselines in ${scheme}`, async () => {
+    // Every variant × colour, one row per variant.
+    it(`grid matches its baselines in ${scheme}`, async () => {
       await setColorScheme(scheme);
-      renderPair(
-        <div style={{ display: 'flex', gap: 8 }}>
+      const row = { display: 'flex', gap: 8, marginBottom: 8 } as const;
+      await renderPair(
+        <div>
           {EMAIL_VARIANTS.map((variant) => (
-            <Avatar key={variant} variant={variant} color="primary">
-              MG
-            </Avatar>
+            <div key={variant} style={row}>
+              {EMAIL_COLORS.map((color) => (
+                <Avatar key={color} variant={variant} color={color} size="sm">
+                  MG
+                </Avatar>
+              ))}
+            </div>
           ))}
         </div>,
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div>
           {EMAIL_VARIANTS.map((variant) => (
-            <Email.Avatar key={variant} variant={variant} color="primary">
-              MG
-            </Email.Avatar>
+            <div key={variant} style={row}>
+              {EMAIL_COLORS.map((color) => (
+                <Email.Avatar key={color} variant={variant} color={color} size="sm">
+                  MG
+                </Email.Avatar>
+              ))}
+            </div>
           ))}
         </div>,
       );
-      await expect(page.getByTestId('web')).toMatchScreenshot(`email-avatar-variants-web-${scheme}`);
-      await expect(page.getByTestId('email')).toMatchScreenshot(`email-avatar-variants-email-${scheme}`);
+      await expect(page.getByTestId('web')).toMatchScreenshot(`email-avatar-grid-web-${scheme}`);
+      await expect(page.getByTestId('email')).toMatchScreenshot(`email-avatar-grid-email-${scheme}`);
     });
   }
 });
