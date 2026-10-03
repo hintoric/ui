@@ -52,6 +52,17 @@ describe('renderSecurityActivityAlert', () => {
     expect(links.find((a) => a.textContent === 'Aktivitätsprotokoll')?.getAttribute('href')).toBe('https://app.example.com/activity');
   });
 
+  it('builds the avatar from the letters of the name, not from its symbols', async () => {
+    const avatarOf = async (workspaceName: string) => {
+      const doc = parse((await renderSecurityActivityAlert({ ...props, target: { type: 'workspace', workspaceName } })).html);
+      const leaves = [...doc.body.querySelectorAll('*')].filter((e) => e.children.length === 0);
+      return leaves.find((e) => e.textContent!.length <= 2 && e.textContent !== '')?.textContent;
+    };
+
+    expect(await avatarOf('Müller & Söhne GmbH')).toBe('MS');
+    expect(await avatarOf('„Alpha“ - Beta')).toBe('AB');
+  });
+
   it('formats the time in the given zone, not the server’s', async () => {
     const { text } = await renderSecurityActivityAlert(props);
     // 17:31 UTC is 19:31 in Berlin under summer time.
