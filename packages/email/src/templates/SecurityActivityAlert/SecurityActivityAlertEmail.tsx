@@ -22,12 +22,17 @@ function targetNameOf({ target }: SecurityActivityAlertProps): string {
   return target.type === 'workspace' ? target.workspaceName : target.email;
 }
 
+/**
+ * The first letter of the first two words that have one: "Müller & Söhne"
+ * is MS, not M&, and a quote or dash in front of a word does not count.
+ */
 function initials(name: string): string {
   return name
     .split(/\s+/)
-    .filter(Boolean)
+    .map((word) => word.match(/\p{L}/u)?.[0])
+    .filter((letter): letter is string => letter !== undefined)
     .slice(0, 2)
-    .map((word) => word[0]!.toUpperCase())
+    .map((letter) => letter.toUpperCase())
     .join('');
 }
 
