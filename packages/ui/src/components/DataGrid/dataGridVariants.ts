@@ -48,4 +48,4 @@ export const DATAGRID_RESIZE_HANDLE_CLASS =
   'absolute right-0 top-0 z-10 h-full w-1 cursor-col-resize touch-none select-none opacity-0 group-hover:opacity-100';
 
 export const DATAGRID_SORT_ICON_CLASS =
-  'inline-flex items-center text-base text-ink-icon transition-transform duration-200';
+  'inline-flex items-center text-base text-ink-icon';

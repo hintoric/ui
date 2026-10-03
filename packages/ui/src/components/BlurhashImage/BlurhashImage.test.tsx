@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { BlurhashImage } from './BlurhashImage';
 
 const HASH = 'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
@@ -31,6 +32,16 @@ describe('BlurhashImage', () => {
     fireEvent.load(screen.getByAltText('Hero'));
 
     expect(screen.getByAltText('Hero')).toHaveClass('opacity-100');
+  });
+
+  it('uses the app-provided reduced motion preference for the fade transition', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <BlurhashImage src="/hero.jpg" hash={HASH} alt="Hero" />
+      </ReducedMotionProvider>,
+    );
+
+    expect(screen.getByAltText('Hero')).not.toHaveClass('transition-opacity');
   });
 
   it('reveals an image that was already in the cache', () => {

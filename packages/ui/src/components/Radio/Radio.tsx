@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Radio as BaseRadio } from '@base-ui/react/radio';
 import { RadioGroup as BaseRadioGroup } from '@base-ui/react/radio-group';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { RadioGroupContext } from '../RadioGroup/RadioGroupContext';
 import { radioBoxVariants, radioRootVariants } from './radioVariants';
 import { useFormContext } from 'react-hook-form';
@@ -73,6 +74,7 @@ const RadioBase = React.forwardRef<HTMLElement, RadioProps>(function RadioBase(
   // fail the moment this is inverted.
   const hasError = error ?? formControl?.error ?? false;
   const effectiveColor = color ?? (hasError ? 'danger' : isChecked ? 'primary' : 'neutral');
+  const reducedMotion = useReducedMotion();
 
   const box = (
     <BaseRadio.Root
@@ -86,7 +88,11 @@ const RadioBase = React.forwardRef<HTMLElement, RadioProps>(function RadioBase(
     >
       {!disableIcon && (
         <span
-          className={cx('rounded-[50%] bg-current transition-transform', isChecked ? 'scale-100' : 'scale-0')}
+          className={cx(
+            'rounded-[50%] bg-current',
+            !reducedMotion && 'transition-transform',
+            isChecked ? 'scale-100' : 'scale-0',
+          )}
           style={{ width: '50%', height: '50%' }}
         />
       )}

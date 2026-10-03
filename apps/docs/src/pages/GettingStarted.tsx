@@ -46,6 +46,18 @@ export function App() {
         Our own components do not use <code>dark:</code> at all — they read the tokens directly.
         This exists purely for your markup.
       </p>
+
+      <h2>Optional: provide your own reduced-motion setting</h2>
+      <p>
+        Components that animate read <code>prefers-reduced-motion</code> by default. If your app
+        already owns an accessibility setting, pass it through{' '}
+        <a href="/reduced-motion-provider">ReducedMotionProvider</a>.
+      </p>
+      <Code>{`import { ReducedMotionProvider } from '@hintoric/ui';
+
+<ReducedMotionProvider reducedMotion={settings.reducedMotion}>
+  <App />
+</ReducedMotionProvider>`}</Code>
     </>
   );
 }

@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Dialog as BaseDialog } from '@base-ui/react/dialog';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { SURFACE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { ModalDialogProps } from './types';
 
@@ -19,11 +20,15 @@ export const ModalDialog = React.forwardRef<HTMLDivElement, ModalDialogProps>(fu
   { variant = 'outlined', color = 'neutral', size = 'md', layout = 'center', className, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <BaseDialog.Popup
       ref={ref}
       className={cx(
-        'relative flex min-w-[min(calc(100vw-2rem),300px)] flex-col gap-2 rounded-md font-body shadow-[var(--shadow-md)] outline-none transition-[scale,opacity] data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0',
+        'relative flex min-w-[min(calc(100vw-2rem),300px)] flex-col gap-2 rounded-md font-body shadow-[var(--shadow-md)] outline-none',
+        !reducedMotion &&
+          'transition-[scale,opacity] data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0',
         layout === 'fullscreen' && 'h-full w-full rounded-none',
         SIZE_CLASS[size],
         SURFACE_COLOR_CLASSES[variant][color],

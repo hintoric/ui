@@ -2,6 +2,7 @@ import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Button } from './Button';
 
 describe('Button', () => {
@@ -42,6 +43,17 @@ describe('Button', () => {
     expect(button).toBeDisabled();
     await userEvent.click(button);
     expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('does not spin the loading indicator when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Button loading>Save</Button>
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByRole('button').querySelector('.border-t-transparent')).not.toHaveClass(
+      'animate-spin',
+    );
   });
 
   it('renders startDecorator and endDecorator around the children', () => {

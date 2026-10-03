@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Accordion as BaseAccordion } from '@base-ui/react/accordion';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { STATIC_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { AccordionDetailsProps } from './types';
 
@@ -18,11 +19,14 @@ export const AccordionDetails = React.forwardRef<HTMLDivElement, AccordionDetail
   { variant = 'plain', color = 'neutral', className, children, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <BaseAccordion.Panel
       ref={ref}
       className={cx(
-        'h-[var(--collapsible-panel-height)] overflow-hidden transition-[height] duration-200 ease-out data-[ending-style]:h-0 data-[starting-style]:h-0',
+        'h-[var(--collapsible-panel-height)] overflow-hidden',
+        !reducedMotion && 'transition-[height] duration-200 ease-out data-[ending-style]:h-0 data-[starting-style]:h-0',
         STATIC_COLOR_CLASSES[variant][color],
         className,
       )}

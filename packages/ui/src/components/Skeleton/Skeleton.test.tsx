@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Skeleton } from './Skeleton';
 
 describe('Skeleton', () => {
@@ -20,6 +21,15 @@ describe('Skeleton', () => {
 
   it('disables the animation when animation=false', () => {
     render(<Skeleton data-testid="s" variant="text" animation={false} />);
+    expect(screen.getByTestId('s')).not.toHaveClass('animate-pulse');
+  });
+
+  it('disables the default pulse when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Skeleton data-testid="s" variant="text" />
+      </ReducedMotionProvider>,
+    );
     expect(screen.getByTestId('s')).not.toHaveClass('animate-pulse');
   });
 });

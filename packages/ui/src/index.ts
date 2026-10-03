@@ -13,6 +13,9 @@ export type { LocaleContextValue, LocaleOption, LocaleProviderProps } from './th
 export { DateTimeProvider, useDateTimeDefaults } from './theme/DateTimeProvider';
 export type { DateTimeContextValue, DateTimeProviderProps, HourCycle } from './theme/DateTimeProvider';
 
+export { ReducedMotionProvider, useReducedMotion } from './theme/ReducedMotionProvider';
+export type { ReducedMotionProviderProps } from './theme/ReducedMotionProvider';
+
 export { RelativeTime } from './components/RelativeTime';
 export type {
   RelativeTimeProps,

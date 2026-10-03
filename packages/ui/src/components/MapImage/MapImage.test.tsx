@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { MapImage } from './MapImage';
 
 describe('MapImage', () => {
@@ -39,6 +40,15 @@ describe('MapImage', () => {
     render(<MapImage lat={52.52} lng={13.4} data-testid="map" />);
     expect(screen.getByTestId('map')).toHaveTextContent('');
     expect(screen.getByTestId('map-loading')).toBeInTheDocument();
+  });
+
+  it('does not spin the loading indicator when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <MapImage lat={52.52} lng={13.4} data-testid="map" />
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByTestId('map-loading').firstElementChild).not.toHaveClass('animate-spin');
   });
 
   it('hides the loading indicator once the image loads', () => {

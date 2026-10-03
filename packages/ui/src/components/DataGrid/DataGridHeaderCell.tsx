@@ -3,6 +3,7 @@ import * as React from 'react';
 import { flexRender } from '@tanstack/react-table';
 import type { RowData } from '@tanstack/react-table';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { ArrowDropDownIcon } from '../../internal/svg-icons/ArrowDropDownIcon';
 import { useDataGridContext } from './DataGridContext';
 import { DATAGRID_HEADER_HOVER_CLASS, DATAGRID_RESIZE_HANDLE_CLASS, DATAGRID_SORT_ICON_CLASS } from './dataGridVariants';
@@ -13,6 +14,7 @@ function DataGridHeaderCellInner<TData extends RowData>(
   ref: React.Ref<HTMLTableCellElement>,
 ) {
   const { variant, color } = useDataGridContext();
+  const reducedMotion = useReducedMotion();
   const canSort = header.column.getCanSort();
   const sortDirection = header.column.getIsSorted();
   const canResize = header.column.getCanResize();
@@ -37,6 +39,7 @@ function DataGridHeaderCellInner<TData extends RowData>(
               aria-hidden="true"
               className={cx(
                 DATAGRID_SORT_ICON_CLASS,
+                !reducedMotion && 'transition-transform duration-200',
                 sortDirection === 'asc' && 'rotate-180',
                 !sortDirection && 'opacity-40',
               )}

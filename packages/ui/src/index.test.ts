@@ -6,6 +6,8 @@ describe('package entry point', () => {
     const expectedExports = [
       'ColorSchemeProvider',
       'useColorScheme',
+      'ReducedMotionProvider',
+      'useReducedMotion',
       'Box',
       'Stack',
       'Typography',

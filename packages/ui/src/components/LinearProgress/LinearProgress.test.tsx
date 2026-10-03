@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { LinearProgress } from './LinearProgress';
 
 describe('LinearProgress', () => {
@@ -18,6 +19,16 @@ describe('LinearProgress', () => {
     render(<LinearProgress data-testid="lp" />);
     const bar = screen.getByTestId('lp').firstElementChild as HTMLElement;
     expect(bar).toHaveClass('animate-pulse');
+  });
+
+  it('does not pulse when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <LinearProgress data-testid="lp" />
+      </ReducedMotionProvider>,
+    );
+    const bar = screen.getByTestId('lp').firstElementChild as HTMLElement;
+    expect(bar).not.toHaveClass('animate-pulse');
   });
 
   it('sizes the track thickness per the size prop', () => {

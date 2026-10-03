@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { z } from 'zod';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Switch } from './Switch';
 import { runFieldMatrix, MATRIX_LABEL } from '../../test/fieldMatrix';
 
@@ -46,6 +47,15 @@ describe('Switch', () => {
   it('sizes the track per the size prop', () => {
     render(<Switch aria-label="notifications" size="lg" />);
     expect(screen.getByRole('switch')).toHaveStyle({ width: '40px', height: '24px' });
+  });
+
+  it('does not animate the thumb when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Switch aria-label="notifications" />
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByRole('switch').firstElementChild).not.toHaveClass('transition-transform');
   });
 });
 

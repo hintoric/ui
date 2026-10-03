@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Modal } from './Modal';
 import { ModalDialog } from '../ModalDialog';
 import { ModalClose } from '../ModalClose';
@@ -56,5 +57,18 @@ describe('Modal', () => {
     );
     await user.keyboard('{Escape}');
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it('does not animate the dialog when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Modal open>
+          <ModalDialog data-testid="dialog">
+            <DialogTitle>Confirm</DialogTitle>
+          </ModalDialog>
+        </Modal>
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByTestId('dialog')).not.toHaveClass('transition-[scale,opacity]');
   });
 });

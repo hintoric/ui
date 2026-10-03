@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ReducedMotionProvider } from '../../theme/ReducedMotionProvider';
 import { Drawer } from './Drawer';
 
 describe('Drawer', () => {
@@ -42,5 +43,17 @@ describe('Drawer', () => {
       </Drawer>,
     );
     expect(screen.getByTestId('panel')).toHaveClass('left-0', 'h-full');
+  });
+
+  it('does not animate the panel when reduced motion is provided', () => {
+    render(
+      <ReducedMotionProvider reducedMotion>
+        <Drawer open data-testid="panel">
+          Menu
+        </Drawer>
+      </ReducedMotionProvider>,
+    );
+    expect(screen.getByTestId('panel')).not.toHaveClass('transition-transform');
+    expect(screen.getByTestId('panel')).not.toHaveClass('data-[starting-style]:-translate-x-full');
   });
 });

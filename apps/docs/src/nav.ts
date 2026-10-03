@@ -102,6 +102,12 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    title: 'Accessibility',
+    links: [
+      { to: '/reduced-motion-provider', label: 'Reduced motion' },
+    ],
+  },
+  {
     title: 'Utils',
     links: [
       { to: '/color-scheme-provider', label: 'ColorSchemeProvider' },

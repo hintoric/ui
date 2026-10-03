@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { Tabs as BaseTabs } from '@base-ui/react/tabs';
 import { cx } from '../../utils/cx';
+import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { STATIC_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { TabListProps } from './types';
 
@@ -19,6 +20,8 @@ export const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function T
   { variant = 'plain', color = 'neutral', className, children, ...props },
   ref,
 ) {
+  const reducedMotion = useReducedMotion();
+
   return (
     <BaseTabs.List
       ref={ref}
@@ -30,7 +33,12 @@ export const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function T
       {...props}
     >
       {children}
-      <BaseTabs.Indicator className="absolute bottom-0 left-[var(--active-tab-left)] h-0.5 w-[var(--active-tab-width)] bg-current transition-all duration-200 data-[orientation=vertical]:top-[var(--active-tab-top)] data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[var(--active-tab-height)] data-[orientation=vertical]:w-0.5" />
+      <BaseTabs.Indicator
+        className={cx(
+          'absolute bottom-0 left-[var(--active-tab-left)] h-0.5 w-[var(--active-tab-width)] bg-current data-[orientation=vertical]:top-[var(--active-tab-top)] data-[orientation=vertical]:left-0 data-[orientation=vertical]:h-[var(--active-tab-height)] data-[orientation=vertical]:w-0.5',
+          !reducedMotion && 'transition-all duration-200',
+        )}
+      />
     </BaseTabs.List>
   );
 });
