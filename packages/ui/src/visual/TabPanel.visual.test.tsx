@@ -13,7 +13,7 @@ import { TabList as HintoricTabList } from '../components/TabList';
 import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 // Composed inside a real Tabs rather than a hand-built parent: TabPanel reads
 // context from Tabs for its selected state, so a stand-in parent would verify
@@ -66,6 +66,11 @@ describe('TabPanel visual parity with @mui/joy', () => {
           expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
           expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
 
+          // Joy's panel sits directly above our Tabs, and its capture is scaled,
+          // so its bottom row is resampled with the top of ours — including the
+          // selected Tab, which fades in via `transition-colors`. Unsettled,
+          // that row drifts by a few pixels between runs.
+          await settleTransitions();
           await expect(joyLocator).toMatchScreenshot(
             `tabpanel-${variant}-${color}-joy-${scheme}`,
           );
