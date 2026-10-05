@@ -9,6 +9,7 @@ import { INTERACTIVE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 import { TabsSizeContext } from '../Tabs/TabsContext';
 import { TabNavContext } from '../TabNav/TabNavContext';
+import { ReportTabLook } from './TabIndicatorContext';
 import type { TabProps } from './types';
 
 const SIZE_CLASS = {
@@ -24,15 +25,20 @@ const SIZE_CLASS = {
 // (0.75/1/1.25rem), with no border subtracted. Measured 2026-10-05 against
 // @mui/joy (TabNav.visual.test.tsx); the previous px-2/3/4 with no vertical
 // padding was never compared.
+//
+// In a vertical TabList Joy's indicator sits on the right (`indicatorPlacement`
+// defaults to `row ? 'bottom' : 'right'`), so the extra pixel moves from the
+// bottom to the right: `paddingRight: calc(--ListItem-paddingRight +
+// thickness - 1px)`. Measured in TabList.visual.test.tsx.
 const PADDING_CLASS = {
-  sm: 'px-3 pt-[3px] pb-[4px]',
-  md: 'px-4 pt-[4px] pb-[5px]',
-  lg: 'px-5 pt-[6px] pb-[7px]',
+  sm: 'px-3 pt-[3px] pb-[4px] data-[orientation=vertical]:pb-[3px] data-[orientation=vertical]:pr-[calc(0.75rem+1px)]',
+  md: 'px-4 pt-[4px] pb-[5px] data-[orientation=vertical]:pb-[4px] data-[orientation=vertical]:pr-[calc(1rem+1px)]',
+  lg: 'px-5 pt-[6px] pb-[7px] data-[orientation=vertical]:pb-[6px] data-[orientation=vertical]:pr-[calc(1.25rem+1px)]',
 } as const;
 const OUTLINED_PADDING_CLASS = {
-  sm: 'px-3 pt-[2px] pb-[3px]',
-  md: 'px-4 pt-[3px] pb-[4px]',
-  lg: 'px-5 pt-[5px] pb-[6px]',
+  sm: 'px-3 pt-[2px] pb-[3px] data-[orientation=vertical]:pb-[2px] data-[orientation=vertical]:pr-[calc(0.75rem+1px)]',
+  md: 'px-4 pt-[3px] pb-[4px] data-[orientation=vertical]:pb-[3px] data-[orientation=vertical]:pr-[calc(1rem+1px)]',
+  lg: 'px-5 pt-[5px] pb-[6px] data-[orientation=vertical]:pb-[5px] data-[orientation=vertical]:pr-[calc(1.25rem+1px)]',
 } as const;
 
 // Extends ListItemButton's own styling (STATIC/INTERACTIVE base, no separate
@@ -127,17 +133,14 @@ export const Tab = React.forwardRef<HTMLElement, TabProps>(function Tab(
   const size = React.useContext(TabsSizeContext);
   const nav = React.useContext(TabNavContext);
   const current = nav !== null && nav.value === value;
-  const setCurrentLook = nav?.setCurrentLook;
-  React.useLayoutEffect(() => {
-    if (current) setCurrentLook?.({ variant, color });
-  }, [current, setCurrentLook, variant, color]);
   const classes = cx(
     // `border-transparent` and `gap-1.5`: Joy's ListItemButton keeps a 1px
     // transparent border on every variant (so outlined does not jump), and
     // TabList sets `--ListItem-gap: 0.375rem`. Focus is Joy's
     // `theme.focus.default`; disabled is `pointer-events: none` like Joy's
-    // `${variant}Disabled`, not a dimmed opacity.
-    'relative flex cursor-pointer items-center justify-center gap-1.5 rounded-[inherit] border border-transparent font-body no-underline transition-colors focus-visible:z-[1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 data-[disabled]:pointer-events-none data-[disabled]:cursor-default',
+    // `${variant}Disabled`, not a dimmed opacity. Joy centres a tab's content
+    // only in a row (`justifyContent: row ? 'center' : 'initial'`).
+    'relative flex cursor-pointer items-center justify-center data-[orientation=vertical]:justify-normal gap-1.5 rounded-[inherit] border border-transparent font-body no-underline transition-colors focus-visible:z-[1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 data-[disabled]:pointer-events-none data-[disabled]:cursor-default',
     SIZE_CLASS[size],
     variant === 'outlined' ? OUTLINED_PADDING_CLASS[size] : PADDING_CLASS[size],
     INTERACTIVE_COLOR_CLASSES[variant][color],
@@ -168,14 +171,29 @@ export const Tab = React.forwardRef<HTMLElement, TabProps>(function Tab(
       props as React.ComponentPropsWithoutRef<'a'>,
     ),
   });
-  if (nav !== null) return link;
+  if (nav !== null) {
+    return (
+      <>
+        {link}
+        <ReportTabLook selected={current} variant={variant} color={color} />
+      </>
+    );
+  }
 
+  // The render function is where Base UI hands out `active` (selected), so
+  // the report rides along next to the button.
   return (
     <BaseTabs.Tab
       ref={ref as React.Ref<HTMLButtonElement>}
       value={value}
       disabled={disabled}
       className={classes}
+      render={(buttonProps, state) => (
+        <>
+          <button {...buttonProps} />
+          <ReportTabLook selected={state.active} variant={variant} color={color} />
+        </>
+      )}
       {...(props as React.ComponentPropsWithoutRef<'button'>)}
     >
       {children}
