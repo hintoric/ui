@@ -101,6 +101,8 @@ export type { ChipDeleteProps } from './components/ChipDelete';
 export { AvatarGroup } from './components/AvatarGroup';
 export type { AvatarGroupProps } from './components/AvatarGroup';
 
+export { AccountMenu } from './components/AccountMenu';
+export type { AccountMenuLabels, AccountMenuProps, AccountMenuUser } from './components/AccountMenu';
 export { LocaleSwitcher } from './components/LocaleSwitcher';
 export type { LocaleSwitcherProps } from './components/LocaleSwitcher';
 export { ConfirmationDialog } from './components/ConfirmationDialog';

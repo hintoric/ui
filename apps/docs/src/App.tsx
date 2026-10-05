@@ -63,6 +63,7 @@ import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
 import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
+import { AccountMenuPage } from './pages/AccountMenuPage';
 import { MapImagePage } from './pages/MapImagePage';
 import { EmailOverviewPage } from './pages/email/EmailOverviewPage';
 import { EmailTypographyPage } from './pages/email/EmailTypographyPage';
@@ -148,6 +149,7 @@ export function App() {
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
             <Route path="/forms" element={<FormsPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
+            <Route path="/account-menu" element={<AccountMenuPage />} />
             <Route path="/map-image" element={<MapImagePage />} />
 
             {/* The email section — its own navigation, see EMAIL_NAV. */}

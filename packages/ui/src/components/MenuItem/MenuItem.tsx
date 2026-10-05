@@ -11,13 +11,14 @@ import type { MenuItemProps } from './types';
 // not a value-select list; there's no aria-selected/value-matching
 // mechanism). Confirmed against @mui/joy's MenuItem.js source.
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(function MenuItem(
-  { variant = 'plain', color = 'neutral', selected = false, disabled, className, children, ...props },
+  { variant = 'plain', color = 'neutral', selected = false, disabled, closeOnClick = true, className, children, ...props },
   ref,
 ) {
   return (
     <BaseMenu.Item
       ref={ref}
       disabled={disabled}
+      closeOnClick={closeOnClick}
       className={(state) =>
         cx(
           'flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',

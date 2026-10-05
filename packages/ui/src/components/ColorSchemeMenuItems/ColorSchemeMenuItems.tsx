@@ -23,6 +23,8 @@ export function ColorSchemeMenuItems({
   labels,
   color = 'neutral',
   icons = true,
+  closeOnClick = true,
+  onModeChange,
 }: ColorSchemeMenuItemsProps) {
   const { mode, setMode } = useColorScheme();
   const resolved = resolveColorSchemeLabels(labels);
@@ -38,7 +40,11 @@ export function ColorSchemeMenuItems({
             // `mode`, not `resolvedMode`: the tick belongs beside what the
             // user chose, so "System" stays ticked while it resolves to dark.
             selected={entry === mode}
-            onClick={() => setMode(entry)}
+            closeOnClick={closeOnClick}
+            onClick={() => {
+              setMode(entry);
+              onModeChange?.(entry);
+            }}
           >
             {icons && <Icon className={`${ICON_SIZE_CLASS.sm} shrink-0`} />}
             {resolved[entry]}
