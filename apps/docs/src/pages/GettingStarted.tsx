@@ -13,6 +13,35 @@ export function GettingStarted() {
         point.
       </p>
       <Code>{`import '@hintoric/ui/styles.css';`}</Code>
+      <p>
+        That stylesheet contains only the utilities our components use. A class in your own markup
+        works only if a component happens to use it too, and responsive variants such as{' '}
+        <code>md:</code> are never included.
+      </p>
+
+      <h2>Running Tailwind yourself? Use the Tailwind entry instead</h2>
+      <p>
+        If your app has its own Tailwind CSS v4 (4.1 or later), import{' '}
+        <code>@hintoric/ui/tailwind.css</code> in your Tailwind stylesheet <em>instead of</em>{' '}
+        <code>styles.css</code>. It contains our theme tokens, the <code>dark:</code> variant
+        described below, and a <code>@source</code> for our bundle. Your build then generates the
+        utilities for our components and for your own markup, all with the same tokens.
+      </p>
+      <Code>{`/* app.css */
+@import "tailwindcss";
+@import "@hintoric/ui/tailwind.css";`}</Code>
+      <Code>{`<div className="flex flex-col gap-2 md:flex-row bg-surface-1 md:bg-primary-soft-bg text-ink-primary">…</div>`}</Code>
+      <p>
+        Do not load both files. A second Tailwind build next to <code>styles.css</code> outputs some
+        of our utilities again, later in the same <code>utilities</code> layer. That changes which
+        rule wins: a component element with <code>p-2 px-4</code> gets 8px of horizontal padding
+        instead of 16px when your markup also uses <code>p-2</code>.
+      </p>
+      <p>
+        The token names (<code>--color-primary-soft-bg</code>, <code>surface-1</code>,{' '}
+        <code>ink-primary</code> and the rest of <code>theme.css</code>) are public API. Renaming or
+        removing a token is a breaking change.
+      </p>
 
       <h2>Wrap your app in a ColorSchemeProvider</h2>
       <p>

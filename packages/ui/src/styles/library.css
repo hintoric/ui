@@ -1,0 +1,28 @@
+/*
+ * Everything the library's stylesheet needs on top of Tailwind itself, minus
+ * the content scan. Two entry points share it: `index.css` (our own build,
+ * which scans `src/`) and the published `dist/tailwind.css` (a consumer's
+ * Tailwind build, which scans `dist/index.js` instead — see
+ * scripts/tailwindEntry.ts). Keep anything path-relative out of this file:
+ * it is inlined into dist, where `src/` paths do not exist.
+ */
+@import "./theme.css";
+
+/*
+ * Tailwind's stock `dark:` keys off `prefers-color-scheme`, which contradicts
+ * ColorSchemeProvider the moment a user overrides their OS setting. Point it
+ * at the same attribute our tokens use. Our own components never write `dark:`
+ * (they read tokens instead) — this exists entirely for consumers' markup.
+ */
+@custom-variant dark (&:where([data-color-scheme="dark"], [data-color-scheme="dark"] *));
+
+/*
+ * `canvas`/`surface*`/`ink-*`/`divider` are public, page-layout tokens meant
+ * for consumers to use directly in their own markup (e.g. `bg-canvas` on a
+ * page root) — not just internally by Phase 1 components. No component's own
+ * source literally contains most of these class names, so Tailwind's content
+ * scan never finds them and never generates their CSS. Force-generate them
+ * explicitly.
+ */
+@source inline("{bg,text,border}-{canvas,surface,surface-1,surface-2,surface-3,surface-popup}");
+@source inline("{bg,border}-divider");

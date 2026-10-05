@@ -36,6 +36,18 @@ once, near the root of your project:
 import '@hintoric/ui/styles.css';
 ```
 
+If your app runs its own Tailwind CSS v4 (4.1 or later), import the Tailwind entry in your
+stylesheet **instead of** `styles.css`. Your build then generates the utilities for our components
+and for your own markup (`md:`, arbitrary values, and so on), all with our theme tokens:
+
+```css
+@import "tailwindcss";
+@import "@hintoric/ui/tailwind.css";
+```
+
+Do not load both files. A second Tailwind build next to `styles.css` changes which utility wins
+inside our components.
+
 ## Usage
 
 ```tsx

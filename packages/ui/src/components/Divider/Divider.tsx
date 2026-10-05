@@ -32,8 +32,12 @@ export const Divider = React.forwardRef<HTMLElement, DividerProps>(function Divi
       aria-orientation={orientation === 'vertical' ? 'vertical' : undefined}
       className={cx(
         'flex items-center self-stretch whitespace-nowrap font-body text-sm text-ink-tertiary',
-        'before:h-px before:flex-1 before:bg-divider before:content-[""]',
-        'after:h-px after:flex-1 after:bg-divider after:content-[""]',
+        // Single quotes inside the class, so the bundler never has to escape
+        // them: a consumer's Tailwind scans dist/index.js, where
+        // `content-[""]` turned into `content-[\"\"]` and stopped matching
+        // (scripts/tailwindEntry.test.ts).
+        "before:h-px before:flex-1 before:bg-divider before:content-['']",
+        "after:h-px after:flex-1 after:bg-divider after:content-['']",
         orientation === 'vertical'
           ? 'flex-col before:h-full before:w-px before:mb-2 after:h-full after:w-px after:mt-2'
           : 'flex-row before:mr-2 after:ml-2',
