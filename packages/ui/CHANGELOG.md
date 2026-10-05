@@ -1,5 +1,60 @@
 # @hintoric/ui
 
+## 0.9.0
+
+### Minor Changes
+
+- fed8ba4: New `AccountMenu` block: the signed-in person in one pill (avatar and menu button) with a card (avatar, address, subtitle), "Appearance" and "Language" as sub-views that stay inside the open menu, your own `items` and a sign-out row. It knows no session, routes or i18n — user, labels, locales and `onSignOut` all come in as props, with the language falling back to a `LocaleProvider`.
+
+  `MenuItem` takes `closeOnClick` (default `true`): set it to `false` for an item that changes what the menu shows instead of finishing the job, such as a row that opens a sub-view. `ColorSchemeMenuItems` takes the same `closeOnClick`, plus `onModeChange`, so it can sit in a menu that stays open — until now, choosing a scheme always closed the menu.
+
+- d7598bb: Add `TabNav` for navigation tabs: a `<nav>` of links that look like `TabList` + `Tab`, with the same sliding indicator under the current page. Put the usual `Tab`s inside, with `href` (and `component` for a router link), and pass the current route as `value`:
+
+  ```tsx
+  <TabNav value={pathname} aria-label="Main">
+    <Tab value="/documents" href="/documents" component={RouterLink}>
+      Documents
+    </Tab>
+  </TabNav>
+  ```
+
+  Unlike Joy UI's `<Tab component={Link}>` inside `Tabs`, the links get `aria-current="page"` instead of `role="tab"`, and every link stays in the Tab order.
+
+  `Tab` now matches Joy UI's measurements: 1rem horizontal padding at `md` (0.75rem/1.25rem at `sm`/`lg`) plus Joy's vertical padding, a transparent 1px border, Joy's focus ring, and Joy's disabled look (the variant's disabled colours and no pointer events, instead of 60% opacity). Existing tabs therefore become slightly wider and taller.
+
+- eb80b9b: Add `@hintoric/ui/tailwind.css` for apps that run their own Tailwind CSS v4 (4.1 or later). Import it in your Tailwind stylesheet instead of `@hintoric/ui/styles.css`:
+
+  ```css
+  @import 'tailwindcss';
+  @import '@hintoric/ui/tailwind.css';
+  ```
+
+  It contains the library's theme tokens (including the dark-mode values), the `dark:` variant that follows `ColorSchemeProvider`, and a `@source` for the library bundle. Your build then generates the utilities for our components and for your own markup — `md:` and other responsive variants, arbitrary values, and so on — all with the same tokens. Do not load both files: a second Tailwind build next to `styles.css` changes which utility wins inside our components. The token names are now public API, so renaming or removing one is a breaking change.
+
+  `Divider` now writes its pseudo-element `content` with single quotes, so a Tailwind build that scans the published bundle still generates its lines. It looks the same as before.
+
+- 6800887: Add `ReducedMotionProvider` and `useReducedMotion` so applications can pass their own reduced-motion preference into `@hintoric/ui`. Components still fall back to `prefers-reduced-motion` when no provider is present.
+
+  Animated/loading components and larger UI transitions now respect that preference, including progress indicators, skeletons, loading spinners, map loading, accordions, tabs, modal/dialog and drawer transitions.
+
+### Patch Changes
+
+- db47386: `TabList` now matches Joy UI's `TabList`:
+
+  - It draws Joy's default underline: a 1px divider line under a horizontal list, or to the right of a vertical one. The selected tab's indicator sits on that line.
+  - Tabs touch. The 4px gap between them is gone.
+  - The indicator takes the colour of the selected `Tab`, not the colour of the list. For example, a `solid` list with plain tabs no longer gets an indicator in the list's text colour.
+  - In a vertical list, the indicator is now on the right of the selected tab, as in Joy UI. It used to be on the left. Vertical tabs also align their label to the start instead of the centre, and get Joy's padding.
+
+  So a horizontal `TabList` is now 1px taller, and a vertical one is 1px wider.
+
+- db47386: `Tabs` now matches Joy UI's `Tabs`:
+
+  - The root has square corners in every variant. It used to have an 8px radius, which Joy UI's `Tabs` does not have. This is visible on `solid`, `soft` and `outlined` tabs.
+  - The `size` prop now sets the root's text size: 14px for `sm`, 16px for `md` and 18px for `lg`, as in Joy UI. Before, the root always used the inherited size.
+  - `Tab` and `TabPanel` use a line-height of 1.5 at every size. At `sm` and `lg` they had 20px and 28px. Joy UI has 21px and 27px, so `sm` tabs and panels are now 1px taller, and `lg` ones are 1px shorter.
+  - The root is now `position: relative`, as in Joy UI. Absolutely positioned children now position against the `Tabs` root.
+
 ## 0.8.0
 
 ### Minor Changes
