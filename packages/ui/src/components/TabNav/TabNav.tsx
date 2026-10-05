@@ -4,44 +4,9 @@ import { cx } from '../../utils/cx';
 import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { STATIC_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import { TabsSizeContext } from '../Tabs/TabsContext';
-import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
+import { INDICATOR_COLOR_CLASSES, TabIndicatorContext, useSelectedTabLook } from '../Tab/TabIndicatorContext';
 import { TabNavContext } from './TabNavContext';
-import type { TabLook } from './TabNavContext';
 import type { TabNavProps } from './types';
-
-// The current tab's own text colour — what Joy's `::after` resolves
-// `currentColor` to. Soft is the one variant whose selected (`softActive`)
-// state changes the colour as well. Literal strings for Tailwind's scanner.
-const INDICATOR_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
-  solid: {
-    primary: 'text-primary-solid-color',
-    neutral: 'text-neutral-solid-color',
-    danger: 'text-danger-solid-color',
-    success: 'text-success-solid-color',
-    warning: 'text-warning-solid-color',
-  },
-  soft: {
-    primary: 'text-primary-soft-active-color',
-    neutral: 'text-neutral-soft-active-color',
-    danger: 'text-danger-soft-active-color',
-    success: 'text-success-soft-active-color',
-    warning: 'text-warning-soft-active-color',
-  },
-  outlined: {
-    primary: 'text-primary-outlined-color',
-    neutral: 'text-neutral-outlined-color',
-    danger: 'text-danger-outlined-color',
-    success: 'text-success-outlined-color',
-    warning: 'text-warning-outlined-color',
-  },
-  plain: {
-    primary: 'text-primary-plain-color',
-    neutral: 'text-neutral-plain-color',
-    danger: 'text-danger-plain-color',
-    success: 'text-success-plain-color',
-    warning: 'text-warning-plain-color',
-  },
-};
 
 type IndicatorBox = { left: number; width: number };
 
@@ -117,13 +82,8 @@ export const TabNav = React.forwardRef<HTMLElement, TabNavProps>(function TabNav
     [ref],
   );
   const indicator = useIndicator(nav);
-  const [look, setLook] = React.useState<TabLook>({ variant: 'plain', color: 'neutral' });
-  const setCurrentLook = React.useCallback(
-    (next: TabLook) =>
-      setLook((prev) => (prev.variant === next.variant && prev.color === next.color ? prev : next)),
-    [],
-  );
-  const context = React.useMemo(() => ({ value, setCurrentLook }), [value, setCurrentLook]);
+  const [look, reportLook] = useSelectedTabLook();
+  const context = React.useMemo(() => ({ value }), [value]);
 
   return (
     <nav
@@ -138,7 +98,9 @@ export const TabNav = React.forwardRef<HTMLElement, TabNavProps>(function TabNav
       {...props}
     >
       <TabNavContext.Provider value={context}>
-        <TabsSizeContext.Provider value={size}>{children}</TabsSizeContext.Provider>
+        <TabIndicatorContext.Provider value={reportLook}>
+          <TabsSizeContext.Provider value={size}>{children}</TabsSizeContext.Provider>
+        </TabIndicatorContext.Provider>
       </TabNavContext.Provider>
       {indicator && (
         <span
