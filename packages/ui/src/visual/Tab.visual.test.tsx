@@ -13,7 +13,7 @@ import { TabList as HintoricTabList } from '../components/TabList';
 import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
-import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 
 // Composed inside a real Tabs rather than a hand-built parent: Tab reads
 // context from Tabs for its selected state, so a stand-in parent would verify
@@ -26,6 +26,35 @@ import { COLOR_SCHEMES, setColorScheme } from './helpers';
 // with its own assertion at the bottom of this file.
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
+
+// Until 2026-10-05 this compared colours and the type scale only, and Tab's
+// padding (px-3 and no vertical padding, where Joy has 1rem and 4px/5px), its
+// border and its disabled look were all off. TabNav.visual.test.tsx found
+// them; the full list now guards the button form too.
+const PROPERTIES = [
+  'backgroundColor',
+  'color',
+  'borderColor',
+  'borderRadius',
+  'fontSize',
+  'fontWeight',
+  'lineHeight',
+  'minHeight',
+  'height',
+  'width',
+  'paddingTop',
+  'paddingRight',
+  'paddingBottom',
+  'paddingLeft',
+  'display',
+  'cursor',
+  'columnGap',
+] as const;
+
+function pick(element: Element, properties: readonly string[]) {
+  const style = getComputedStyle(element) as unknown as Record<string, string>;
+  return Object.fromEntries(properties.map((property) => [property, style[property]]));
+}
 
 describe('Tab visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -60,14 +89,7 @@ describe('Tab visual parity with @mui/joy', () => {
           const joyLocator = page.getByTestId(`joy-${variant}-${color}`);
           const hintoricLocator = page.getByTestId(`hintoric-${variant}-${color}`);
 
-          const joyStyle = getComputedStyle(joyLocator.element());
-          const hintoricStyle = getComputedStyle(hintoricLocator.element());
-
-          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
-          expect(hintoricStyle.color).toBe(joyStyle.color);
-          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
-          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
-          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+          expect(pick(hintoricLocator.element(), PROPERTIES)).toEqual(pick(joyLocator.element(), PROPERTIES));
 
           await expect(joyLocator).toMatchScreenshot(
             `tab-${variant}-${color}-joy-${scheme}`,
@@ -129,4 +151,78 @@ describe('Tab visual parity with @mui/joy', () => {
     });
   }
 
+  for (const scheme of COLOR_SCHEMES) {
+    for (const variant of VARIANTS) {
+      it(`a disabled ${variant} tab matches Joy UI in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        render(
+          <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyTabs defaultValue={1}>
+              <JoyTabList>
+                <JoyTab value={0} variant={variant} disabled data-testid="joy-disabled">One</JoyTab>
+                <JoyTab value={1}>Two</JoyTab>
+              </JoyTabList>
+            </JoyTabs>
+          </JoyCssVarsProvider>,
+        );
+        render(
+          <ColorSchemeProvider defaultMode={scheme}>
+            <HintoricTabs defaultValue={1}>
+              <HintoricTabList>
+                <HintoricTab value={0} variant={variant} disabled data-testid="hintoric-disabled">One</HintoricTab>
+                <HintoricTab value={1}>Two</HintoricTab>
+              </HintoricTabList>
+            </HintoricTabs>
+          </ColorSchemeProvider>,
+        );
+
+        const properties = [...PROPERTIES, 'opacity', 'pointerEvents'];
+        expect(pick(page.getByTestId('hintoric-disabled').element(), properties)).toEqual(
+          pick(page.getByTestId('joy-disabled').element(), properties),
+        );
+        await expect(page.getByTestId('joy-disabled')).toMatchScreenshot(`tab-disabled-${variant}-joy-${scheme}`);
+        await expect(page.getByTestId('hintoric-disabled')).toMatchScreenshot(
+          `tab-disabled-${variant}-hintoric-${scheme}`,
+        );
+      });
+    }
+
+    it(`shows the same focus-visible outline as Joy UI in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyTabs defaultValue={0}>
+            <JoyTabList>
+              <JoyTab value={0} data-testid="joy-focus">One</JoyTab>
+            </JoyTabList>
+          </JoyTabs>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <ColorSchemeProvider defaultMode={scheme}>
+          <HintoricTabs defaultValue={0}>
+            <HintoricTabList>
+              <HintoricTab value={0} data-testid="hintoric-focus">One</HintoricTab>
+            </HintoricTabList>
+          </HintoricTabs>
+        </ColorSchemeProvider>,
+      );
+      const properties = ['outlineStyle', 'outlineWidth', 'outlineColor', 'outlineOffset'];
+      const joyEl = page.getByTestId('joy-focus').element() as HTMLElement;
+      const ourEl = page.getByTestId('hintoric-focus').element() as HTMLElement;
+
+      joyEl.focus();
+      await settleTransitions();
+      const joyOutline = pick(joyEl, properties);
+      joyEl.blur();
+      ourEl.focus();
+      await settleTransitions();
+      const ourOutline = pick(ourEl, properties);
+      ourEl.blur();
+
+      expect(ourOutline).toEqual(joyOutline);
+    });
+  }
 });

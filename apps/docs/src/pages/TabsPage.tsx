@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tab, TabList, TabPanel, Tabs, Typography } from '@hintoric/ui';
+import { Tab, TabList, TabNav, TabPanel, Tabs, Typography } from '@hintoric/ui';
 import type { JoyColor, JoyVariant } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { VariantColorGrid } from '../components/VariantColorGrid';
@@ -7,6 +7,28 @@ import { PropsTable } from '../components/PropsTable';
 
 const VARIANTS: JoyVariant[] = ['solid', 'soft', 'outlined', 'plain'];
 const COLORS: JoyColor[] = ['primary', 'neutral', 'danger', 'success', 'warning'];
+
+function NavigationTabs() {
+  // Stands in for the router: in an app this is `useLocation().pathname`.
+  const [pathname, setPathname] = React.useState('/documents');
+  const go = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    setPathname(event.currentTarget.getAttribute('href') ?? '/documents');
+  };
+  return (
+    <TabNav value={pathname} aria-label="Main">
+      <Tab value="/documents" href="/documents" onClick={go}>
+        Documents
+      </Tab>
+      <Tab value="/templates" href="/templates" onClick={go}>
+        Templates
+      </Tab>
+      <Tab value="/settings" href="/settings" onClick={go}>
+        Settings
+      </Tab>
+    </TabNav>
+  );
+}
 
 function ControlledTabs() {
   const [value, setValue] = React.useState<string | number | null>('overview');
@@ -78,6 +100,29 @@ export function TabsPage() {
       <Code>{`const [value, setValue] = React.useState<string | number | null>('overview');
 
 <Tabs value={value} onChange={(_event, next) => setValue(next)}>…</Tabs>`}</Code>
+
+      <h2>Navigation</h2>
+      <p>
+        For links between pages rather than panels on one, use <code>TabNav</code> instead of{' '}
+        <code>Tabs</code> + <code>TabList</code>. It takes the same <code>Tab</code>s, with an{' '}
+        <code>href</code> — and <code>component</code> for a router&apos;s link — and{' '}
+        <code>value</code> taken from the route. It renders a <code>&lt;nav&gt;</code> of links with{' '}
+        <code>aria-current=&quot;page&quot;</code> on the current one and the same sliding
+        indicator; there are no panels. Joy UI does this with{' '}
+        <code>&lt;Tab component=&#123;Link&#125;&gt;</code> inside <code>Tabs</code>, which makes the
+        links <code>role=&quot;tab&quot;</code> and takes all but one out of the Tab order — the
+        WAI-ARIA pattern for site navigation is a <code>nav</code> landmark with{' '}
+        <code>aria-current</code>, so that is what this renders. The look is Joy&apos;s.
+      </p>
+      <Demo>
+        <NavigationTabs />
+      </Demo>
+      <Code>{`const { pathname } = useLocation();
+
+<TabNav value={pathname} aria-label="Main">
+  <Tab value="/documents" href="/documents" component={RouterLink}>Documents</Tab>
+  <Tab value="/settings" href="/settings" component={RouterLink}>Settings</Tab>
+</TabNav>`}</Code>
 
       <h2>Sizes</h2>
       <p>
@@ -175,6 +220,19 @@ export function TabsPage() {
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: 'Visual style of the trigger.' },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
           { name: 'disabled', type: 'boolean', default: 'false', description: 'Makes the tab unselectable.' },
+          { name: 'href', type: 'string', description: 'Inside a TabNav only: where the link goes.' },
+          { name: 'component', type: 'React.ElementType', default: "'a'", description: "Inside a TabNav only: what the link renders as, e.g. a router's Link. Ignored inside Tabs." },
+        ]}
+      />
+
+      <h2>TabNav props</h2>
+      <PropsTable
+        rows={[
+          { name: 'children', type: 'React.ReactNode', description: 'Tabs with an href.' },
+          { name: 'value', type: 'string | number | null', description: "The current page's Tab value, usually from the route. No match marks none and hides the indicator." },
+          { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Passed to each Tab, as on Tabs.' },
+          { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: 'Visual style of the strip, as on TabList.' },
+          { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette of the strip, as on TabList.' },
         ]}
       />
 
@@ -192,8 +250,8 @@ export function TabsPage() {
       <p>
         Joy UI draws the active underline as a static <code>::after</code> on the selected tab. This
         build uses Base UI&apos;s single sliding <code>Tabs.Indicator</code>, which produces the
-        same underline plus a transition Joy&apos;s version does not have. Selected tabs also get no
-        persistent background here — only the indicator marks them, matching Joy.
+        same underline plus a transition Joy&apos;s version does not have. A selected tab also keeps
+        its variant&apos;s active background, as Joy&apos;s does.
       </p>
     </>
   );
