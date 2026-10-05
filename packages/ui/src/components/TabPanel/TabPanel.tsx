@@ -10,11 +10,12 @@ import type { TabPanelProps } from './types';
 // independently to plain/neutral (not inherited from <Tabs>), padding and
 // font-size both come from the inherited `size` (--Tabs-spacing: 12/16/20px,
 // and `body-${size}` directly — sm->14px/md->16px/lg->18px, NOT the
-// shifted-down mapping some other components use).
+// shifted-down mapping some other components use). `body-${size}` always uses
+// `lineHeight-md` (1.5), hence `leading-normal` at every size.
 const SIZE_CLASS = {
-  sm: 'p-3 text-sm',
-  md: 'p-4 text-base',
-  lg: 'p-5 text-lg',
+  sm: 'p-3 text-sm leading-normal',
+  md: 'p-4 text-base leading-normal',
+  lg: 'p-5 text-lg leading-normal',
 } as const;
 
 export const TabPanel = React.forwardRef<HTMLDivElement, TabPanelProps>(function TabPanel(
