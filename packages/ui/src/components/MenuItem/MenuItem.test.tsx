@@ -46,4 +46,22 @@ describe('MenuItem', () => {
     expect(beta).toHaveAttribute('data-highlighted');
     expect(alpha).not.toHaveAttribute('data-highlighted');
   });
+
+  it('keeps the menu open on click with closeOnClick={false}', async () => {
+    const user = userEvent.setup();
+    render(
+      <Dropdown>
+        <MenuButton>Open</MenuButton>
+        <Menu>
+          <MenuItem closeOnClick={false}>Stay</MenuItem>
+          <MenuItem>Go</MenuItem>
+        </Menu>
+      </Dropdown>,
+    );
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    await user.click(await screen.findByText('Stay'));
+    expect(screen.getByText('Stay')).toBeInTheDocument();
+    await user.click(screen.getByText('Go'));
+    expect(screen.queryByText('Stay')).not.toBeInTheDocument();
+  });
 });

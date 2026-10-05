@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Dropdown } from '../Dropdown';
@@ -52,6 +52,21 @@ describe('ColorSchemeMenuItems', () => {
     renderInHostMenu({ labels: { dark: 'Dunkel' } });
     await userEvent.click(await screen.findByText('Dunkel'));
     expect(screen.getByTestId('mode')).toHaveTextContent('dark');
+  });
+
+  it('closes the host menu on a choice by default', async () => {
+    renderInHostMenu();
+    await userEvent.click(await screen.findByText('Dark'));
+    expect(screen.queryByText('Light')).not.toBeInTheDocument();
+  });
+
+  it('keeps the host menu open with closeOnClick={false}, and reports the mode', async () => {
+    const onModeChange = vi.fn();
+    renderInHostMenu({ closeOnClick: false, onModeChange });
+    await userEvent.click(await screen.findByText('Dark'));
+    expect(screen.getByTestId('mode')).toHaveTextContent('dark');
+    expect(onModeChange).toHaveBeenCalledWith('dark');
+    expect(screen.getByText('Light')).toBeInTheDocument();
   });
 
   it('throws outside a ColorSchemeProvider', () => {
