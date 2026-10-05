@@ -3,9 +3,24 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'node:path';
+import { tailwindEntry } from './scripts/tailwindEntry.ts';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), dts({ include: ['src'], exclude: ['src/test/**', 'src/visual/**', '**/*.test.*'], rollupTypes: true })],
+  plugins: [
+    react(),
+    tailwindcss(),
+    dts({ include: ['src'], exclude: ['src/test/**', 'src/visual/**', '**/*.test.*'], rollupTypes: true }),
+    {
+      // Publishes `@hintoric/ui/tailwind.css` — see scripts/tailwindEntry.ts.
+      // `fileName` bypasses `assetFileNames` below, which would otherwise
+      // rename every CSS asset to style.css.
+      name: 'hintoric-tailwind-entry',
+      apply: 'build',
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: 'tailwind.css', source: tailwindEntry() });
+      },
+    },
+  ],
   resolve: {
     alias: [
       // Trailing `$` for an exact-specifier match — without it Vite treats
