@@ -1,6 +1,6 @@
 {
   "name": "@hintoric/email",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Transactional email components in @hintoric/ui's look, built on react-email.",
   "type": "module",
   "license": "MIT",

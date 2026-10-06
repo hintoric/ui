@@ -1,5 +1,11 @@
 # @hintoric/email
 
+## 0.1.2
+
+### Patch Changes
+
+- 9a1a616: Build the security alert's avatar initials from letters only. A workspace named "Müller & Söhne GmbH" showed "M&"; it now shows "MS", and quotes or dashes in front of a word no longer count as its initial.
+
 ## 0.1.1
 
 ### Patch Changes
