@@ -9,6 +9,16 @@ import type { TabsProps } from './types';
 // Confirmed against @mui/joy's Tabs.js source: `size` is the only prop
 // threaded down to TabList/Tab/TabPanel via context — variant/color are NOT
 // inherited by them (see TabsContext.ts).
+//
+// Joy's TabsRoot sets `position: relative` and `theme.typography[body-${size}]`
+// (font-size by size, line-height always `lineHeight-md`) and no border-radius
+// at all — the root is square in every variant.
+const SIZE_CLASSES = {
+  sm: 'text-sm leading-normal',
+  md: 'text-base leading-normal',
+  lg: 'text-lg leading-normal',
+} as const;
+
 export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
   {
     variant = 'plain',
@@ -34,9 +44,10 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(
       }
       orientation={orientation}
       className={cx(
-        'flex',
+        'relative flex',
         orientation === 'vertical' ? 'flex-row' : 'flex-col',
-        'rounded-md font-body',
+        'font-body',
+        SIZE_CLASSES[size],
         SURFACE_COLOR_CLASSES[variant][color],
         className,
       )}

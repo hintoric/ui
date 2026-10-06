@@ -12,10 +12,13 @@ import { TabNavContext } from '../TabNav/TabNavContext';
 import { ReportTabLook } from './TabIndicatorContext';
 import type { TabProps } from './types';
 
+// Joy's Tab sets no line-height of its own and inherits `lineHeight-md` (1.5)
+// from the Tabs root, so `leading-normal` overrides the per-size line-height
+// Tailwind's `text-sm`/`text-lg` would bring (20px/28px where Joy is 21/27).
 const SIZE_CLASS = {
-  sm: 'min-h-8 text-sm',
-  md: 'min-h-9 text-base',
-  lg: 'min-h-11 text-lg',
+  sm: 'min-h-8 text-sm leading-normal',
+  md: 'min-h-9 text-base leading-normal',
+  lg: 'min-h-11 text-lg leading-normal',
 } as const;
 
 // Joy's Tab is a ListItemButton: `paddingBlock` is the List's `--ListItem-
