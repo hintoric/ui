@@ -6,4 +6,12 @@ export interface MenuItemProps extends Omit<React.ComponentPropsWithoutRef<'div'
   color?: JoyColor;
   selected?: boolean;
   disabled?: boolean;
+  /**
+   * Whether clicking the item closes the menu. Turn it off for an item that
+   * changes what the menu shows — a row that opens a sub-view, a setting
+   * whose new value the menu should display — rather than finishing the job.
+   *
+   * @default true
+   */
+  closeOnClick?: boolean;
 }

@@ -96,6 +96,7 @@ export const NAV: NavGroup[] = [
     // above is one part you assemble yourself.
     title: 'Blocks',
     links: [
+      { to: '/account-menu', label: 'AccountMenu' },
       { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
       { to: '/locale-switcher', label: 'LocaleSwitcher' },
       { to: '/map-image', label: 'MapImage' },
