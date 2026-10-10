@@ -131,5 +131,35 @@ describe('Snackbar visual parity with @mui/joy', () => {
         }
       });
     }
+
+    it(`single-line snackbar with a decorator keeps Joy's height and icon position in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      const icon = (id: string) => <svg data-testid={id} width="20" height="20" />;
+
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoySnackbar open data-testid="joy-deco" startDecorator={icon('joy-icon')} anchorOrigin={{ vertical: 'top', horizontal: 'left' }}>
+            Text
+          </JoySnackbar>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <HintoricSnackbar
+          open
+          data-testid="hintoric-deco"
+          startDecorator={icon('hintoric-icon')}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+          Text
+        </HintoricSnackbar>,
+      );
+
+      const rel = (snackId: string, iconId: string) => {
+        const a = page.getByTestId(snackId).element().getBoundingClientRect();
+        const i = page.getByTestId(iconId).element().getBoundingClientRect();
+        return { height: a.height, top: i.top - a.top };
+      };
+      expect(rel('hintoric-deco', 'hintoric-icon')).toEqual(rel('joy-deco', 'joy-icon'));
+    });
   }
 });

@@ -13,7 +13,9 @@ const compoundVariants = JOY_VARIANTS.flatMap((variant) =>
 // variant overlay, same fallback mechanism as Sheet/Card/Chip. Radius is
 // `theme.vars.radius.sm` (our --radius-sm), not a component-local value.
 // Confirmed against @mui/joy's Alert.js source.
-export const alertVariants = cva('flex items-center rounded-sm font-body font-medium', {
+// Deliberate deviation from Joy: the row is `items-start`, not `items-center`,
+// so decorators stay on the first line of multi-line content.
+export const alertVariants = cva('flex items-start rounded-sm font-body font-medium', {
   variants: {
     variant: { solid: '', soft: '', outlined: '', plain: '' },
     color: { primary: '', neutral: '', danger: '', success: '', warning: '' },
@@ -26,3 +28,9 @@ export const alertVariants = cva('flex items-center rounded-sm font-body font-me
   compoundVariants,
   defaultVariants: { variant: 'soft', color: 'neutral', size: 'md' },
 });
+
+// Decorators sit on the first text line: the box is at least one line high
+// (`1lh` = the alert's own line-height) and centres its content in it, so an
+// icon no taller than a line lines up with a single line exactly as it did
+// when the whole row was centred.
+export const DECORATOR_CLASSES = 'inline-flex min-h-[1lh] flex-none items-center';

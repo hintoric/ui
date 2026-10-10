@@ -37,6 +37,16 @@ describe('Snackbar', () => {
     expect(screen.getByText('end')).toBeInTheDocument();
   });
 
+  it('top-aligns decorators like Alert', () => {
+    render(
+      <Snackbar open role="status" startDecorator={<span data-testid="icon">i</span>}>
+        Saved
+      </Snackbar>,
+    );
+    expect(screen.getByRole('status')).toHaveClass('items-start');
+    expect(screen.getByTestId('icon').parentElement).toHaveClass('min-h-[1lh]', 'items-center');
+  });
+
   describe('autoHideDuration', () => {
     beforeEach(() => {
       vi.useFakeTimers();
