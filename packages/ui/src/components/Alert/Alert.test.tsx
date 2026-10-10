@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Alert } from './Alert';
+import { AlertTitle } from './AlertTitle';
 
 describe('Alert', () => {
   it('renders its children', () => {
@@ -40,5 +41,31 @@ describe('Alert', () => {
     );
     expect(screen.getByTestId('start')).toBeInTheDocument();
     expect(screen.getByTestId('end')).toBeInTheDocument();
+  });
+
+  it('top-aligns the row so decorators stay on the first line', () => {
+    render(
+      <Alert data-testid="alert" startDecorator={<span data-testid="icon">i</span>}>
+        <AlertTitle>Title</AlertTitle>
+        <div>Line one</div>
+        <div>Line two</div>
+      </Alert>,
+    );
+    expect(screen.getByTestId('alert')).toHaveClass('items-start');
+    expect(screen.getByTestId('alert')).not.toHaveClass('items-center');
+    const decorator = screen.getByTestId('icon').parentElement!;
+    expect(decorator).toHaveClass('min-h-[1lh]', 'items-center', 'flex-none');
+  });
+});
+
+describe('AlertTitle', () => {
+  it('renders a 16px/24px semibold title', () => {
+    render(<AlertTitle>Heads up</AlertTitle>);
+    expect(screen.getByText('Heads up')).toHaveClass('text-base/6', 'font-semibold');
+  });
+
+  it('merges className', () => {
+    render(<AlertTitle className="mb-1">Heads up</AlertTitle>);
+    expect(screen.getByText('Heads up')).toHaveClass('font-semibold', 'mb-1');
   });
 });

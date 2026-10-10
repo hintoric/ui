@@ -3,6 +3,7 @@ import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { cx } from '../../utils/cx';
 import { SURFACE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
+import { DECORATOR_CLASSES } from '../Alert/alertVariants';
 import type { SnackbarProps } from './types';
 
 const SIZE_CLASS = {
@@ -62,7 +63,7 @@ export const Snackbar = React.forwardRef<HTMLDivElement, SnackbarProps>(function
       ref={ref}
       role="status"
       className={cx(
-        'fixed z-50 flex min-w-[300px] max-w-[calc(100vw-2rem)] items-center rounded-sm font-body shadow-[var(--shadow-lg)]',
+        'fixed z-50 flex min-w-[300px] max-w-[calc(100vw-2rem)] items-start rounded-sm font-body shadow-[var(--shadow-lg)]',
         VERTICAL_CLASS[size][anchorOrigin.vertical],
         HORIZONTAL_CLASS[size][anchorOrigin.horizontal],
         SIZE_CLASS[size],
@@ -71,9 +72,9 @@ export const Snackbar = React.forwardRef<HTMLDivElement, SnackbarProps>(function
       )}
       {...props}
     >
-      {startDecorator && <span className="inline-flex items-center">{startDecorator}</span>}
+      {startDecorator && <span className={DECORATOR_CLASSES}>{startDecorator}</span>}
       <span className="min-w-0 flex-1">{children}</span>
-      {endDecorator && <span className="inline-flex items-center">{endDecorator}</span>}
+      {endDecorator && <span className={DECORATOR_CLASSES}>{endDecorator}</span>}
     </div>,
     document.body,
   );

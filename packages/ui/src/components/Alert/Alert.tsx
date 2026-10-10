@@ -4,7 +4,7 @@ import { useRender } from '@base-ui/react/use-render';
 import { mergeProps } from '@base-ui/react/merge-props';
 import { cx } from '../../utils/cx';
 import { asRenderProp } from '../../utils/asRenderProp';
-import { alertVariants } from './alertVariants';
+import { alertVariants, DECORATOR_CLASSES } from './alertVariants';
 import type { AlertProps } from './types';
 
 export const Alert = React.forwardRef<HTMLElement, AlertProps>(function Alert(
@@ -21,9 +21,9 @@ export const Alert = React.forwardRef<HTMLElement, AlertProps>(function Alert(
       {
         children: (
           <>
-            {startDecorator && <span className="inline-flex items-center">{startDecorator}</span>}
+            {startDecorator && <span className={DECORATOR_CLASSES}>{startDecorator}</span>}
             <span className="min-w-0 flex-1">{children}</span>
-            {endDecorator && <span className="inline-flex items-center">{endDecorator}</span>}
+            {endDecorator && <span className={DECORATOR_CLASSES}>{endDecorator}</span>}
           </>
         ),
       },

@@ -1,4 +1,4 @@
-import { Alert } from '@hintoric/ui';
+import { Alert, AlertTitle } from '@hintoric/ui';
 import type { JoyColor, JoyVariant } from '@hintoric/ui';
 import { Demo, Code } from '../components/Demo';
 import { VariantColorGrid } from '../components/VariantColorGrid';
@@ -51,13 +51,32 @@ export function AlertPage() {
   Your session is about to expire.
 </Alert>`}</Code>
 
+      <h2>Title and multi-line content</h2>
+      <p>
+        Decorators are top-aligned: the icon sits on the first line, so it stays next to the title however long the
+        content gets. <code>AlertTitle</code> is 16px / semibold; body text below it keeps the alert&apos;s size, with{' '}
+        <code>font-normal</code> for a regular weight. <code>Snackbar</code> aligns its decorators the same way.
+      </p>
+      <Demo>
+        <Alert color="primary" startDecorator={<span style={{ fontSize: 24, lineHeight: '24px' }}>ℹ️</span>} className="px-4 py-1.5 rounded">
+          <AlertTitle>Heads up</AlertTitle>
+          <div className="font-normal">First line of text.</div>
+          <div className="font-normal">Second line of text.</div>
+        </Alert>
+      </Demo>
+      <Code>{`<Alert color="primary" startDecorator={<InfoIcon />}>
+  <AlertTitle>Heads up</AlertTitle>
+  <div className="font-normal">First line of text.</div>
+  <div className="font-normal">Second line of text.</div>
+</Alert>`}</Code>
+
       <h2>Props</h2>
       <PropsTable
         rows={[
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'soft'", description: 'Visual style of the alert.' },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'Color palette applied to the variant.' },
           { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Controls padding, gap and font size.' },
-          { name: 'startDecorator', type: 'React.ReactNode', description: 'Element rendered before the content (e.g. an icon).' },
+          { name: 'startDecorator', type: 'React.ReactNode', description: 'Element rendered before the content (e.g. an icon), aligned to the first line.' },
           { name: 'endDecorator', type: 'React.ReactNode', description: 'Element rendered after the content (e.g. a close button).' },
           { name: 'role', type: 'string', default: "'alert'", description: 'ARIA role of the element.' },
           { name: 'component', type: 'React.ElementType', default: "'div'", description: 'Renders as a different element/component.' },
