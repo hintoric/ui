@@ -11,6 +11,7 @@ import type { WaitlistWelcomeProps } from './types';
  * next, one button to the website. Centred, like the other single-purpose
  * mails — logo, heading, two short paragraphs, button, sign-off.
  */
+/** @deprecated New consumers should not use this template. */
 export function WaitlistWelcomeEmail(props: WaitlistWelcomeProps) {
   const { messages } = props;
   return (
@@ -36,6 +37,7 @@ export function WaitlistWelcomeEmail(props: WaitlistWelcomeProps) {
 }
 
 /** What goes inside the card, without the document — for in-app previews (render `ColorSchemeStyles` next to it). */
+/** @deprecated New consumers should not use this template. */
 export function WaitlistWelcomeContent({ messages, websiteUrl }: WaitlistWelcomeProps) {
   return (
     <div style={{ textAlign: 'center' }}>
@@ -69,6 +71,7 @@ export interface RenderedWaitlistWelcome {
 }
 
 /** Subject, HTML and plain-text body in one call — what SES, Resend and the like take. */
+/** @deprecated New consumers should not use this template. */
 export async function renderWaitlistWelcome(props: WaitlistWelcomeProps): Promise<RenderedWaitlistWelcome> {
   const { html, text } = await renderEmail(<WaitlistWelcomeEmail {...props} />);
   return { subject: props.messages.subject, html, text };

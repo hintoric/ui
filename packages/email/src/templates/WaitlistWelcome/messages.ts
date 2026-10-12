@@ -1,5 +1,6 @@
 import type { WaitlistWelcomeMessages } from './types';
 
+/** @deprecated New consumers should not use this template. */
 export const waitlistWelcomeMessagesDe: WaitlistWelcomeMessages = {
   lang: 'de',
   subject: 'Du bist auf der Hintoric-Warteliste',
@@ -13,6 +14,7 @@ export const waitlistWelcomeMessagesDe: WaitlistWelcomeMessages = {
   footer: 'Wir haben dir diese E-Mail gesendet, weil du dich für die Hintoric-Warteliste eingetragen hast.',
 };
 
+/** @deprecated New consumers should not use this template. */
 export const waitlistWelcomeMessagesEn: WaitlistWelcomeMessages = {
   lang: 'en',
   subject: "You're on the Hintoric waitlist",
