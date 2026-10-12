@@ -236,6 +236,7 @@ export function FloatingBarPage() {
           { name: 'orientation', type: "'horizontal' | 'vertical'", description: 'Defaults to the one the placement implies.' },
           { name: 'placement', type: "'top' | 'right' | 'bottom' | 'left'", description: 'Pins the bar to that edge of the nearest positioned ancestor. Without it the bar stays in the flow.' },
           { name: 'align', type: "'start' | 'center' | 'end'", default: "'center'", description: 'Where along the edge it sits.' },
+          { name: 'wrap', type: 'boolean', default: 'false', description: 'Lets the buttons break onto a second row in a narrow space. A solid bar also gives a Divider inside it a visible line.' },
           { name: 'straddle', type: 'boolean', default: 'false', description: 'Hangs the bar half over the edge instead of keeping it inside.' },
           { name: 'component', type: 'React.ElementType', description: 'Renders as something else than a div.' },
         ]}
@@ -243,6 +244,7 @@ export function FloatingBarPage() {
       <h3>FloatingBarButton</h3>
       <PropsTable
         rows={[
+          { name: 'text', type: 'boolean', default: 'false', description: 'The button carries a text label: it grows with it and gets horizontal padding, still a pill.' },
           { name: 'selected', type: 'boolean', description: 'Draws the button active and announces it pressed. Omit it entirely for a plain action.' },
           { name: 'variant', type: "'solid' | 'soft' | 'outlined' | 'plain'", default: "'plain'", description: "Also picks the token the selected background comes from." },
           { name: 'color', type: "'primary' | 'neutral' | 'danger' | 'success' | 'warning'", default: "'neutral'", description: 'As on IconButton.' },

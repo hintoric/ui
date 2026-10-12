@@ -25,6 +25,12 @@ export interface FloatingBarProps extends Omit<React.ComponentPropsWithoutRef<'d
   align?: FloatingBarAlign;
   /** Hangs the bar half over the edge instead of keeping it inside. */
   straddle?: boolean;
+  /**
+   * Lets the buttons break onto a second row when there is not room for all of
+   * them, instead of overflowing. The pill's corners ease from fully round to
+   * a large radius so a two-row bar does not turn into an ellipse.
+   */
+  wrap?: boolean;
 }
 
 export interface FloatingBarButtonProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'color'> {
@@ -36,6 +42,11 @@ export interface FloatingBarButtonProps extends Omit<React.ComponentPropsWithout
    * plain action — a button with no state should not claim one.
    */
   selected?: boolean;
+  /**
+   * The button carries a text label, not an icon: it grows with its label and
+   * gets horizontal padding, instead of staying a circle. Still a full pill.
+   */
+  text?: boolean;
 }
 
 /**

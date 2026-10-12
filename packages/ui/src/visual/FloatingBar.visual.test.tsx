@@ -5,6 +5,7 @@ import { FloatingBar, FloatingBarButton, FloatingBarMenuButton } from '../compon
 import { Dropdown } from '../components/Dropdown';
 import { Menu } from '../components/Menu';
 import { MenuItem } from '../components/MenuItem';
+import { Divider } from '../components/Divider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
 /**
@@ -131,5 +132,55 @@ describe('FloatingBar', () => {
       await expect(page.getByTestId('frame')).toMatchScreenshot(`floating-bar-menu-${scheme}`);
     });
   }
-});
 
+  for (const scheme of COLOR_SCHEMES) {
+    it(`carries text labels, wraps in a narrow space and shows its divider in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      render(
+        <div data-testid="frame" style={{ width: 150, padding: 8 }}>
+          <FloatingBar aria-label="Felder" variant="solid" color="neutral" wrap>
+            <FloatingBarButton text variant="solid" color="success" selected>
+              Datum
+            </FloatingBarButton>
+            <FloatingBarButton text variant="solid">
+              Betrag
+            </FloatingBarButton>
+            <Divider orientation="vertical" data-testid="divider" />
+            <FloatingBarButton text variant="solid">
+              Kein Feld
+            </FloatingBarButton>
+          </FloatingBar>
+        </div>,
+      );
+
+      const bar = page.getByRole('toolbar').element();
+      const label = page.getByRole('button', { name: 'Betrag' }).element();
+      const labelBox = label.getBoundingClientRect();
+      const labelStyle = getComputedStyle(label);
+      const pressed = getComputedStyle(page.getByRole('button', { name: 'Datum' }).element());
+
+      // A label is wider than tall, padded, and still a pill — not a circle.
+      expect(labelBox.width).toBeGreaterThan(labelBox.height);
+      expect(parseFloat(labelStyle.paddingLeft)).toBeGreaterThanOrEqual(12);
+      expect(parseFloat(labelStyle.borderTopLeftRadius)).toBeGreaterThanOrEqual(labelBox.height / 2);
+      expect(labelStyle.fontSize).toBe('14px');
+      expect(pressed.backgroundColor).not.toBe(labelStyle.backgroundColor);
+
+      // It wraps: taller than one row, and nothing sticks out of the frame.
+      const barBox = bar.getBoundingClientRect();
+      expect(barBox.height).toBeGreaterThan(labelBox.height * 1.8);
+      for (const button of page.getByRole('button').elements()) {
+        expect(button.getBoundingClientRect().right).toBeLessThanOrEqual(barBox.right);
+      }
+      expect(getComputedStyle(bar).flexWrap).toBe('wrap');
+
+      // The divider has to be told apart from the solid fill. It is a
+      // translucent white there, never the (invisible) dark divider grey.
+      const line = getComputedStyle(page.getByTestId('divider').element()).backgroundColor;
+      expect(line).toBe('rgba(255, 255, 255, 0.32)');
+      expect(line).not.toBe(getComputedStyle(bar).backgroundColor);
+
+      await expect(page.getByTestId('frame')).toMatchScreenshot(`floating-bar-text-wrap-${scheme}`);
+    });
+  }
+});

@@ -73,6 +73,7 @@ export const FloatingBar = React.forwardRef<HTMLElement, FloatingBarProps>(funct
     placement,
     align = 'center',
     straddle = false,
+    wrap = false,
     className,
     style,
     ...props
@@ -92,10 +93,17 @@ export const FloatingBar = React.forwardRef<HTMLElement, FloatingBarProps>(funct
         // A toolbar is horizontal unless it says otherwise.
         'aria-orientation': upright ? ('vertical' as const) : undefined,
         className: cx(
-          'inline-flex items-center gap-1 rounded-full p-1 shadow-md',
+          'inline-flex items-center gap-1 p-1 shadow-md',
+          // A wrapped bar is several rows tall; `rounded-full` would turn it
+          // into an ellipse, so the radius is capped at a single row's.
+          wrap ? 'flex-wrap rounded-[1.5rem]' : 'rounded-full',
           upright ? 'flex-col' : 'flex-row',
           placement && 'absolute z-10',
           sheetVariants({ variant, color }),
+          // The divider grey is a translucent dark; on a solid fill it
+          // vanishes. The text colour of every solid is white, so a
+          // translucent white is the line that stays visible on all of them.
+          variant === 'solid' && '[--divider-line:rgb(255_255_255/0.32)]',
           className,
         ),
         style: { ...(placement ? floatingStyle(placement, align, straddle) : null), ...style },
