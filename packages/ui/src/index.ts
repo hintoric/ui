@@ -183,6 +183,9 @@ export type { RadioGroupProps, RadioGroupContextValue } from './components/Radio
 export { Switch } from './components/Switch';
 export type { SwitchProps } from './components/Switch';
 
+export { Popover } from './components/Popover';
+export type { PopoverProps, PopoverAnchorRect } from './components/Popover';
+
 export { Tooltip } from './components/Tooltip';
 export type { TooltipProps } from './components/Tooltip';
 
