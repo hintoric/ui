@@ -137,4 +137,22 @@ describe('FloatingBar', () => {
     await userEvent.click(more);
     expect(await screen.findByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument();
   });
+
+  it('wraps only when asked to', () => {
+    const { rerender } = render(<FloatingBar aria-label="Actions" />);
+    expect(screen.getByRole('toolbar')).not.toHaveClass('flex-wrap');
+    rerender(<FloatingBar aria-label="Actions" wrap />);
+    expect(screen.getByRole('toolbar')).toHaveClass('flex-wrap');
+  });
+
+  it('keeps a button a circle unless it carries text', () => {
+    render(
+      <FloatingBar aria-label="Actions">
+        <FloatingBarButton aria-label="Edit">E</FloatingBarButton>
+        <FloatingBarButton text>Datum</FloatingBarButton>
+      </FloatingBar>,
+    );
+    expect(screen.getByRole('button', { name: 'Edit' })).not.toHaveClass('px-3');
+    expect(screen.getByRole('button', { name: 'Datum' })).toHaveClass('px-3', 'rounded-full');
+  });
 });

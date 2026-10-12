@@ -6,6 +6,8 @@ import { IconButton } from '../IconButton/IconButton';
 import { FloatingBarContext } from './FloatingBarContext';
 import type { FloatingBarButtonProps } from './types';
 
+const TEXT_SIZE_CLASS = { sm: 'text-xs', md: 'text-sm', lg: 'text-base' } as const;
+
 /**
  * A button inside a FloatingBar: round, and round again when selected.
  *
@@ -15,7 +17,7 @@ import type { FloatingBarButtonProps } from './types';
  * variant or colour, so the bar stays one surface.
  */
 export const FloatingBarButton = React.forwardRef<HTMLButtonElement, FloatingBarButtonProps>(
-  function FloatingBarButton({ variant = 'plain', color = 'neutral', size, selected, className, ...props }, ref) {
+  function FloatingBarButton({ variant = 'plain', color = 'neutral', size, selected, text, className, ...props }, ref) {
     const bar = React.useContext(FloatingBarContext);
     return (
       <IconButton
@@ -24,7 +26,13 @@ export const FloatingBarButton = React.forwardRef<HTMLButtonElement, FloatingBar
         color={color}
         size={size ?? bar.size}
         aria-pressed={selected}
-        className={cx('rounded-full', selected && ACTIVE_BG_CLASS[variant][color], className)}
+        className={cx(
+          'rounded-full',
+          // `px-3` after the size's own padding, so twMerge drops that one.
+          text && ['px-3 whitespace-nowrap', TEXT_SIZE_CLASS[size ?? bar.size]],
+          selected && ACTIVE_BG_CLASS[variant][color],
+          className,
+        )}
         {...props}
       />
     );
