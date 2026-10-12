@@ -19,6 +19,7 @@ export function WaitlistWelcomeEmail(props: WaitlistWelcomeProps) {
       lang={messages.lang}
       preview={messages.preview}
       colorScheme={props.colorScheme}
+      unsubscribe={props.unsubscribeUrl && messages.unsubscribe ? { href: props.unsubscribeUrl, label: messages.unsubscribe } : undefined}
       footer={
         <Typography level="body-xs" component="p" textAlign="center" textColor="icon" style={{ fontWeight: 400 }}>
           {messages.footer}

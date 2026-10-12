@@ -2,6 +2,9 @@ import * as React from 'react';
 import { Body, Container, Head, Html, Preview } from 'react-email';
 import { emailClass, emailStylesheet } from '../styles';
 import { emailFonts, emailSchemes, variantTokens } from '../tokens';
+import { safeHref } from '../safeUrl';
+import { Link } from './Link';
+import { Typography } from './Typography';
 
 export interface LayoutProps {
   /** The `lang` of the message — screen readers pick their voice from it. */
@@ -13,6 +16,12 @@ export interface LayoutProps {
   preview: string;
   /** Rendered under the card: why the reader got this, the sender's legal line. */
   footer?: React.ReactNode;
+  /**
+   * An unsubscribe link, rendered as the last line of the footer. Only for
+   * mails a reader can opt out of — marketing and updates, not security alerts.
+   * Without a safe http(s)/mailto `href` nothing is rendered.
+   */
+  unsubscribe?: { href: string; label: string };
   /** Forces a scheme for previews. Left out, the email follows the reader's OS where the client supports that. */
   colorScheme?: 'light' | 'dark';
   children: React.ReactNode;
@@ -23,7 +32,7 @@ export interface LayoutProps {
  * with a 20px radius and 48px padding on a `surface-1` page, the fine print
  * centred under it. In dark the page and card swap surfaces, as AuthScreen's do.
  */
-export function Layout({ lang, preview, footer, colorScheme, children }: LayoutProps) {
+export function Layout({ lang, preview, footer, unsubscribe, colorScheme, children }: LayoutProps) {
   const t = emailSchemes.light;
   return (
     <Html lang={lang} data-color-scheme={colorScheme}>
@@ -49,7 +58,18 @@ export function Layout({ lang, preview, footer, colorScheme, children }: LayoutP
             {children}
           </div>
         </Container>
-        {footer && <Container style={{ maxWidth: '440px', padding: '24px 24px 0', textAlign: 'center' }}>{footer}</Container>}
+        {(footer || unsubscribe) && (
+          <Container style={{ maxWidth: '440px', padding: '24px 24px 0', textAlign: 'center' }}>
+            {footer}
+            {unsubscribe && safeHref(unsubscribe.href) && (
+              <Typography level="body-xs" component="p" textAlign="center" textColor="icon" style={{ margin: footer ? '12px 0 0' : 0, fontWeight: 400 }}>
+                <Link href={unsubscribe.href} color="neutral">
+                  {unsubscribe.label}
+                </Link>
+              </Typography>
+            )}
+          </Container>
+        )}
       </Body>
     </Html>
   );

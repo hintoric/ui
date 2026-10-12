@@ -84,6 +84,7 @@ const { subject, html, text } = await renderWaitlistWelcome({
   messages: waitlistWelcomeMessagesDe,
   websiteUrl: 'https://hintoric.com',
   legalNotice: 'Muster GmbH · Musterstraße 1 · 79098 Freiburg', // optional
+  unsubscribeUrl: 'https://hintoric.com/unsubscribe?token=…', // optional
 });
 
 await mailer.send({ to: entry.email, subject, html, text });`}</Code>
@@ -98,6 +99,7 @@ await mailer.send({ to: entry.email, subject, html, text });`}</Code>
           },
           { name: 'websiteUrl', type: 'string', description: 'Behind the button. Unsafe schemes are dropped.' },
           { name: 'legalNotice', type: 'string', description: 'Optional line under the footer.' },
+          { name: 'unsubscribeUrl', type: 'string', description: 'Optional. Adds an unsubscribe link (label: messages.unsubscribe) as the last footer line.' },
           { name: 'colorScheme', type: "'light' | 'dark'", description: 'Forces a scheme. Previews only.' },
         ]}
       />
