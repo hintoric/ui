@@ -85,6 +85,12 @@ export function Layout() {
                   onClick={closeMobileNav}
                 >
                   {link.label}
+                  {link.deprecated && (
+                    <svg className="docs-nav-deprecated-icon" viewBox="0 0 16 16" width="14" height="14" role="img" aria-label="Deprecated">
+                      <title>Deprecated</title>
+                      <path fill="currentColor" d="M8 1.5 15 14H1L8 1.5Zm-.75 4.75v3.5h1.5v-3.5h-1.5Zm0 4.75v1.5h1.5V11h-1.5Z" />
+                    </svg>
+                  )}
                 </NavLink>
               ))}
             </div>

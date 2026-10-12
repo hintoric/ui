@@ -10,6 +10,9 @@ import {
   variantTokens,
   renderEmail,
   renderSecurityActivityAlert,
+  renderWaitlistWelcome,
+  waitlistWelcomeMessagesDe,
+  waitlistWelcomeMessagesEn,
   safeHref,
   securityActivityAlertMessagesDe,
   securityActivityAlertMessagesEn,
@@ -152,5 +155,36 @@ describe('safeHref', () => {
   it('renders an unsafe Link as text and an unsafe Button as nothing', async () => {
     expect((await renderEmail(<Link href="javascript:x">label</Link>)).html).not.toContain('<a');
     expect((await renderEmail(<Button href="javascript:x">label</Button>)).html).not.toContain('label');
+  });
+});
+
+describe('renderWaitlistWelcome', () => {
+  const waitlist = { messages: waitlistWelcomeMessagesDe, websiteUrl: 'https://hintoric.com' };
+
+  it('returns subject, HTML and a plain-text part', async () => {
+    const { subject, html, text } = await renderWaitlistWelcome(waitlist);
+    expect(subject).toBe('Du bist auf der Hintoric-Warteliste');
+    expect(html).toMatch(/^<!DOCTYPE html/);
+    expect(html).toContain('lang="de"');
+    expect(text).toContain('Alles erledigt.');
+    expect(text).toContain('https://hintoric.com');
+  });
+
+  it('shows the heading and a button to the website', async () => {
+    const doc = parse((await renderWaitlistWelcome(waitlist)).html);
+    expect(doc.querySelector('h1')?.textContent).toBe('Willkommen bei Hintoric');
+    const button = [...doc.querySelectorAll('a')].find((a) => a.textContent === 'Zu hintoric.com');
+    expect(button?.getAttribute('href')).toBe('https://hintoric.com/');
+  });
+
+  it('renders in English with its own lang and subject', async () => {
+    const { subject, html } = await renderWaitlistWelcome({ ...waitlist, messages: waitlistWelcomeMessagesEn });
+    expect(subject).toBe("You're on the Hintoric waitlist");
+    expect(html).toContain('lang="en"');
+  });
+
+  it('adds the legal notice under the footer only when given', async () => {
+    expect((await renderWaitlistWelcome(waitlist)).text).not.toContain('Musterstraße');
+    expect((await renderWaitlistWelcome({ ...waitlist, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
   });
 });

@@ -163,12 +163,40 @@ a {
 }
 
 .docs-nav-link {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 6px 8px;
   border-radius: var(--radius-sm);
   text-decoration: none;
   font-size: 0.9rem;
   color: var(--color-ink-secondary);
+}
+
+.docs-badge-deprecated {
+  display: inline-block;
+  margin-left: 0;
+  flex-shrink: 0;
+  padding: 1px 5px;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  background-color: color-mix(in srgb, var(--color-warning-500) 22%, transparent);
+  color: var(--color-ink-primary);
+  font-size: 0.62rem;
+  font-weight: 600;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+h1 .docs-badge-deprecated {
+  font-size: 0.8rem;
+  margin-left: 12px;
+}
+
+.docs-nav-deprecated-icon {
+  flex-shrink: 0;
+  color: var(--color-warning-500);
 }
 
 .docs-nav-link:hover {

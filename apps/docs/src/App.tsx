@@ -74,6 +74,7 @@ import { EmailCardPage } from './pages/email/EmailCardPage';
 import { EmailAvatarPage } from './pages/email/EmailAvatarPage';
 import { EmailChipPage } from './pages/email/EmailChipPage';
 import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
+import { WaitlistWelcomePage } from './pages/email/WaitlistWelcomePage';
 
 export function App() {
   return (
@@ -162,6 +163,7 @@ export function App() {
             <Route path="/email/avatar" element={<EmailAvatarPage />} />
             <Route path="/email/chip" element={<EmailChipPage />} />
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
+            <Route path="/email/templates/waitlist-welcome" element={<WaitlistWelcomePage />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -1,6 +1,8 @@
 export interface NavLink {
   to: string;
   label: string;
+  /** Still documented, but new code should not use it: a badge in the sidebar, and `<DeprecatedBadge />` on the page. */
+  deprecated?: boolean;
 }
 
 export interface NavGroup {
@@ -146,7 +148,10 @@ export const EMAIL_NAV: NavGroup[] = [
   },
   {
     title: 'Templates',
-    links: [{ to: '/email/templates/security-activity-alert', label: 'Security activity alert' }],
+    links: [
+      { to: '/email/templates/security-activity-alert', label: 'Security activity alert' },
+      { to: '/email/templates/waitlist-welcome', label: 'Waitlist welcome', deprecated: true },
+    ],
   },
 ];
 
