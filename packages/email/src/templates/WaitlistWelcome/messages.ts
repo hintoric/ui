@@ -12,6 +12,7 @@ export const waitlistWelcomeMessagesDe: WaitlistWelcomeMessages = {
   cta: 'Zu hintoric.com',
   signoff: '— Dein Hintoric-Team',
   footer: 'Wir haben dir diese E-Mail gesendet, weil du dich für die Hintoric-Warteliste eingetragen hast.',
+  unsubscribe: 'Abmelden',
 };
 
 /** @deprecated New consumers should not use this template. */
@@ -26,4 +27,5 @@ export const waitlistWelcomeMessagesEn: WaitlistWelcomeMessages = {
   cta: 'Go to hintoric.com',
   signoff: '— Your Hintoric team',
   footer: 'We sent you this email because you signed up for the Hintoric waitlist.',
+  unsubscribe: 'Unsubscribe',
 };

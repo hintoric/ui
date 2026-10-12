@@ -187,4 +187,12 @@ describe('renderWaitlistWelcome', () => {
     expect((await renderWaitlistWelcome(waitlist)).text).not.toContain('Musterstraße');
     expect((await renderWaitlistWelcome({ ...waitlist, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
   });
+
+  it('renders the unsubscribe link only when a URL is given', async () => {
+    const link = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'Abmelden');
+    expect(link((await renderWaitlistWelcome(waitlist)).html)).toBeUndefined();
+    const withUrl = await renderWaitlistWelcome({ ...waitlist, unsubscribeUrl: 'https://hintoric.com/unsubscribe?t=1' });
+    expect(link(withUrl.html)?.getAttribute('href')).toBe('https://hintoric.com/unsubscribe?t=1');
+    expect(link((await renderWaitlistWelcome({ ...waitlist, unsubscribeUrl: 'javascript:x' })).html)).toBeUndefined();
+  });
 });

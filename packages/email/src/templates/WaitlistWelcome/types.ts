@@ -19,12 +19,16 @@ export interface WaitlistWelcomeMessages {
   signoff: string;
   /** Under the card: why the reader got this mail. */
   footer: string;
+  /** Label of the unsubscribe link under the footer. Shown only when `unsubscribeUrl` is set. */
+  unsubscribe?: string;
 }
 
 export interface WaitlistWelcomeProps {
   messages: WaitlistWelcomeMessages;
   /** Where the button leads — normally the marketing site. */
   websiteUrl: string;
+  /** One-click opt-out. When set (and `messages.unsubscribe` is), the footer ends with an unsubscribe link. */
+  unsubscribeUrl?: string;
   /** The sender's legal line under the footer — company, address. */
   legalNotice?: string;
   /** Previews only — see `Layout`. */
