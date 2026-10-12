@@ -40,3 +40,4 @@ export type { ChipProps } from './components/Chip';
 export { HintoricLogo } from './components/HintoricLogo';
 
 export * from './templates/SecurityActivityAlert';
+export * from './templates/WaitlistWelcome';
