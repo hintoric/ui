@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, Tooltip as JoyTooltip } from '@mui/joy';
+import {
+  CssVarsProvider as JoyCssVarsProvider,
+  Modal as JoyModal,
+  ModalDialog as JoyModalDialog,
+  Tooltip as JoyTooltip,
+} from '@mui/joy';
+import { Modal as HintoricModal } from '../components/Modal';
+import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { Tooltip as HintoricTooltip } from '../components/Tooltip';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
@@ -55,5 +62,52 @@ describe('Tooltip visual parity with @mui/joy', () => {
         });
       }
     }
+  }
+});
+
+// A tooltip on a control inside a Modal must paint above it. Joy stacks the
+// tooltip (1500) over the modal (1300); the z-index has to sit on Base UI's
+// positioner — the popup inside it is not positioned, so a z-index there is a
+// no-op. Hit-testing the popup's centre is the signal: `elementFromPoint`
+// returns the popup only if nothing (the modal's layer) covers it.
+describe('Tooltip over a Modal', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    it(`paints above the Modal like Joy UI's does in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(
+        <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyModal open>
+            <JoyModalDialog data-testid="joy-dialog">
+              <JoyTooltip title="joy-tip" placement="top" open>
+                <button>joy trigger</button>
+              </JoyTooltip>
+            </JoyModalDialog>
+          </JoyModal>
+        </JoyCssVarsProvider>,
+      );
+      const joyPopup = page.getByText('joy-tip').element() as HTMLElement;
+      const joyRect = joyPopup.getBoundingClientRect();
+      expect(document.elementFromPoint(joyRect.x + joyRect.width / 2, joyRect.y + joyRect.height / 2)).toBe(joyPopup);
+      await expect(page.getByTestId('joy-dialog')).toMatchScreenshot(`tooltip-over-modal-joy-${scheme}`);
+    });
+
+    it(`paints above our Modal in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+
+      render(
+        <HintoricModal open>
+          <HintoricModalDialog data-testid="hintoric-dialog">
+            <HintoricTooltip title="hintoric-tip" placement="top" defaultOpen>
+              <button>hintoric trigger</button>
+            </HintoricTooltip>
+          </HintoricModalDialog>
+        </HintoricModal>,
+      );
+      const popup = page.getByText('hintoric-tip').element() as HTMLElement;
+      const rect = popup.getBoundingClientRect();
+      expect(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)).toBe(popup);
+      await expect(page.getByTestId('hintoric-dialog')).toMatchScreenshot(`tooltip-over-modal-hintoric-${scheme}`);
+    });
   }
 });

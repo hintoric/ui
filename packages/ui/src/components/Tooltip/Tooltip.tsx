@@ -23,10 +23,10 @@ export function Tooltip({
     <BaseTooltip.Root disabled={!title} defaultOpen={defaultOpen}>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
-        <BaseTooltip.Positioner side={placement} sideOffset={8}>
+        <BaseTooltip.Positioner side={placement} sideOffset={8} className="z-[1500]">
           <BaseTooltip.Popup
             className={cx(
-              'z-50 rounded-sm font-body shadow-[var(--shadow-xs)]',
+              'rounded-sm font-body shadow-[var(--shadow-xs)]',
               SIZE_CLASS[size],
               SURFACE_COLOR_CLASSES[variant][color],
             )}
