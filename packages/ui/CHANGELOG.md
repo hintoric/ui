@@ -1,5 +1,17 @@
 # @hintoric/ui
 
+## 0.10.0
+
+### Minor Changes
+
+- 45597dc: `Alert` and `Snackbar` now top-align their `startDecorator` and `endDecorator`, so an icon stays on the first line of multi-line content instead of floating in the vertical middle. Single-line alerts look the same as before. New `AlertTitle` renders a 16px semibold title above the body text of an `Alert`.
+- 04258ed: `FloatingBar` gets a `wrap` prop: buttons break onto a second row in a narrow space instead of overflowing. `FloatingBarButton` gets a `text` prop for a text label instead of an icon: it grows with its label and keeps the pill shape (`selected` still draws the pressed state, e.g. with `color="success"`). A `Divider` inside a `variant="solid"` `FloatingBar` is now visible on the filled background; `Divider` reads an optional `--divider-line` custom property for its colour.
+- c308b21: New `Popover`: a popup that stands at a rectangle (`anchorRect={{ x, y, width, height }}`, viewport coordinates) instead of at an element — for a toolbar over a text selection or a map marker. It stays beside the rectangle without covering it, flips to the other side and shifts at the edge of the page like `Menu`, and closes on Escape or a press outside (`onClose`). Focus is not moved into it, so a text selection survives. It paints nothing by default (`variant="plain"`), so a `FloatingBar` inside keeps its own surface.
+
+### Patch Changes
+
+- 79f94e2: Fix `Tooltip` rendering underneath a `Modal` or `Drawer`. The `z-index` was set on the popup, which isn't positioned, so it had no effect; it now sits on the positioner (1500, like Joy UI), so a tooltip on a control inside a dialog is visible.
+
 ## 0.9.0
 
 ### Minor Changes
