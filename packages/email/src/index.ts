@@ -35,9 +35,15 @@ export { Card } from './components/Card';
 export type { CardProps } from './components/Card';
 export { Avatar } from './components/Avatar';
 export type { AvatarProps } from './components/Avatar';
+export { Alert, AlertTitle } from './components/Alert';
+export { EMAIL_ALERT_ICON_BASE, EMAIL_ALERT_ICON_FOR_COLOR, emailAlertIcon, emailAlertIconFiles, emailAlertIconUrl } from './alertIcons';
+export type { EmailAlertIconName } from './alertIcons';
+export type { AlertProps, AlertTitleProps } from './components/Alert';
 export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 export { HintoricLogo } from './components/HintoricLogo';
 
+export * from './templates/AuthCode';
+export * from './templates/AuthNoAccount';
 export * from './templates/SecurityActivityAlert';
 export * from './templates/WaitlistWelcome';

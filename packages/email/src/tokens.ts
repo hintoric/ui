@@ -110,6 +110,9 @@ export const emailFonts = {
   // core's `--font-heading`. Only clients with the font installed or web-font
   // support (Apple Mail) show Montserrat; the rest fall back to the body stack.
   heading: "Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  // Joy's `fontFamily.code` without its web font: one-time codes, where a 0
+  // and an O must not look alike.
+  code: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 };
 
 /** theme.css's radius scale. */

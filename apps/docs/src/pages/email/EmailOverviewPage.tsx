@@ -41,7 +41,7 @@ await mailer.send({ to, subject, html, text });`}</Code>
       <h2>Components</h2>
       <p>
         <code>Typography</code>, <code>Button</code>, <code>Link</code>, <code>Divider</code>,{' '}
-        <code>Card</code>, <code>Avatar</code> and <code>Chip</code> take the same <code>variant</code>,{' '}
+        <code>Card</code>, <code>Avatar</code>, <code>Chip</code> and <code>Alert</code> take the same <code>variant</code>,{' '}
         <code>color</code> and <code>size</code> as in <code>@hintoric/ui</code> and look the same. There are
         no hover or focus states, and spacing goes on each element through <code>style</code>.{' '}
         <code>HintoricLogo</code> is the wordmark.

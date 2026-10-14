@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useColorScheme } from '@hintoric/ui';
 import { WaitlistWelcomeEmail, renderEmail, waitlistWelcomeMessagesDe, waitlistWelcomeMessagesEn } from '@hintoric/email';
 import { Demo, Code } from '../../components/Demo';
+import { EmailPreview } from '../../components/EmailPreview';
 import { PropsTable } from '../../components/PropsTable';
 import { SegmentedToggle } from '../../components/SegmentedToggle';
 
@@ -10,25 +11,6 @@ const shared = {
   legalNotice: 'Muster GmbH · Musterstraße 1 · 79098 Freiburg',
 };
 
-/** Written with document.write, not `srcDoc` — see SecurityActivityAlertPage. */
-function EmailPreview({ html }: { html: string }) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  useEffect(() => {
-    const doc = frame.current?.contentDocument;
-    if (!doc) return;
-    doc.open();
-    doc.write(html);
-    doc.close();
-  }, [html]);
-  return (
-    <iframe
-      ref={frame}
-      title="Waitlist welcome preview"
-      sandbox="allow-same-origin"
-      style={{ width: '100%', height: 720, border: 0, display: 'block' }}
-    />
-  );
-}
 
 export function WaitlistWelcomePage() {
   const { resolvedMode } = useColorScheme();
@@ -74,7 +56,7 @@ export function WaitlistWelcomePage() {
             onChange={setLang}
           />
         </div>
-        {html && <EmailPreview key={html} html={html} />}
+        {html && <EmailPreview key={html} html={html} title="Waitlist welcome preview" />}
       </Demo>
 
       <h2>Sending</h2>

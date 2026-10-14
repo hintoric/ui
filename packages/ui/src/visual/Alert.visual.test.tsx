@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
-import { CssVarsProvider as JoyCssVarsProvider, Alert as JoyAlert } from '@mui/joy';
-import { Alert as HintoricAlert, AlertTitle } from '../components/Alert';
+import { CssVarsProvider as JoyCssVarsProvider, Alert as JoyAlert, SvgIcon as JoySvgIcon } from '@mui/joy';
+import { Alert as HintoricAlert, AlertTitle, ALERT_ICONS, ALERT_ICON_FOR_COLOR } from '../components/Alert';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 
@@ -11,6 +11,27 @@ const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
 // Alert is non-interactive — no focus state to cover, just the variant x
 // color x size matrix.
+//
+// Our Alert shows an icon per colour by default; Joy's shows none. Joy gets
+// the same path as its own SvgIcon, which it sizes through the alert's
+// `--Icon-fontSize` — so the comparison also checks our icon's size and
+// position against Joy's sizing, not against itself.
+const joyIcon = (color: (typeof COLORS)[number], testId: string) => (
+  <JoySvgIcon data-testid={testId}>
+    <path d={ALERT_ICONS[ALERT_ICON_FOR_COLOR[color]]} />
+  </JoySvgIcon>
+);
+
+function expectSameIcon(joyAlertId: string, joyIconId: string, hintoricAlertId: string) {
+  const box = (alertId: string, icon: Element) => {
+    const a = page.getByTestId(alertId).element().getBoundingClientRect();
+    const i = icon.getBoundingClientRect();
+    return { width: i.width, height: i.height, left: i.left - a.left, top: i.top - a.top, alertHeight: a.height };
+  };
+  const ours = page.getByTestId(hintoricAlertId).element().querySelector('svg[data-alert-icon]')!;
+  expect(box(hintoricAlertId, ours)).toEqual(box(joyAlertId, page.getByTestId(joyIconId).element()));
+  expect(getComputedStyle(ours).color).toBe(getComputedStyle(page.getByTestId(joyIconId).element()).color);
+}
 describe('Alert visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
     for (const variant of VARIANTS) {
@@ -20,7 +41,12 @@ describe('Alert visual parity with @mui/joy', () => {
 
           render(
             <JoyCssVarsProvider defaultMode={scheme}>
-              <JoyAlert data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
+              <JoyAlert
+                data-testid={`joy-${variant}-${color}`}
+                variant={variant}
+                color={color}
+                startDecorator={joyIcon(color, `joy-icon-${variant}-${color}`)}
+              >
                 {color}
               </JoyAlert>
             </JoyCssVarsProvider>,
@@ -48,6 +74,7 @@ describe('Alert visual parity with @mui/joy', () => {
           expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
           expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
           expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+          expectSameIcon(`joy-${variant}-${color}`, `joy-icon-${variant}-${color}`, `hintoric-${variant}-${color}`);
 
           await expect(joyLocator).toMatchScreenshot(`alert-${variant}-${color}-joy-${scheme}`);
           await expect(hintoricLocator).toMatchScreenshot(`alert-${variant}-${color}-hintoric-${scheme}`);
@@ -61,7 +88,7 @@ describe('Alert visual parity with @mui/joy', () => {
 
         render(
           <JoyCssVarsProvider defaultMode={scheme}>
-            <JoyAlert data-testid={`joy-size-${size}`} size={size}>
+            <JoyAlert data-testid={`joy-size-${size}`} size={size} startDecorator={joyIcon('neutral', `joy-icon-size-${size}`)}>
               {size}
             </JoyAlert>
           </JoyCssVarsProvider>,
@@ -79,6 +106,7 @@ describe('Alert visual parity with @mui/joy', () => {
 
         expect(hintoricStyle.padding).toBe(joyStyle.padding);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+        expectSameIcon(`joy-size-${size}`, `joy-icon-size-${size}`, `hintoric-size-${size}`);
       });
     }
 

@@ -68,4 +68,54 @@ describe('AlertTitle', () => {
     render(<AlertTitle className="mb-1">Heads up</AlertTitle>);
     expect(screen.getByText('Heads up')).toHaveClass('font-semibold', 'mb-1');
   });
+
+  it('shows an icon for its colour by default, hidden from assistive technology', () => {
+    const iconOf = (color: 'primary' | 'neutral' | 'danger' | 'success' | 'warning') => {
+      const { container, unmount } = render(<Alert color={color}>Message</Alert>);
+      const svg = container.querySelector('svg');
+      const name = svg?.getAttribute('data-alert-icon');
+      expect(svg).toHaveAttribute('aria-hidden', 'true');
+      unmount();
+      return name;
+    };
+    expect(iconOf('primary')).toBe('info');
+    expect(iconOf('neutral')).toBe('info');
+    expect(iconOf('danger')).toBe('report');
+    expect(iconOf('success')).toBe('check-circle');
+    expect(iconOf('warning')).toBe('warning');
+  });
+
+  it('defaults to the neutral icon when no colour is given', () => {
+    const { container } = render(<Alert>Message</Alert>);
+    expect(container.querySelector('svg')).toHaveAttribute('data-alert-icon', 'info');
+  });
+
+  it('puts the icon in the start decorator, on the first line', () => {
+    const { container } = render(<Alert color="warning">Message</Alert>);
+    expect(container.querySelector('svg')!.parentElement).toHaveClass('min-h-[1lh]', 'items-center', 'flex-none');
+  });
+
+  it('sizes the icon 20px up to md and 24px at lg, as Joy sizes icons in an alert', () => {
+    const sizeOf = (size: 'sm' | 'md' | 'lg') => {
+      const { container, unmount } = render(<Alert size={size}>Message</Alert>);
+      const cls = container.querySelector('svg')!.getAttribute('class');
+      unmount();
+      return cls;
+    };
+    expect(sizeOf('sm')).toContain('size-5');
+    expect(sizeOf('md')).toContain('size-5');
+    expect(sizeOf('lg')).toContain('size-6');
+  });
+
+  it('replaces the icon with a given start decorator', () => {
+    const { container } = render(<Alert startDecorator={<span data-testid="own">!</span>}>Message</Alert>);
+    expect(screen.getByTestId('own')).toBeInTheDocument();
+    expect(container.querySelector('svg')).toBeNull();
+  });
+
+  it('leaves the icon out for startDecorator={null}', () => {
+    const { container } = render(<Alert color="danger" startDecorator={null}>Message</Alert>);
+    expect(container.querySelector('svg')).toBeNull();
+    expect(screen.getByText('Message').parentElement!.children).toHaveLength(1);
+  });
 });

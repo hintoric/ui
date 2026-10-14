@@ -74,8 +74,8 @@ export type { ChipProps } from './components/Chip';
 export { Avatar } from './components/Avatar';
 export type { AvatarProps } from './components/Avatar';
 
-export { Alert, AlertTitle } from './components/Alert';
-export type { AlertProps, AlertTitleProps } from './components/Alert';
+export { Alert, AlertTitle, AlertIcon, ALERT_ICONS, ALERT_ICON_FOR_COLOR } from './components/Alert';
+export type { AlertProps, AlertTitleProps, AlertIconName, AlertIconProps } from './components/Alert';
 
 export { Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
