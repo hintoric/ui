@@ -17,6 +17,7 @@ import {
   waitlistWelcomeMessagesEn,
   safeHref,
   Alert,
+  HintoricLogo,
   emailAlertIconFiles,
   securityActivityAlertMessagesDe,
   securityActivityAlertMessagesEn,
@@ -351,5 +352,23 @@ describe('Alert icons', () => {
   it('asks for exactly the files in assets/email/alert, the CDN folder', () => {
     const onDisk = Object.keys(import.meta.glob('../assets/email/alert/*.png')).map((path) => path.split('/').pop());
     expect(emailAlertIconFiles().map(({ file }) => file).sort()).toEqual(onDisk.sort());
+  });
+});
+
+describe('HintoricLogo', () => {
+  // The web logo's viewBox (@hintoric/ui HintoricLogo: 1484 × 326), which the
+  // hosted PNGs are drawn at twice. A ratio that drifts from it squeezes the
+  // wordmark, as it did once the PNGs were replaced by the 2968 × 652 artwork.
+  const WEB_RATIO = 1484 / 326;
+
+  it("keeps the wordmark's proportions, at the height of the auth screen's logo", async () => {
+    const imgs = [...parse((await renderEmail(<HintoricLogo />)).html).querySelectorAll('img')];
+    expect(imgs).toHaveLength(2);
+    for (const img of imgs) {
+      const width = Number(img.getAttribute('width'));
+      const height = Number(img.getAttribute('height'));
+      expect(height).toBe(26);
+      expect(Math.abs(width / height - WEB_RATIO)).toBeLessThan(0.05);
+    }
   });
 });
