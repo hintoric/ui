@@ -9,6 +9,8 @@ import {
   mainColor,
   variantTokens,
   renderEmail,
+  renderAuthCode,
+  renderAuthNoAccount,
   renderSecurityActivityAlert,
   renderWaitlistWelcome,
   waitlistWelcomeMessagesDe,
@@ -17,6 +19,12 @@ import {
   securityActivityAlertMessagesDe,
   securityActivityAlertMessagesEn,
   type SecurityActivityAlertProps,
+  authCodeMessagesDe,
+  authCodeMessagesEn,
+  authNoAccountMessagesDe,
+  authNoAccountMessagesEn,
+  type AuthCodeProps,
+  type AuthNoAccountProps,
 } from './index';
 
 const props: SecurityActivityAlertProps = {
@@ -194,5 +202,115 @@ describe('renderWaitlistWelcome', () => {
     const withUrl = await renderWaitlistWelcome({ ...waitlist, unsubscribeUrl: 'https://hintoric.com/unsubscribe?t=1' });
     expect(link(withUrl.html)?.getAttribute('href')).toBe('https://hintoric.com/unsubscribe?t=1');
     expect(link((await renderWaitlistWelcome({ ...waitlist, unsubscribeUrl: 'javascript:x' })).html)).toBeUndefined();
+  });
+});
+
+describe('renderAuthCode', () => {
+  const auth: AuthCodeProps = { purpose: 'login', code: '482915', email: 'max@muster.de', messages: authCodeMessagesDe };
+
+  it('returns subject, HTML and a plain-text part with the code in all three', async () => {
+    const { subject, html, text } = await renderAuthCode(auth);
+    expect(subject).toBe('Dein Anmeldecode für hintoric');
+    expect(html).toMatch(/^<!DOCTYPE html/);
+    expect(html).toContain('lang="de"');
+    expect(html).toContain('482915');
+    expect(text).toContain('482915');
+  });
+
+  it('shows the code as one unbroken run, so a double-click selects all of it', async () => {
+    const doc = parse((await renderAuthCode(auth)).html);
+    const code = doc.querySelector('[data-auth-code]');
+    expect(code?.textContent).toBe('482915');
+    expect(code?.children.length).toBe(0);
+  });
+
+  it('puts the code in the inbox preview line', async () => {
+    const doc = parse((await renderAuthCode(auth)).html);
+    expect(doc.body.textContent).toContain('Dein Code: 482915');
+  });
+
+  it('names the flow in heading and subject, in the words core uses for it', async () => {
+    const heading = async (purpose: AuthCodeProps['purpose']) => {
+      const { subject, html } = await renderAuthCode({ ...auth, purpose });
+      return [subject, parse(html).querySelector('h1')?.textContent];
+    };
+    expect(await heading('verification')).toEqual(['Dein Bestätigungscode für hintoric', 'Adresse bestätigen']);
+    expect(await heading('registration')).toEqual(['Dein Registrierungscode für hintoric', 'Konto anlegen']);
+    expect(await heading('login')).toEqual(['Dein Anmeldecode für hintoric', 'Anmelden']);
+    expect(await heading('recovery')).toEqual(['Dein Wiederherstellungscode für hintoric', 'Konto wiederherstellen']);
+  });
+
+  it('adds a button only when a link is given, and only a safe one', async () => {
+    const button = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'Adresse bestätigen');
+    expect(button((await renderAuthCode({ ...auth, purpose: 'verification' })).html)).toBeUndefined();
+    const url = 'https://auth.hint-dev.com/self-service/verification?flow=1&code=482915';
+    const withUrl = await renderAuthCode({ ...auth, purpose: 'verification', url });
+    expect(button(withUrl.html)?.getAttribute('href')).toBe(url);
+    expect(withUrl.text).toContain(url);
+    const unsafe = await renderAuthCode({ ...auth, purpose: 'verification', url: 'javascript:alert(1)' });
+    expect(unsafe.html).not.toContain('javascript:');
+  });
+
+  it('says how long the code is valid only when told', async () => {
+    expect((await renderAuthCode(auth)).text).not.toContain('Minuten');
+    expect((await renderAuthCode({ ...auth, expiresInMinutes: 15 })).text).toContain('15 Minuten');
+    expect((await renderAuthCode({ ...auth, expiresInMinutes: 60, messages: authCodeMessagesEn })).text).toContain('60 minutes');
+  });
+
+  it('names the address the code is for, when given', async () => {
+    expect((await renderAuthCode(auth)).text).toContain('max@muster.de');
+    expect((await renderAuthCode({ ...auth, email: undefined })).text).not.toContain('@');
+  });
+
+  it('warns more firmly for recovery, which hands over the account', async () => {
+    expect((await renderAuthCode(auth)).text).toContain('kannst du diese E-Mail ignorieren');
+    expect((await renderAuthCode({ ...auth, purpose: 'recovery' })).text).toContain('Gib den Code an niemanden weiter');
+  });
+
+  it('escapes the code and the address rather than rendering them as markup', async () => {
+    const { html } = await renderAuthCode({ ...auth, code: '<b>1</b>', email: '<img src=x onerror=alert(1)>' });
+    expect(html).not.toContain('<b>1</b>');
+    expect(html).not.toContain('<img src=x');
+  });
+
+  it('renders in English with its own lang and subject', async () => {
+    const { subject, html } = await renderAuthCode({ ...auth, messages: authCodeMessagesEn });
+    expect(subject).toBe('Your hintoric sign-in code');
+    expect(html).toContain('lang="en"');
+  });
+
+  it('adds the legal notice under the footer only when given', async () => {
+    expect((await renderAuthCode(auth)).text).not.toContain('Musterstraße');
+    expect((await renderAuthCode({ ...auth, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
+  });
+});
+
+describe('renderAuthNoAccount', () => {
+  const noAccount: AuthNoAccountProps = { purpose: 'recovery', email: 'max@muster.de', messages: authNoAccountMessagesDe };
+
+  it('returns subject, HTML and a plain-text part, and no code anywhere', async () => {
+    const { subject, html, text } = await renderAuthNoAccount(noAccount);
+    expect(subject).toBe('Kein hintoric-Konto mit dieser Adresse');
+    expect(html).toMatch(/^<!DOCTYPE html/);
+    expect(parse(html).querySelector('[data-auth-code]')).toBeNull();
+    expect(text).toContain('max@muster.de');
+  });
+
+  it('says what was attempted, for recovery and for verification', async () => {
+    expect((await renderAuthNoAccount(noAccount)).text).toContain('hintoric-Konto zu max@muster.de wiederherstellen');
+    expect((await renderAuthNoAccount({ ...noAccount, purpose: 'verification' })).text).toContain('die Adresse max@muster.de bei hintoric bestätigen');
+  });
+
+  it('offers to create an account only when a registration link is given', async () => {
+    const button = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'Konto anlegen');
+    expect(button((await renderAuthNoAccount(noAccount)).html)).toBeUndefined();
+    const withUrl = await renderAuthNoAccount({ ...noAccount, registrationUrl: 'https://hint-dev.com/auth/registration' });
+    expect(button(withUrl.html)?.getAttribute('href')).toBe('https://hint-dev.com/auth/registration');
+  });
+
+  it('renders in English with its own lang and subject', async () => {
+    const { subject, html } = await renderAuthNoAccount({ ...noAccount, messages: authNoAccountMessagesEn });
+    expect(subject).toBe('No hintoric account with this address');
+    expect(html).toContain('lang="en"');
   });
 });

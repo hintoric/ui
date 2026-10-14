@@ -20,7 +20,8 @@ rendered as tables and inline styles. A visual test suite compares every variant
 against its web component in light and dark.
 
 It also ships `Layout` (a message framed like hintoric's auth screens), `renderEmail` and
-ready-made templates such as `SecurityActivityAlertEmail`.
+ready-made templates such as `SecurityActivityAlertEmail` and `AuthCodeEmail` (the one-time
+codes of Kratos' sign-in flows).
 
 ## Install
 

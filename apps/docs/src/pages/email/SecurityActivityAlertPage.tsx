@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useColorScheme } from '@hintoric/ui';
 import {
   SecurityActivityAlertEmail,
@@ -8,6 +8,7 @@ import {
   type SecurityActivityAlertProps,
 } from '@hintoric/email';
 import { Demo, Code } from '../../components/Demo';
+import { EmailPreview } from '../../components/EmailPreview';
 import { PropsTable } from '../../components/PropsTable';
 import { SegmentedToggle } from '../../components/SegmentedToggle';
 
@@ -72,31 +73,6 @@ const EXAMPLES: Record<'de' | 'en', Record<'workspace' | 'account', Example>> = 
   },
 };
 
-/**
- * The rendered mail in an iframe, written with document.write rather than
- * `srcDoc`: a srcdoc document is always in no-quirks mode, while the mail's
- * own doctype puts it in limited-quirks mode — the layout readers get.
- * `allow-same-origin` and nothing else: the page can write into the frame,
- * scripts in it stay blocked.
- */
-function EmailPreview({ html }: { html: string }) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  useEffect(() => {
-    const doc = frame.current?.contentDocument;
-    if (!doc) return;
-    doc.open();
-    doc.write(html);
-    doc.close();
-  }, [html]);
-  return (
-    <iframe
-      ref={frame}
-      title="Security activity alert preview"
-      sandbox="allow-same-origin"
-      style={{ width: '100%', height: 720, border: 0, display: 'block' }}
-    />
-  );
-}
 
 export function SecurityActivityAlertPage() {
   const { resolvedMode } = useColorScheme();
@@ -153,7 +129,7 @@ export function SecurityActivityAlertPage() {
             onChange={setLang}
           />
         </div>
-        {html && <EmailPreview key={html} html={html} />}
+        {html && <EmailPreview key={html} html={html} title="Security activity alert preview" />}
       </Demo>
 
       <h2>Sending</h2>

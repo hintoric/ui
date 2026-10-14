@@ -39,5 +39,7 @@ export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 export { HintoricLogo } from './components/HintoricLogo';
 
+export * from './templates/AuthCode';
+export * from './templates/AuthNoAccount';
 export * from './templates/SecurityActivityAlert';
 export * from './templates/WaitlistWelcome';
