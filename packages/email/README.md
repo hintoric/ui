@@ -15,7 +15,7 @@
 Mail clients understand neither Tailwind classes nor CSS variables, and run no JavaScript, so
 `@hintoric/ui`'s components can't be sent as they are. `@hintoric/email` has email counterparts of
 the most important ones — `Typography`, `Button`, `Link`, `Divider`,
-`Card`, `Avatar` and `Chip` — with the same `variant`, `color` and `size` props,
+`Card`, `Avatar`, `Chip` and `Alert` — with the same `variant`, `color` and `size` props,
 rendered as tables and inline styles. A visual test suite compares every variant × colour of each
 against its web component in light and dark.
 

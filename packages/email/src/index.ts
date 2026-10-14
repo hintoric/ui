@@ -35,6 +35,8 @@ export { Card } from './components/Card';
 export type { CardProps } from './components/Card';
 export { Avatar } from './components/Avatar';
 export type { AvatarProps } from './components/Avatar';
+export { Alert, AlertTitle } from './components/Alert';
+export type { AlertProps, AlertTitleProps } from './components/Alert';
 export { Chip } from './components/Chip';
 export type { ChipProps } from './components/Chip';
 export { HintoricLogo } from './components/HintoricLogo';

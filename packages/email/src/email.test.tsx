@@ -301,6 +301,13 @@ describe('renderAuthNoAccount', () => {
     expect((await renderAuthNoAccount({ ...noAccount, purpose: 'verification' })).text).toContain('die Adresse max@muster.de bei hintoric bestätigen');
   });
 
+  it('states the missing account in a warning alert, not in the running text', async () => {
+    const doc = parse((await renderAuthNoAccount(noAccount)).html);
+    const alert = doc.querySelector('table.hx-soft-warning');
+    expect(alert?.textContent).toBe('Mit max@muster.de gibt es kein hintoric-Konto.');
+    expect([...doc.querySelectorAll('p')].some((p) => p.textContent?.includes('gibt es aber kein Konto'))).toBe(false);
+  });
+
   it('offers to create an account only when a registration link is given', async () => {
     const button = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'Konto anlegen');
     expect(button((await renderAuthNoAccount(noAccount)).html)).toBeUndefined();

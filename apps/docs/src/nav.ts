@@ -144,6 +144,7 @@ export const EMAIL_NAV: NavGroup[] = [
       { to: '/email/card', label: 'Card' },
       { to: '/email/avatar', label: 'Avatar' },
       { to: '/email/chip', label: 'Chip' },
+      { to: '/email/alert', label: 'Alert' },
     ],
   },
   {

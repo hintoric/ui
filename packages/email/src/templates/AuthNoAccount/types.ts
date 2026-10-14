@@ -23,8 +23,10 @@ export interface AuthNoAccountMessages {
   /** The line inbox lists show after the subject. */
   preview: (ctx: AuthNoAccountContext) => string;
   heading: (ctx: AuthNoAccountContext) => string;
-  /** What was attempted, and that the address has no account. */
+  /** What was attempted. */
   body: (ctx: AuthNoAccountContext) => string;
+  /** That the address has no account — the warning alert under the body. */
+  alert: (ctx: AuthNoAccountContext) => string;
   /** The likely explanation, and what to do if it wasn't the reader. */
   hint: (ctx: AuthNoAccountContext) => string;
   /** Label of the button. Shown only when `registrationUrl` is set. */

@@ -1,3 +1,4 @@
+import { Alert } from '../../components/Alert';
 import { Button } from '../../components/Button';
 import { HintoricLogo } from '../../components/HintoricLogo';
 import { Layout } from '../../components/Layout';
@@ -13,8 +14,8 @@ function contextOf({ purpose, email }: AuthNoAccountProps): AuthNoAccountContext
 
 /**
  * The answer to a code request for an address without an account: no code,
- * only what was attempted, the likely mix-up, and — when given — a way to
- * create the account.
+ * only what was attempted, the fact itself in a warning alert, the likely
+ * mix-up, and — when given — a way to create the account.
  */
 export function AuthNoAccountEmail(props: AuthNoAccountProps) {
   const { messages } = props;
@@ -46,23 +47,28 @@ export function AuthNoAccountContent(props: AuthNoAccountProps) {
   const { messages, registrationUrl } = props;
   const ctx = contextOf(props);
   return (
-    <div style={{ textAlign: 'center' }}>
-      <HintoricLogo />
-      <Typography level="h3" component="h1" style={{ margin: '16px 0 12px', fontFamily: emailFonts.heading }}>
-        {messages.heading(ctx)}
-      </Typography>
-      <Typography level="body-sm" style={{ marginBottom: '12px' }}>
-        {messages.body(ctx)}
-      </Typography>
-      <Typography level="body-sm" style={{ marginBottom: registrationUrl ? '24px' : 0 }}>
-        {messages.hint(ctx)}
-      </Typography>
-      {registrationUrl && (
-        <Button href={registrationUrl} variant="outlined" color="neutral" size="lg" fullWidth>
-          {messages.registerButton}
-        </Button>
-      )}
-    </div>
+    <>
+      <div style={{ textAlign: 'center' }}>
+        <HintoricLogo />
+        <Typography level="h3" component="h1" style={{ margin: '16px 0 12px', fontFamily: emailFonts.heading }}>
+          {messages.heading(ctx)}
+        </Typography>
+        <Typography level="body-sm" style={{ marginBottom: '24px' }}>
+          {messages.body(ctx)}
+        </Typography>
+      </div>
+      <Alert color="warning">{messages.alert(ctx)}</Alert>
+      <div style={{ textAlign: 'center' }}>
+        <Typography level="body-sm" style={{ margin: registrationUrl ? '24px 0' : '24px 0 0' }}>
+          {messages.hint(ctx)}
+        </Typography>
+        {registrationUrl && (
+          <Button href={registrationUrl} variant="outlined" color="neutral" size="lg" fullWidth>
+            {messages.registerButton}
+          </Button>
+        )}
+      </div>
+    </>
   );
 }
 

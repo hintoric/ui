@@ -30,6 +30,7 @@ async function renderNoAccount(scheme: 'light' | 'dark', width = 640) {
     card: doc.querySelector('.hx-layout-card') as HTMLElement,
     heading: doc.querySelector('h1') as HTMLElement,
     button: [...doc.querySelectorAll('a')].find((a) => a.textContent === 'Konto anlegen')!,
+    alert: doc.querySelector('table.hx-soft-warning') as HTMLElement,
   };
 }
 
@@ -55,8 +56,8 @@ describe('AuthNoAccountEmail visual (self-baseline)', () => {
     });
   }
 
-  it('changes page, card, border, heading and button colours between light and dark', async () => {
-    const read = ({ doc, card, heading, button }: Awaited<ReturnType<typeof renderNoAccount>>) => {
+  it('changes page, card, border, heading, alert and button colours between light and dark', async () => {
+    const read = ({ doc, card, heading, button, alert }: Awaited<ReturnType<typeof renderNoAccount>>) => {
       const view = doc.defaultView!;
       return {
         page: view.getComputedStyle(doc.querySelector('body > table td')!).backgroundColor,
@@ -64,6 +65,8 @@ describe('AuthNoAccountEmail visual (self-baseline)', () => {
         border: view.getComputedStyle(card).borderTopColor,
         ink: view.getComputedStyle(heading).color,
         button: view.getComputedStyle(button).color,
+        alert: view.getComputedStyle(alert).backgroundColor,
+        alertInk: view.getComputedStyle(alert).color,
       };
     };
     const light = read(await renderNoAccount('light'));

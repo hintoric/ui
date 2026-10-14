@@ -73,6 +73,7 @@ import { EmailDividerPage } from './pages/email/EmailDividerPage';
 import { EmailCardPage } from './pages/email/EmailCardPage';
 import { EmailAvatarPage } from './pages/email/EmailAvatarPage';
 import { EmailChipPage } from './pages/email/EmailChipPage';
+import { EmailAlertPage } from './pages/email/EmailAlertPage';
 import { AuthCodePage } from './pages/email/AuthCodePage';
 import { AuthNoAccountPage } from './pages/email/AuthNoAccountPage';
 import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
@@ -164,6 +165,7 @@ export function App() {
             <Route path="/email/card" element={<EmailCardPage />} />
             <Route path="/email/avatar" element={<EmailAvatarPage />} />
             <Route path="/email/chip" element={<EmailChipPage />} />
+            <Route path="/email/alert" element={<EmailAlertPage />} />
             <Route path="/email/templates/auth-code" element={<AuthCodePage />} />
             <Route path="/email/templates/auth-no-account" element={<AuthNoAccountPage />} />
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
