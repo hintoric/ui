@@ -104,6 +104,29 @@ describe('Email.Alert parity with Alert', () => {
       });
     }
 
+    for (const size of ['sm', 'md', 'lg'] as const) {
+      it(`size ${size} puts the default icon where the web Alert's is, at its size, in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+        const { web, email } = await renderPair(
+          <Alert size={size} color="warning">
+            {TEXT}
+          </Alert>,
+          <Email.Alert size={size} color="warning">
+            {TEXT}
+          </Email.Alert>,
+        );
+        const box = (root: Element, el: Element) => {
+          const r = root.getBoundingClientRect();
+          const b = el.getBoundingClientRect();
+          return { width: b.width, height: b.height, left: b.left - r.left, top: b.top - r.top };
+        };
+        // The light image is the visible one until the dark rules apply.
+        const visible = [...email.querySelectorAll('img')].find((img) => img.ownerDocument.defaultView!.getComputedStyle(img).display !== 'none')!;
+        expect(box(email, visible)).toEqual(box(web, web.querySelector('svg[data-alert-icon]')!));
+        expectSameBox(web, email);
+      });
+    }
+
     for (const variant of EMAIL_VARIANTS) {
       it(`${variant} with a title over regular body text matches in ${scheme}`, async () => {
         await setColorScheme(scheme);

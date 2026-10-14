@@ -1,19 +1,28 @@
 import * as React from 'react';
+import { Img } from 'react-email';
+import { emailAlertIcon } from '../alertIcons';
 import { emailClass } from '../styles';
 import { emailFonts, emailRadius, emailSchemes, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
 
-/** alertVariants.ts: `gap-2/2.5/3.5`, `p-2/3/4`, `text-xs/sm/base` at a 1.5 line-height. */
+/**
+ * alertVariants.ts: `gap-2/2.5/3.5`, `p-2/3/4`, `text-xs/sm/base` at a 1.5
+ * line-height; the icon is AlertIcon's 20px up to md and 24px at lg.
+ */
 const SIZES = {
-  sm: { gap: 8, padding: 8, fontSize: 12 },
-  md: { gap: 10, padding: 12, fontSize: 14 },
-  lg: { gap: 14, padding: 16, fontSize: 16 },
+  sm: { gap: 8, padding: 8, fontSize: 12, icon: 20 },
+  md: { gap: 10, padding: 12, fontSize: 14, icon: 20 },
+  lg: { gap: 14, padding: 16, fontSize: 16, icon: 24 },
 } as const;
 
 export interface AlertProps {
   variant?: EmailVariant;
   color?: EmailColor;
   size?: keyof typeof SIZES;
-  /** A box — normally an image icon — on the first line, before the text. */
+  /**
+   * A box — normally an image icon — on the first line, before the text.
+   * Left out, the alert shows the icon for its colour, as the web Alert
+   * does; `null` shows none.
+   */
   startDecorator?: React.ReactNode;
   /** A box on the first line, after the text. */
   endDecorator?: React.ReactNode;
@@ -35,6 +44,7 @@ export interface AlertProps {
  */
 export function Alert({ variant = 'soft', color = 'neutral', size = 'md', startDecorator, endDecorator, style, children }: AlertProps) {
   const s = SIZES[size];
+  const start = startDecorator === undefined ? <AlertIcon variant={variant} color={color} size={s.icon} /> : startDecorator;
   const v = variantTokens('light', variant, color);
   const filled = v.backgroundColor !== undefined;
   const lineHeight = s.fontSize * 1.5;
@@ -73,11 +83,11 @@ export function Alert({ variant = 'soft', color = 'neutral', size = 'md', startD
       <tbody>
         <tr>
           <td style={{ padding: `${s.padding}px`, ...type }}>
-            {startDecorator || endDecorator ? (
+            {start || endDecorator ? (
               <table role="presentation" width="100%" cellPadding={0} cellSpacing={0} border={0}>
                 <tbody>
                   <tr>
-                    {startDecorator && decorator(startDecorator, 'start')}
+                    {start && decorator(start, 'start')}
                     <td data-alert-content="" style={{ verticalAlign: 'top', ...type }}>
                       {children}
                     </td>
@@ -92,6 +102,25 @@ export function Alert({ variant = 'soft', color = 'neutral', size = 'md', startD
         </tr>
       </tbody>
     </table>
+  );
+}
+
+/**
+ * The colour's icon as a light / dark pair of hosted PNGs, like HintoricLogo:
+ * a mail client can't recolour an image, so each scheme's ink is its own file.
+ * Clients without the dark stylesheet keep the light one.
+ */
+function AlertIcon({ variant, color, size }: { variant: EmailVariant; color: EmailColor; size: number }) {
+  const light = emailAlertIcon('light', variant, color);
+  const dark = emailAlertIcon('dark', variant, color);
+  const img = (url: string, className: string, display: 'block' | 'none') => (
+    <Img src={url} width={size} height={size} alt="" className={className} style={{ display, width: `${size}px`, height: `${size}px`, border: 0 }} />
+  );
+  return (
+    <>
+      {img(light.url, emailClass.lightOnly, 'block')}
+      {img(dark.url, emailClass.darkOnly, 'none')}
+    </>
   );
 }
 

@@ -45,6 +45,9 @@ export const emailClass = {
   // dark rules apply — clients without <style> support keep the light logo.
   logoLight: 'hx-logo-light',
   logoDark: 'hx-logo-dark',
+  // The same swap for a pair of block images, such as an Alert's icon.
+  lightOnly: 'hx-light-only',
+  darkOnly: 'hx-dark-only',
 } as const;
 
 function darkRules(scope: string): string {
@@ -63,6 +66,8 @@ function darkRules(scope: string): string {
     rule(`${emailClass.layoutCanvas}>table>tbody>tr>td`, `background-color:${t.surface}!important;`),
     rule(emailClass.logoLight, 'display:none!important;'),
     rule(emailClass.logoDark, 'display:inline-block!important;'),
+    rule(emailClass.lightOnly, 'display:none!important;'),
+    rule(emailClass.darkOnly, 'display:block!important;'),
     rule(emailClass.layoutCard,`background-color:${t.surface1}!important;border-color:${variantTokens('dark', 'outlined', 'neutral').borderColor}!important;`),
   ];
   for (const color of EMAIL_COLORS) {

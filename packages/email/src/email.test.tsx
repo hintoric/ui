@@ -16,6 +16,8 @@ import {
   waitlistWelcomeMessagesDe,
   waitlistWelcomeMessagesEn,
   safeHref,
+  Alert,
+  emailAlertIconFiles,
   securityActivityAlertMessagesDe,
   securityActivityAlertMessagesEn,
   type SecurityActivityAlertProps,
@@ -319,5 +321,35 @@ describe('renderAuthNoAccount', () => {
     const { subject, html } = await renderAuthNoAccount({ ...noAccount, messages: authNoAccountMessagesEn });
     expect(subject).toBe('No hintoric account with this address');
     expect(html).toContain('lang="en"');
+  });
+});
+
+describe('Alert icons', () => {
+  const imgs = async (node: React.ReactElement) => [...parse((await renderEmail(node)).html).querySelectorAll('img')];
+
+  it('shows the icon for its colour as a light / dark pair by default', async () => {
+    const [light, dark] = await imgs(<Alert color="warning">Hinweis</Alert>);
+    expect(light?.getAttribute('src')).toBe('https://cdn.hintoric.com/assets/email/alert/warning-492b08.png');
+    expect(dark?.getAttribute('src')).toBe('https://cdn.hintoric.com/assets/email/alert/warning-fce1c2.png');
+    expect(light?.getAttribute('alt')).toBe('');
+    expect(light?.getAttribute('width')).toBe('20');
+  });
+
+  it('is 24px at lg', async () => {
+    const [light] = await imgs(<Alert size="lg">Hinweis</Alert>);
+    expect(light?.getAttribute('width')).toBe('24');
+    expect(light?.getAttribute('src')).toContain('/info-');
+  });
+
+  it('shows no icon for startDecorator={null}, and a given decorator instead of it', async () => {
+    expect(await imgs(<Alert startDecorator={null}>Hinweis</Alert>)).toHaveLength(0);
+    const html = (await renderEmail(<Alert startDecorator={<span>!</span>}>Hinweis</Alert>)).html;
+    expect(parse(html).querySelectorAll('img')).toHaveLength(0);
+    expect(html).toContain('<span>!</span>');
+  });
+
+  it('asks for exactly the files in assets/email/alert, the CDN folder', () => {
+    const onDisk = Object.keys(import.meta.glob('../assets/email/alert/*.png')).map((path) => path.split('/').pop());
+    expect(emailAlertIconFiles().map(({ file }) => file).sort()).toEqual(onDisk.sort());
   });
 });

@@ -42,12 +42,17 @@ export function EmailAlertPage() {
         weight, so body text under a title wants <code>fontWeight: 400</code>.
       </p>
 
-      <h2>Decorators</h2>
+      <h2>Icons and decorators</h2>
       <p>
-        <code>startDecorator</code> and <code>endDecorator</code> each get a cell of their own and sit centred
-        on the first line, as on the web. Email has no icon font and Gmail drops SVG: use a PNG at twice its
-        display size. The decorator&rsquo;s cell sets no line height of its own, so text there needs its own
-        font size.
+        As on the web, every alert shows the icon for its colour on the first line. Mail clients can&rsquo;t
+        recolour an image, so the icon is a pair of hosted PNGs in the alert&rsquo;s light and dark text colour
+        (<code>cdn.hintoric.com/assets/email/alert/</code>), swapped where the client applies the dark stylesheet.{' '}
+        <code>startDecorator={'{null}'}</code> leaves it out.
+      </p>
+      <p>
+        A <code>startDecorator</code> or <code>endDecorator</code> of your own gets a cell and sits centred on the
+        first line too. Email has no icon font and Gmail drops SVG: use a PNG at twice its display size. The
+        decorator&rsquo;s cell sets no line height of its own, so text there needs its own font size.
       </p>
       <Code>{`<Alert color="warning" startDecorator={<img src="https://cdn.example.com/warning@2x.png" width={16} height={16} alt="" />}>
   Der Code ist nur 15 Minuten gültig.
@@ -59,7 +64,7 @@ export function EmailAlertPage() {
           { ...VARIANT_PROP, default: "'soft'" },
           { ...COLOR_PROP, default: "'neutral'" },
           { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: '8 / 12 / 16px padding, 12 / 14 / 16px text.' },
-          { name: 'startDecorator', type: 'ReactNode', description: 'A box on the first line, before the text.' },
+          { name: 'startDecorator', type: 'ReactNode', default: 'the colour’s icon', description: 'A box on the first line, before the text. null shows none.' },
           { name: 'endDecorator', type: 'ReactNode', description: 'A box on the first line, after the text.' },
         ]}
       />
