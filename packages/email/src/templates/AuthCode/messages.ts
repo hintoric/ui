@@ -28,13 +28,13 @@ export const authCodeMessagesDe: AuthCodeMessages = {
   intro: ({ purpose, email }) => {
     switch (purpose) {
       case 'verification':
-        return email ? `Gib diesen Code ein, um ${email} für dein hintoric-Konto zu bestätigen.` : 'Gib diesen Code ein, um deine E-Mail-Adresse zu bestätigen.';
+        return `Gib diesen Code ein, um ${email ?? 'deine E-Mail-Adresse'} zu bestätigen.`;
       case 'registration':
-        return `Gib diesen Code ein, um dein hintoric-Konto${email ? ` für ${email}` : ''} anzulegen.`;
+        return `Gib diesen Code ein, um dein Konto bei hintoric${email ? ` für ${email}` : ''} anzulegen.`;
       case 'login':
         return `Gib diesen Code ein, um dich${email ? ` als ${email}` : ''} bei hintoric anzumelden.`;
       case 'recovery':
-        return `Gib diesen Code ein, um wieder auf dein hintoric-Konto${email ? ` (${email})` : ''} zuzugreifen.`;
+        return `Gib diesen Code ein, um wieder auf dein Konto bei hintoric${email ? ` (${email})` : ''} zuzugreifen.`;
     }
   },
   button: ({ purpose }) => headingDe[purpose],
@@ -43,7 +43,7 @@ export const authCodeMessagesDe: AuthCodeMessages = {
     grantsAccess(purpose)
       ? 'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren. Gib den Code an niemanden weiter – hintoric fragt dich nie danach.'
       : 'Wenn du das nicht angefordert hast, kannst du diese E-Mail ignorieren.',
-  footer: () => 'Wir haben dir diese E-Mail gesendet, weil bei hintoric jemand mit deiner Adresse einen Code angefordert hat.',
+  footer: () => 'Du erhältst diese E-Mail, weil mit deiner Adresse ein Code bei hintoric angefordert wurde.',
 };
 
 const codeNameEn: Record<AuthCodePurpose, string> = {

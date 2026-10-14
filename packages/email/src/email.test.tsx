@@ -79,7 +79,7 @@ describe('renderSecurityActivityAlert', () => {
   it('formats the time in the given zone, not the server’s', async () => {
     const { text } = await renderSecurityActivityAlert(props);
     // 17:31 UTC is 19:31 in Berlin under summer time.
-    expect(text).toMatch(/28\. September 2026.*19:31/);
+    expect(text).toContain('28. September 2026 um 19:31 Uhr');
   });
 
   it('uses the activity’s own description instead of the summary, guidance still following', async () => {
@@ -88,7 +88,7 @@ describe('renderSecurityActivityAlert', () => {
       activity: { ...props.activity, description: 'Erika Mustermann hat die IBAN des Geschäftskontos geändert.' },
     });
     expect(text).toContain('Erika Mustermann hat die IBAN des Geschäftskontos geändert. Wenn du diese Änderung nicht erwartet hast');
-    expect(html).not.toContain('eine sicherheitsrelevante Änderung vorgenommen');
+    expect(html).not.toContain('das die Sicherheit betrifft');
   });
 
   it('shows the account and explains the mail differently for an account target', async () => {
@@ -98,14 +98,14 @@ describe('renderSecurityActivityAlert', () => {
       target: { type: 'account', email: 'max@muster.de' },
     });
     expect(subject).toBe('Passwort geändert – max@muster.de');
-    expect(text).toContain('über wichtige Änderungen an deinem hintoric-Konto');
-    expect(text).not.toContain('Administrator');
+    expect(text).toContain('weil sie dein Konto bei hintoric betrifft');
+    expect(text).not.toContain('Workspace verwaltest');
     expect(parse(html).body.textContent).toContain('max@muster.de');
   });
 
   it('tells a workspace admin why they got it', async () => {
     const { text } = await renderSecurityActivityAlert(props);
-    expect(text).toContain('als Administrator über wichtige Änderungen in deinem Workspace');
+    expect(text).toContain('weil du diesen Workspace verwaltest');
   });
 
   it('escapes activity data rather than rendering it as markup', async () => {
@@ -173,23 +173,23 @@ describe('renderWaitlistWelcome', () => {
 
   it('returns subject, HTML and a plain-text part', async () => {
     const { subject, html, text } = await renderWaitlistWelcome(waitlist);
-    expect(subject).toBe('Du bist auf der Hintoric-Warteliste');
+    expect(subject).toBe('Du stehst auf der Warteliste von hintoric');
     expect(html).toMatch(/^<!DOCTYPE html/);
     expect(html).toContain('lang="de"');
-    expect(text).toContain('Alles erledigt.');
+    expect(text).toContain('Du stehst auf der Warteliste.');
     expect(text).toContain('https://hintoric.com');
   });
 
   it('shows the heading and a button to the website', async () => {
     const doc = parse((await renderWaitlistWelcome(waitlist)).html);
-    expect(doc.querySelector('h1')?.textContent).toBe('Willkommen bei Hintoric');
+    expect(doc.querySelector('h1')?.textContent).toBe('Willkommen bei hintoric');
     const button = [...doc.querySelectorAll('a')].find((a) => a.textContent === 'Zu hintoric.com');
     expect(button?.getAttribute('href')).toBe('https://hintoric.com/');
   });
 
   it('renders in English with its own lang and subject', async () => {
     const { subject, html } = await renderWaitlistWelcome({ ...waitlist, messages: waitlistWelcomeMessagesEn });
-    expect(subject).toBe("You're on the Hintoric waitlist");
+    expect(subject).toBe("You're on the hintoric waitlist");
     expect(html).toContain('lang="en"');
   });
 
@@ -199,7 +199,7 @@ describe('renderWaitlistWelcome', () => {
   });
 
   it('renders the unsubscribe link only when a URL is given', async () => {
-    const link = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'Abmelden');
+    const link = (html: string) => [...parse(html).querySelectorAll('a')].find((a) => a.textContent === 'E-Mails abbestellen');
     expect(link((await renderWaitlistWelcome(waitlist)).html)).toBeUndefined();
     const withUrl = await renderWaitlistWelcome({ ...waitlist, unsubscribeUrl: 'https://hintoric.com/unsubscribe?t=1' });
     expect(link(withUrl.html)?.getAttribute('href')).toBe('https://hintoric.com/unsubscribe?t=1');
@@ -292,22 +292,22 @@ describe('renderAuthNoAccount', () => {
 
   it('returns subject, HTML and a plain-text part, and no code anywhere', async () => {
     const { subject, html, text } = await renderAuthNoAccount(noAccount);
-    expect(subject).toBe('Kein hintoric-Konto mit dieser Adresse');
+    expect(subject).toBe('Zu dieser Adresse gibt es kein Konto bei hintoric');
     expect(html).toMatch(/^<!DOCTYPE html/);
     expect(parse(html).querySelector('[data-auth-code]')).toBeNull();
     expect(text).toContain('max@muster.de');
   });
 
   it('says what was attempted, for recovery and for verification', async () => {
-    expect((await renderAuthNoAccount(noAccount)).text).toContain('hintoric-Konto zu max@muster.de wiederherstellen');
-    expect((await renderAuthNoAccount({ ...noAccount, purpose: 'verification' })).text).toContain('die Adresse max@muster.de bei hintoric bestätigen');
+    expect((await renderAuthNoAccount(noAccount)).text).toContain('Für max@muster.de wurde ein Wiederherstellungscode angefordert.');
+    expect((await renderAuthNoAccount({ ...noAccount, purpose: 'verification' })).text).toContain('Für max@muster.de wurde ein Bestätigungscode angefordert.');
   });
 
   it('states the missing account in a warning alert, not in the running text', async () => {
     const doc = parse((await renderAuthNoAccount(noAccount)).html);
     const alert = doc.querySelector('table.hx-soft-warning');
-    expect(alert?.textContent).toBe('Mit max@muster.de gibt es kein hintoric-Konto.');
-    expect([...doc.querySelectorAll('p')].some((p) => p.textContent?.includes('gibt es aber kein Konto'))).toBe(false);
+    expect(alert?.textContent).toBe('Zu dieser Adresse gibt es kein Konto bei hintoric.');
+    expect([...doc.querySelectorAll('p')].some((p) => p.textContent?.includes('kein Konto bei hintoric'))).toBe(false);
   });
 
   it('offers to create an account only when a registration link is given', async () => {

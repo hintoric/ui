@@ -1,23 +1,24 @@
 import type { SecurityActivityAlertMessages } from './types';
 
-function dateTimeFormatter(locale: string) {
+function dateTimeFormatter(locale: string, suffix = '') {
   return (date: Date, timeZone: string) =>
-    new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short', timeZone }).format(date);
+    new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short', timeZone }).format(date) + suffix;
 }
 
 export const securityActivityAlertMessagesDe: SecurityActivityAlertMessages = {
   lang: 'de',
   subject: ({ activity, targetName }) => `${activity.title} – ${targetName}`,
   preview: ({ activity, occurredAt }) => `${activity.actorName} · ${occurredAt}`,
-  summary: ({ activity, occurredAt }) => `${activity.actorName} hat am ${occurredAt} eine sicherheitsrelevante Änderung vorgenommen.`,
+  summary: ({ activity, occurredAt }) => `${activity.actorName} hat am ${occurredAt} etwas geändert, das die Sicherheit betrifft.`,
   guidance: () => 'Wenn du diese Änderung nicht erwartet hast, prüfe die Aktivität jetzt.',
   reviewButton: 'Aktivität prüfen',
   activityLogHint: (link) => <>Alle sicherheitsrelevanten Aktivitäten findest du im {link('Aktivitätsprotokoll')}.</>,
   footer: ({ target }) =>
     target.type === 'workspace'
-      ? 'Wir haben dir diese E-Mail gesendet, um dich als Administrator über wichtige Änderungen in deinem Workspace zu informieren.'
-      : 'Wir haben dir diese E-Mail gesendet, um dich über wichtige Änderungen an deinem hintoric-Konto zu informieren.',
-  formatDateTime: dateTimeFormatter('de-DE'),
+      ? 'Du erhältst diese E-Mail, weil du diesen Workspace verwaltest.'
+      : 'Du erhältst diese E-Mail, weil sie dein Konto bei hintoric betrifft.',
+  // DIN 5008: the time takes "Uhr" — "28. September 2026 um 19:31 Uhr".
+  formatDateTime: dateTimeFormatter('de-DE', ' Uhr'),
 };
 
 export const securityActivityAlertMessagesEn: SecurityActivityAlertMessages = {

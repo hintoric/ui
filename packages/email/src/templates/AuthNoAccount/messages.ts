@@ -2,30 +2,24 @@ import type { AuthNoAccountMessages } from './types';
 
 export const authNoAccountMessagesDe: AuthNoAccountMessages = {
   lang: 'de',
-  subject: () => 'Kein hintoric-Konto mit dieser Adresse',
-  preview: ({ email }) => `Für ${email} gibt es kein hintoric-Konto.`,
+  subject: () => 'Zu dieser Adresse gibt es kein Konto bei hintoric',
+  preview: () => 'Vielleicht hast du dich mit einer anderen Adresse registriert.',
   heading: () => 'Kein Konto gefunden',
-  body: ({ purpose, email }) =>
-    purpose === 'recovery'
-      ? `Jemand – vermutlich du – wollte das hintoric-Konto zu ${email} wiederherstellen.`
-      : `Jemand – vermutlich du – wollte die Adresse ${email} bei hintoric bestätigen.`,
-  alert: ({ email }) => `Mit ${email} gibt es kein hintoric-Konto.`,
-  hint: () => 'Vielleicht hast du dich mit einer anderen Adresse registriert. Wenn du das nicht warst, kannst du diese E-Mail ignorieren.',
+  body: ({ purpose, email }) => `Für ${email} wurde ein ${purpose === 'recovery' ? 'Wiederherstellungscode' : 'Bestätigungscode'} angefordert.`,
+  alert: () => 'Zu dieser Adresse gibt es kein Konto bei hintoric.',
+  hint: () => 'Vielleicht hast du dich mit einer anderen Adresse registriert. Wenn du den Code nicht angefordert hast, kannst du diese E-Mail ignorieren.',
   registerButton: 'Konto anlegen',
-  footer: () => 'Wir haben dir diese E-Mail gesendet, weil bei hintoric jemand deine Adresse angegeben hat.',
+  footer: () => 'Du erhältst diese E-Mail, weil deine Adresse bei hintoric angegeben wurde.',
 };
 
 export const authNoAccountMessagesEn: AuthNoAccountMessages = {
   lang: 'en',
   subject: () => 'No hintoric account with this address',
-  preview: ({ email }) => `There is no hintoric account for ${email}.`,
+  preview: () => 'Maybe you signed up with a different address.',
   heading: () => 'No account found',
-  body: ({ purpose, email }) =>
-    purpose === 'recovery'
-      ? `Someone – probably you – tried to recover the hintoric account for ${email}.`
-      : `Someone – probably you – tried to confirm the address ${email} at hintoric.`,
-  alert: ({ email }) => `There is no hintoric account with ${email}.`,
-  hint: () => "Maybe you signed up with a different address. If this wasn't you, you can ignore this email.",
+  body: ({ purpose, email }) => `A ${purpose === 'recovery' ? 'recovery' : 'verification'} code was requested for ${email}.`,
+  alert: () => 'There is no hintoric account with this address.',
+  hint: () => "Maybe you signed up with a different address. If you didn't request the code, you can ignore this email.",
   registerButton: 'Create an account',
   footer: () => 'We sent you this email because someone entered your address at hintoric.',
 };

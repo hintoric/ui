@@ -364,16 +364,27 @@ h1 .docs-badge-deprecated {
 
 .docs-table-scroll {
   max-width: 100%;
+  overflow-x: auto;
 }
 
-.docs-grid-table th,
-.docs-grid-table td {
+.docs-grid-table > * > tr > th,
+.docs-grid-table > * > tr > td {
   padding: 10px;
   text-align: center;
   vertical-align: middle;
 }
 
-.docs-grid-table th {
+/* .docs-content's `overflow-wrap: anywhere` lets a cell shrink to one letter,
+   which breaks "neutral" into a column once an Alert's icon takes its share.
+   Words stay whole here; a grid too wide for the column scrolls instead.
+   Child selectors throughout: an email component in a cell is a table too,
+   and must not inherit the grid's padding or alignment. */
+.docs-grid-table > * > tr > th,
+.docs-grid-table > * > tr > td {
+  overflow-wrap: normal;
+}
+
+.docs-grid-table > * > tr > th {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;

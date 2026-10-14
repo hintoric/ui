@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { render } from '@testing-library/react';
 import { page } from 'vitest/browser';
 import { Alert, AlertTitle } from '@hintoric/ui';
 import * as Email from '../index';
@@ -14,6 +15,26 @@ const ROOT_PROPS = [...COLOR_PROPS, ...FONT_PROPS, 'borderTopLeftRadius'] as con
 const PADDING = ['paddingTop', 'paddingLeft', 'paddingBottom', 'paddingRight'] as const;
 
 const TEXT = 'Für diese Adresse gibt es kein Konto.';
+
+// A page with @hintoric/ui's stylesheet — the docs, an in-app preview — has
+// Tailwind's preflight `img { max-width: 100% }`, and so do some webmail
+// clients. In a cell that shrinks to its content that resolves to 0 and the
+// icon vanishes, so the icon has to hold its own width.
+describe('Email.Alert inside a page that caps image width', () => {
+  for (const size of ['sm', 'md', 'lg'] as const) {
+    it(`keeps its ${size} icon at full size`, async () => {
+      const { container } = render(
+        <div style={{ width: 120 }}>
+          <Email.Alert size={size} color="warning">
+            neutral
+          </Email.Alert>
+        </div>,
+      );
+      const img = [...container.querySelectorAll('img')].find((i) => getComputedStyle(i).display !== 'none')!;
+      expect(img.getBoundingClientRect().width).toBe(size === 'lg' ? 24 : 20);
+    });
+  }
+});
 
 describe('Email.Alert parity with Alert', () => {
   for (const scheme of COLOR_SCHEMES) {

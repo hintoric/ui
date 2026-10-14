@@ -114,7 +114,17 @@ function AlertIcon({ variant, color, size }: { variant: EmailVariant; color: Ema
   const light = emailAlertIcon('light', variant, color);
   const dark = emailAlertIcon('dark', variant, color);
   const img = (url: string, className: string, display: 'block' | 'none') => (
-    <Img src={url} width={size} height={size} alt="" className={className} style={{ display, width: `${size}px`, height: `${size}px`, border: 0 }} />
+    // min-width and max-width: none against a host's `img { max-width: 100% }`
+    // (Tailwind's preflight, some webmail), which in a cell sized to its
+    // content resolves to 0 and hides the icon.
+    <Img
+      src={url}
+      width={size}
+      height={size}
+      alt=""
+      className={className}
+      style={{ display, width: `${size}px`, height: `${size}px`, minWidth: `${size}px`, maxWidth: 'none', border: 0 }}
+    />
   );
   return (
     <>
