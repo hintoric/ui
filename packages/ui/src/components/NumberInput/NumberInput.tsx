@@ -90,8 +90,8 @@ const NumberInputBase = React.forwardRef<HTMLInputElement, NumberInputProps>(fun
       required={required}
       readOnly={readOnly}
       disabled={disabled}
-      // flex, not Input's inline-flex: Joy's input root fills its container,
-      // and Input's not doing so is the still-open P1 of the 2026-09-06 audit.
+      // flex over inputVariants' inline-flex, as in Input: Joy's input root
+      // fills its container (P1 of the 2026-09-06 audit).
       className={cx(
         inputVariants({ variant, color: effectiveColor, size }),
         'flex data-[disabled]:cursor-default',

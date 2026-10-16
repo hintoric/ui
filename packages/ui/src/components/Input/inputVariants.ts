@@ -29,10 +29,12 @@ export const inputVariants = cva('inline-flex items-center gap-2 rounded-sm font
     // background to the pill's edge instead of stopping at the input's own
     // zero padding (verified against @mui/joy's StyledInputHtml, which does
     // the same with its --Input-paddingInline var).
+    // text-sm/[1.5], text-lg/[1.5]: Joy's body-sm/-lg keep line-height 1.5
+    // (21px/27px); Tailwind's text-sm/-lg alone carry 20px/28px.
     size: {
-      sm: 'min-h-8 px-2 text-sm [--input-padding-inline:0.5rem]',
+      sm: 'min-h-8 px-2 text-sm/[1.5] [--input-padding-inline:0.5rem]',
       md: 'min-h-9 px-3 text-base [--input-padding-inline:0.75rem]',
-      lg: 'min-h-11 px-4 text-lg [--input-padding-inline:1rem]',
+      lg: 'min-h-11 px-4 text-lg/[1.5] [--input-padding-inline:1rem]',
     },
   },
   compoundVariants,

@@ -128,6 +128,10 @@ describe('Select visual parity with @mui/joy', () => {
         expect(hintoricStyle.paddingTop).toBe(joyStyle.paddingTop);
         expect(hintoricStyle.paddingBottom).toBe(joyStyle.paddingBottom);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+        // Joy's body-sm/-lg use line-height 1.5 (21px/27px); Tailwind's
+        // text-sm/-lg carry 20px/28px, invisible behind min-height until now.
+        expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+        expect(hintoricStyle.height).toBe(joyStyle.height);
 
         await expect(page.getByTestId(`joy-size-${size}`)).toMatchScreenshot(`select-size-${size}-joy-${scheme}`);
         await expect(page.getByTestId(`hintoric-size-${size}`)).toMatchScreenshot(`select-size-${size}-hintoric-${scheme}`);

@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Input as BaseInput } from '@base-ui/react/input';
 import { useFormContext } from 'react-hook-form';
 import { cx } from '../../utils/cx';
+import { INPUT_WRAPPER_DISABLED_CLASSES } from '../../utils/colorVariantClasses';
 import { inputVariants } from './inputVariants';
 import { FormControlContext } from '../FormControl/FormControlContext';
 import {
@@ -33,7 +34,23 @@ const InputBase = React.forwardRef<HTMLInputElement, InputProps>(function InputB
   const disabled = props.disabled ?? formControl?.disabled;
 
   return (
-    <span className={cx(inputVariants({ variant, color: effectiveColor, size }), className)}>
+    // data-disabled rather than `has-[:disabled]`: inputVariants' `disabled:`
+    // utilities can't match a <span>, and `:has(:disabled)` would also fire
+    // for a disabled IconButton sitting in a decorator, dimming a live field.
+    // The attribute tracks only this input's own state, and it is what
+    // NumberInput's Base UI root already sets, so both share one class map.
+    // `flex` over inputVariants' inline-flex fills the container like Joy's
+    // root (P1 of the 2026-09-06 audit); Textarea and OtpInput share the cva
+    // and keep their own display, so the override lives here.
+    <span
+      data-disabled={disabled ? '' : undefined}
+      className={cx(
+        inputVariants({ variant, color: effectiveColor, size }),
+        'flex data-[disabled]:cursor-default',
+        INPUT_WRAPPER_DISABLED_CLASSES[variant][effectiveColor],
+        className,
+      )}
+    >
       {startDecorator && (
         <span className="inline-flex items-center text-ink-icon">{startDecorator}</span>
       )}
@@ -47,7 +64,13 @@ const InputBase = React.forwardRef<HTMLInputElement, InputProps>(function InputB
       <BaseInput
         ref={ref}
         className={cx(
-          'w-full min-w-0 border-none bg-transparent p-0 outline-none',
+          // self-stretch: Joy's root leaves align-items at stretch, so its
+          // <input> is as tall as the pill (30/34/42px inside the border) and
+          // the whole pill is the click target and the autofill highlight.
+          // Ours centres its decorators, and without this the <input> was only
+          // one line tall (21/24/27px) — autofill painted a strip across the
+          // middle, and clicks above or below it missed the field.
+          'w-full min-w-0 self-stretch border-none bg-transparent p-0 outline-none',
           // Browser autofill paints its own opaque background directly on
           // this <input>, ignoring the transparent bg above — left alone it
           // shows as a hard-edged rectangle sitting inside the rounded,
@@ -56,10 +79,17 @@ const InputBase = React.forwardRef<HTMLInputElement, InputProps>(function InputB
           // makes the autofill highlight fill the whole pill instead,
           // matching @mui/joy's StyledInputHtml `:-webkit-autofill` rule.
           '[&:-webkit-autofill]:[padding-inline:var(--input-padding-inline)]',
+          // The corners sit inside the pill's border, so they take Joy's
+          // `--Input-radius - --variant-borderWidth`: only outlined has a
+          // border, and with the <input> now as tall as the pill a full
+          // --radius-sm corner would overlap that border's curve by 1px.
+          variant === 'outlined'
+            ? '[--input-autofill-radius:calc(var(--radius-sm)-1px)]'
+            : '[--input-autofill-radius:var(--radius-sm)]',
           !startDecorator &&
-            '[&:-webkit-autofill]:[margin-inline-start:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-start-radius:var(--radius-sm)] [&:-webkit-autofill]:[border-end-start-radius:var(--radius-sm)]',
+            '[&:-webkit-autofill]:[margin-inline-start:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-start-radius:var(--input-autofill-radius)] [&:-webkit-autofill]:[border-end-start-radius:var(--input-autofill-radius)]',
           !endDecorator &&
-            '[&:-webkit-autofill]:[margin-inline-end:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-end-radius:var(--radius-sm)] [&:-webkit-autofill]:[border-end-end-radius:var(--radius-sm)]',
+            '[&:-webkit-autofill]:[margin-inline-end:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-end-radius:var(--input-autofill-radius)] [&:-webkit-autofill]:[border-end-end-radius:var(--input-autofill-radius)]',
         )}
         aria-invalid={hasError || undefined}
         {...props}

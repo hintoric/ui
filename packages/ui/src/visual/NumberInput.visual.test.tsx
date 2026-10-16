@@ -50,8 +50,7 @@ function expectSamePill(ours: HTMLElement, joy: HTMLElement) {
   expect(o.height).toBe(j.height);
   expect(o.paddingLeft).toBe(j.paddingLeft);
   expect(o.cursor).toBe(j.cursor);
-  // Unlike Input (still inline-flex, see P1 of the 2026-09-06 audit), this
-  // field fills its container the way Joy's does.
+  // Fills its container the way Joy's does (P1 of the 2026-09-06 audit).
   expect(o.display).toBe(j.display);
   expect(o.width).toBe(j.width);
 }
@@ -191,5 +190,41 @@ describe('NumberInput visual parity with a Joy Input + IconButtons', () => {
       await expect(page.getByTestId('joy-disabled')).toMatchScreenshot(`number-input-disabled-joy-${scheme}`);
       await expect(page.getByTestId('hintoric-disabled')).toMatchScreenshot(`number-input-disabled-hintoric-${scheme}`);
     });
+  }
+});
+
+// Per size, against a plain Joy Input of that size: the oracle's sm
+// IconButtons are 32px and would stretch a 32px sm pill, while our steppers are
+// sized one step below each size's min-height (see NumberInput.tsx) precisely
+// so they never do. The pill's type and box are what is being compared here.
+describe('NumberInput size parity with a Joy Input', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const size of ['sm', 'md', 'lg'] as const) {
+      it(`size=${size} pill matches Joy UI in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+        const { container: joy } = render(
+          <div data-testid={`joy-size-${size}`} style={{ width: 400 }}>
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyInput size={size} defaultValue="12" />
+            </JoyCssVarsProvider>
+          </div>,
+        );
+        const { container: ours } = render(
+          <div data-testid={`hintoric-size-${size}`} style={{ width: 400 }}>
+            <ColorSchemeProvider defaultMode={scheme}>
+              <HintoricNumberInput size={size} defaultValue={12} aria-label="n" />
+            </ColorSchemeProvider>
+          </div>,
+        );
+        await settleTransitions();
+
+        expectSamePill(pillOf(ours), pillOf(joy));
+
+        await expect(page.getByTestId(`joy-size-${size}`)).toMatchScreenshot(`number-input-size-${size}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-size-${size}`)).toMatchScreenshot(
+          `number-input-size-${size}-hintoric-${scheme}`,
+        );
+      });
+    }
   }
 });

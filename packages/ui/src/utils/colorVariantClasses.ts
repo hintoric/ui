@@ -376,10 +376,6 @@ export const SELECT_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> 
   },
 };
 
-// Joy UI's Input focuses with an INSET ring flush against its border (no
-// outline offset/gap), colored by `--Input-focusedHighlight`, which maps
-// `color="neutral"` to primary-500 and every other color to its own 500.
-// Confirmed against @mui/joy's real focus-within `::before` box-shadow.
 // INPUT_COLOR_CLASSES' disabled colours, keyed on `data-disabled` instead of
 // `:disabled`. Those `disabled:` utilities only ever match when the classes sit
 // on the <input> itself (Textarea, OtpInput's slots). On a wrapper — Input's
@@ -387,7 +383,8 @@ export const SELECT_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> 
 // matches, so the pill kept its resting colours where @mui/joy dims it.
 // NumberInput's visual test caught this against Joy (border neutral-300 where
 // Joy shows neutral-200); Base UI's NumberField root sets data-disabled, which
-// is what these key on. Input and Autocomplete still have the gap.
+// is what these key on, as does Autocomplete's Combobox.InputGroup; Input sets
+// it on its <span> by hand.
 export const INPUT_WRAPPER_DISABLED_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
   solid: {
     primary: 'data-[disabled]:bg-primary-solid-disabled-bg data-[disabled]:text-primary-solid-disabled-color',
@@ -419,6 +416,10 @@ export const INPUT_WRAPPER_DISABLED_CLASSES: Record<JoyVariant, Record<JoyColor,
   },
 };
 
+// Joy UI's Input focuses with an INSET ring flush against its border (no
+// outline offset/gap), colored by `--Input-focusedHighlight`, which maps
+// `color="neutral"` to primary-500 and every other color to its own 500.
+// Confirmed against @mui/joy's real focus-within `::before` box-shadow.
 export const INPUT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
   primary: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
   neutral: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',

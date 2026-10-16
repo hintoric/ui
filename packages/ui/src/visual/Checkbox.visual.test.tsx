@@ -212,3 +212,83 @@ describe('Checkbox error state with no explicit colour', () => {
     });
   }
 });
+
+// The box-only size test above never renders a label, so the root's own
+// line-height went unmeasured: Joy sets it to var(--Checkbox-size) at every size
+// (16/20/24px, the label line is as tall as the box) while Tailwind's
+// text-sm/-base/-lg gave ours 20/24/28px. Measured 2026-10-16.
+describe('Checkbox labelled size parity with @mui/joy', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const size of ['sm', 'md', 'lg'] as const) {
+      it(`size=${size} with a label matches Joy UI's computed metrics in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        const { container: joyContainer } = render(
+          <div data-testid={`joy-labelled-${size}`} style={{ width: 200 }}>
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCheckbox size={size} label="Label" />
+            </JoyCssVarsProvider>
+          </div>,
+        );
+        const { container: hintoricContainer } = render(
+          <div data-testid={`hintoric-labelled-${size}`} style={{ width: 200 }}>
+            <HintoricCheckbox size={size} label="Label" />
+          </div>,
+        );
+
+        const pairs: [HTMLElement, HTMLElement][] = [
+          [joyContainer.querySelector('.MuiCheckbox-root')!, hintoricContainer.querySelector('label')!],
+          [joyContainer.querySelector('.MuiCheckbox-label')!, hintoricContainer.querySelector('label > span:last-of-type')!],
+        ];
+        for (const [joyEl, hintoricEl] of pairs) {
+          const joyStyle = getComputedStyle(joyEl);
+          const hintoricStyle = getComputedStyle(hintoricEl);
+          expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+          expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+          expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+          expect(hintoricStyle.height).toBe(joyStyle.height);
+          expect(hintoricStyle.width).toBe(joyStyle.width);
+          expect(hintoricStyle.color).toBe(joyStyle.color);
+        }
+        const [[joyRoot, hintoricRoot]] = pairs;
+        expect(getComputedStyle(hintoricRoot).display).toBe(getComputedStyle(joyRoot).display);
+        expect(getComputedStyle(hintoricRoot).columnGap).toBe(getComputedStyle(joyRoot).columnGap);
+
+        await expect(page.getByTestId(`joy-labelled-${size}`)).toMatchScreenshot(`checkbox-labelled-${size}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-labelled-${size}`)).toMatchScreenshot(`checkbox-labelled-${size}-hintoric-${scheme}`);
+      });
+    }
+  }
+});
+
+describe('Checkbox labelled colour parity with @mui/joy', () => {
+  for (const scheme of COLOR_SCHEMES) {
+    for (const disabled of [false, true]) {
+      const state = disabled ? 'disabled' : 'enabled';
+      it(`paints an ${state} label in Joy UI's text colour in ${scheme}`, async () => {
+        await setColorScheme(scheme);
+
+        const { container: joyContainer } = render(
+          <div data-testid={`joy-label-${state}`} style={{ width: 200 }}>
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCheckbox label="Label" disabled={disabled} />
+            </JoyCssVarsProvider>
+          </div>,
+        );
+        const { container: hintoricContainer } = render(
+          <div data-testid={`hintoric-label-${state}`} style={{ width: 200 }}>
+            <HintoricCheckbox label="Label" disabled={disabled} />
+          </div>,
+        );
+        await settleTransitions();
+
+        const joyLabel = getComputedStyle(joyContainer.querySelector('.MuiCheckbox-label')!);
+        const hintoricLabel = getComputedStyle(hintoricContainer.querySelector('label > span:last-of-type')!);
+        expect(hintoricLabel.color).toBe(joyLabel.color);
+
+        await expect(page.getByTestId(`joy-label-${state}`)).toMatchScreenshot(`checkbox-label-${state}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-label-${state}`)).toMatchScreenshot(`checkbox-label-${state}-hintoric-${scheme}`);
+      });
+    }
+  }
+});

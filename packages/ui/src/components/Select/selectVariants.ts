@@ -40,10 +40,12 @@ export const selectVariants = cva(
         plain: '',
       },
       color: SELECT_FOCUS_RING_CLASSES,
+      // text-sm/[1.5], text-lg/[1.5]: Joy's body-sm/-lg keep line-height 1.5
+      // (21px/27px); Tailwind's text-sm/-lg alone carry 20px/28px.
       size: {
-        sm: 'min-h-8 px-2 py-0.5 text-sm',
+        sm: 'min-h-8 px-2 py-0.5 text-sm/[1.5]',
         md: 'min-h-9 px-3 py-[3px] text-base',
-        lg: 'min-h-11 px-4 py-1 text-lg',
+        lg: 'min-h-11 px-4 py-1 text-lg/[1.5]',
       },
     },
     compoundVariants,
