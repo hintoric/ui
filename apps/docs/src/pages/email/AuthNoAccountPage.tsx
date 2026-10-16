@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useColorScheme } from '@hintoric/ui';
-import { AuthNoAccountEmail, authNoAccountMessagesDe, authNoAccountMessagesEn, renderEmail, type AuthNoAccountPurpose } from '@hintoric/email';
+import { AuthNoAccountEmail, authNoAccountMessagesDe, authNoAccountMessagesEn, renderEmail, type AuthNoAccountChannel, type AuthNoAccountPurpose } from '@hintoric/email';
 import { Demo, Code } from '../../components/Demo';
 import { EmailPreview } from '../../components/EmailPreview';
 import { PropsTable } from '../../components/PropsTable';
@@ -16,6 +16,7 @@ export function AuthNoAccountPage() {
   const { resolvedMode } = useColorScheme();
   const [lang, setLang] = useState<'de' | 'en'>('de');
   const [purpose, setPurpose] = useState<AuthNoAccountPurpose>('recovery');
+  const [channel, setChannel] = useState<AuthNoAccountChannel>('code');
   const [html, setHtml] = useState('');
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export function AuthNoAccountPage() {
       <AuthNoAccountEmail
         {...shared}
         purpose={purpose}
+        channel={channel}
         messages={lang === 'de' ? authNoAccountMessagesDe : authNoAccountMessagesEn}
         colorScheme={resolvedMode}
       />,
@@ -33,14 +35,15 @@ export function AuthNoAccountPage() {
     return () => {
       current = false;
     };
-  }, [lang, purpose, resolvedMode]);
+  }, [lang, purpose, channel, resolvedMode]);
 
   return (
     <>
       <h1>Auth no-account</h1>
       <p className="docs-lede">
-        The answer to a code request for an address without an account — Kratos&rsquo;{' '}
-        <code>verification_code.invalid</code> and <code>recovery_code.invalid</code>. Saying &ldquo;no such
+        The answer to a code or link request for an address without an account — Kratos&rsquo;{' '}
+        <code>verification_code.invalid</code>, <code>recovery_code.invalid</code> and their link
+        counterparts. Saying &ldquo;no such
         account&rdquo; on screen would tell anyone which addresses have one; this mail tells only the
         address&rsquo;s owner. No code, the likely mix-up, and optionally a way to create the account.
       </p>
@@ -56,6 +59,15 @@ export function AuthNoAccountPage() {
               { value: 'verification', label: 'Verification' },
             ]}
             onChange={setPurpose}
+          />
+          <SegmentedToggle<AuthNoAccountChannel>
+            aria-label="Method"
+            value={channel}
+            options={[
+              { value: 'code', label: 'Code' },
+              { value: 'link', label: 'Link' },
+            ]}
+            onChange={setChannel}
           />
           <SegmentedToggle<'de' | 'en'>
             aria-label="Language"
@@ -85,6 +97,7 @@ const { subject, html, text } = await renderAuthNoAccount({
       <PropsTable
         rows={[
           { name: 'purpose', type: "'verification' | 'recovery'", description: 'What was attempted.' },
+          { name: 'channel', type: "'code' | 'link'", description: "Optional, 'code' by default. What was requested — the mail says code or link." },
           { name: 'email', type: 'string', description: 'The address that was entered — the one the mail goes to.' },
           { name: 'registrationUrl', type: 'string', description: 'Optional. Adds a button to create an account; unsafe schemes are dropped.' },
           {

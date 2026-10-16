@@ -3,8 +3,12 @@ import type * as React from 'react';
 export interface SecurityActivity {
   /** What happened, short — "Bankverbindung geändert", "Passwort geändert". Becomes the heading and the subject. */
   title: string;
-  /** Who did it. */
-  actorName: string;
+  /**
+   * Who did it. Left out when nobody did — a sign-in, or a change the
+   * identity system reports on its own — and the default texts then say what
+   * happened without a subject.
+   */
+  actorName?: string;
   occurredAt: Date;
   /**
    * Free text for this one activity — "Erika Mustermann hat die IBAN des
@@ -52,7 +56,8 @@ export interface SecurityActivityAlertMessages {
   summary: (ctx: SecurityActivityAlertContext) => string;
   /** What to do if the change wasn't expected. Follows the summary or description. */
   guidance: (ctx: SecurityActivityAlertContext) => string;
-  reviewButton: string;
+  /** A function when the label depends on the target: an account's reader secures it, an admin reviews activity. */
+  reviewButton: string | ((ctx: SecurityActivityAlertContext) => string);
   /** The line under the button. `link` is the rendered link to the activity log, so word order stays the translation's. */
   activityLogHint: (link: (label: string) => React.ReactNode) => React.ReactNode;
   /** Under the card: answers "why did I get this?" — differs for workspace and account targets. */

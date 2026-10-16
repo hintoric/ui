@@ -11,6 +11,7 @@ import {
   renderEmail,
   renderAuthCode,
   renderAuthNoAccount,
+  renderAuthLink,
   renderSecurityActivityAlert,
   renderWaitlistWelcome,
   waitlistWelcomeMessagesDe,
@@ -26,6 +27,9 @@ import {
   authCodeMessagesEn,
   authNoAccountMessagesDe,
   authNoAccountMessagesEn,
+  authLinkMessagesDe,
+  authLinkMessagesEn,
+  type AuthLinkProps,
   type AuthCodeProps,
   type AuthNoAccountProps,
 } from './index';
@@ -102,6 +106,38 @@ describe('renderSecurityActivityAlert', () => {
     expect(text).toContain('weil sie dein Konto bei hintoric betrifft');
     expect(text).not.toContain('Workspace verwaltest');
     expect(parse(html).body.textContent).toContain('max@muster.de');
+  });
+
+  it('needs no actor: a fact about an account, like a sign-in, names nobody', async () => {
+    const account: SecurityActivityAlertProps = {
+      ...props,
+      activity: { title: 'Passwort geändert', occurredAt: props.activity.occurredAt },
+      target: { type: 'account', email: 'max@muster.de' },
+    };
+    const de = await renderSecurityActivityAlert(account);
+    expect(de.text).toContain('Am 28. September 2026 um 19:31 Uhr wurde etwas an deinem Konto geändert, das die Sicherheit betrifft.');
+    expect(de.text).not.toContain('undefined');
+    const en = await renderSecurityActivityAlert({ ...account, messages: securityActivityAlertMessagesEn });
+    expect(en.text).toContain('Something security-relevant changed on your account on 28 September 2026');
+    expect(en.text).not.toContain('undefined');
+    expect(de.html).not.toContain('undefined');
+  });
+
+  it('sends the reader of an account alert to secure the account, not to an activity', async () => {
+    const account: SecurityActivityAlertProps = { ...props, target: { type: 'account', email: 'max@muster.de' }, activityLogUrl: undefined };
+    const de = await renderSecurityActivityAlert(account);
+    expect(de.text).toContain('Wenn du das nicht warst, sichere dein Konto jetzt.');
+    expect([...parse(de.html).querySelectorAll('a')].map((a) => a.textContent)).toContain('Konto prüfen');
+    const en = await renderSecurityActivityAlert({ ...account, messages: securityActivityAlertMessagesEn });
+    expect(en.text).toContain("If this wasn't you, secure your account now.");
+    expect([...parse(en.html).querySelectorAll('a')].map((a) => a.textContent)).toContain('Review account');
+    // A workspace admin keeps the activity wording.
+    expect((await renderSecurityActivityAlert(props)).text).toContain('Wenn du diese Änderung nicht erwartet hast, prüfe die Aktivität jetzt.');
+  });
+
+  it('still takes a plain string as the button label', async () => {
+    const { html } = await renderSecurityActivityAlert({ ...props, messages: { ...securityActivityAlertMessagesDe, reviewButton: 'Ansehen' } });
+    expect([...parse(html).querySelectorAll('a')].map((a) => a.textContent)).toContain('Ansehen');
   });
 
   it('tells a workspace admin why they got it', async () => {
@@ -322,6 +358,94 @@ describe('renderAuthNoAccount', () => {
     const { subject, html } = await renderAuthNoAccount({ ...noAccount, messages: authNoAccountMessagesEn });
     expect(subject).toBe('No hintoric account with this address');
     expect(html).toContain('lang="en"');
+  });
+});
+
+describe('renderAuthNoAccount for the link flows', () => {
+  const noAccount: AuthNoAccountProps = { purpose: 'recovery', channel: 'link', email: 'max@muster.de', messages: authNoAccountMessagesDe };
+
+  it('speaks of a link, never of a code', async () => {
+    const recovery = await renderAuthNoAccount(noAccount);
+    expect(recovery.text).toContain('Für max@muster.de wurde ein Wiederherstellungslink angefordert.');
+    expect(recovery.text).toContain('Wenn du den Link nicht angefordert hast');
+    expect(recovery.text).not.toMatch(/code/i);
+    const verification = await renderAuthNoAccount({ ...noAccount, purpose: 'verification' });
+    expect(verification.text).toContain('Für max@muster.de wurde ein Bestätigungslink angefordert.');
+  });
+
+  it('speaks English too', async () => {
+    const { text } = await renderAuthNoAccount({ ...noAccount, messages: authNoAccountMessagesEn });
+    expect(text).toContain('A recovery link was requested for max@muster.de.');
+    expect(text).toContain("If you didn't request the link");
+    expect(text).not.toMatch(/code/i);
+  });
+
+  it('keeps the code wording when no channel is given', async () => {
+    const { text } = await renderAuthNoAccount({ ...noAccount, channel: undefined });
+    expect(text).toContain('wurde ein Wiederherstellungscode angefordert.');
+  });
+});
+
+describe('renderAuthLink', () => {
+  const url = 'https://auth.hint-dev.com/self-service/verification?flow=1&token=abc';
+  const link: AuthLinkProps = { purpose: 'verification', url, email: 'max@muster.de', messages: authLinkMessagesDe };
+
+  it('returns subject, HTML and a plain-text part with the link, and no code anywhere', async () => {
+    const { subject, html, text } = await renderAuthLink(link);
+    expect(subject).toBe('Dein Bestätigungslink für hintoric');
+    expect(html).toMatch(/^<!DOCTYPE html/);
+    expect(html).toContain('lang="de"');
+    expect(parse(html).querySelector('[data-auth-code]')).toBeNull();
+    expect(text).toContain(url);
+    expect(text).not.toMatch(/code/i);
+  });
+
+  it('picks heading, subject and button by purpose', async () => {
+    const read = async (purpose: AuthLinkProps['purpose']) => {
+      const { subject, html } = await renderAuthLink({ ...link, purpose });
+      const doc = parse(html);
+      return [subject, doc.querySelector('h1')?.textContent, [...doc.querySelectorAll('a')].find((a) => a.getAttribute('href') === url)?.textContent];
+    };
+    expect(await read('verification')).toEqual(['Dein Bestätigungslink für hintoric', 'Adresse bestätigen', 'Adresse bestätigen']);
+    expect(await read('recovery')).toEqual(['Dein Wiederherstellungslink für hintoric', 'Konto wiederherstellen', 'Konto wiederherstellen']);
+  });
+
+  it('names the address, and says so when it is not known', async () => {
+    expect((await renderAuthLink(link)).text).toContain('max@muster.de');
+    expect((await renderAuthLink({ ...link, email: undefined })).text).toContain('deine E-Mail-Adresse');
+  });
+
+  it('refuses to link an unsafe scheme', async () => {
+    const { html, text } = await renderAuthLink({ ...link, url: 'javascript:alert(1)' });
+    expect(html).not.toContain('javascript:');
+    expect(text).not.toContain('javascript:');
+  });
+
+  it('says how long the link is valid only when told', async () => {
+    expect((await renderAuthLink(link)).text).not.toContain('Minuten');
+    expect((await renderAuthLink({ ...link, expiresInMinutes: 15 })).text).toContain('Der Link ist 15 Minuten gültig.');
+    expect((await renderAuthLink({ ...link, expiresInMinutes: 60, messages: authLinkMessagesEn })).text).toContain('The link is valid for 60 minutes.');
+  });
+
+  it('warns not to pass on a link that opens the account, and only that one', async () => {
+    expect((await renderAuthLink({ ...link, purpose: 'recovery' })).text).toContain('Gib den Link an niemanden weiter');
+    expect((await renderAuthLink(link)).text).not.toContain('an niemanden weiter');
+  });
+
+  it('renders in English with its own lang and subject', async () => {
+    const { subject, html } = await renderAuthLink({ ...link, purpose: 'recovery', messages: authLinkMessagesEn });
+    expect(subject).toBe('Your hintoric recovery link');
+    expect(html).toContain('lang="en"');
+  });
+
+  it('escapes the address rather than rendering it as markup', async () => {
+    const { html } = await renderAuthLink({ ...link, email: '<img src=x onerror=alert(1)>' });
+    expect(html).not.toContain('<img src=x');
+  });
+
+  it('puts the legal notice under the footer only when given', async () => {
+    expect((await renderAuthLink(link)).text).not.toContain('Musterstraße');
+    expect((await renderAuthLink({ ...link, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
   });
 });
 

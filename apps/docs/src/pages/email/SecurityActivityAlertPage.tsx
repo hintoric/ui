@@ -163,8 +163,8 @@ await renderSecurityActivityAlert({
         rows={[
           {
             name: 'activity',
-            type: '{ title; actorName; occurredAt; description? }',
-            description: 'The heading, who did it and when. description is free text for the paragraph; without it, messages.summary builds one.',
+            type: '{ title; actorName?; occurredAt; description? }',
+            description: 'The heading, who did it and when. actorName is left out when nobody did it — a sign-in, say. description is free text for the paragraph; without it, messages.summary builds one.',
           },
           {
             name: 'target',

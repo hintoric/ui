@@ -77,6 +77,7 @@ import { EmailAvatarPage } from './pages/email/EmailAvatarPage';
 import { EmailChipPage } from './pages/email/EmailChipPage';
 import { EmailAlertPage } from './pages/email/EmailAlertPage';
 import { AuthCodePage } from './pages/email/AuthCodePage';
+import { AuthLinkPage } from './pages/email/AuthLinkPage';
 import { AuthNoAccountPage } from './pages/email/AuthNoAccountPage';
 import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
 import { WaitlistWelcomePage } from './pages/email/WaitlistWelcomePage';
@@ -171,6 +172,7 @@ export function App() {
             <Route path="/email/chip" element={<EmailChipPage />} />
             <Route path="/email/alert" element={<EmailAlertPage />} />
             <Route path="/email/templates/auth-code" element={<AuthCodePage />} />
+            <Route path="/email/templates/auth-link" element={<AuthLinkPage />} />
             <Route path="/email/templates/auth-no-account" element={<AuthNoAccountPage />} />
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
             <Route path="/email/templates/waitlist-welcome" element={<WaitlistWelcomePage />} />

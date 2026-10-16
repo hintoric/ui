@@ -6,9 +6,16 @@
  */
 export type AuthNoAccountPurpose = 'verification' | 'recovery';
 
+/**
+ * What the reader was sent: a one-time code (Kratos' `code` method) or a
+ * link (its `link` method). The mail says which was requested.
+ */
+export type AuthNoAccountChannel = 'code' | 'link';
+
 /** What every message function receives. */
 export interface AuthNoAccountContext {
   purpose: AuthNoAccountPurpose;
+  channel: AuthNoAccountChannel;
   email: string;
 }
 
@@ -37,6 +44,8 @@ export interface AuthNoAccountMessages {
 
 export interface AuthNoAccountProps {
   purpose: AuthNoAccountPurpose;
+  /** What was requested. Defaults to `code`. */
+  channel?: AuthNoAccountChannel;
   /** The address that was entered — the one this mail goes to. */
   email: string;
   /** Where to create an account. Adds a button; unsafe schemes are dropped. */

@@ -8,10 +8,14 @@ function dateTimeFormatter(locale: string, suffix = '') {
 export const securityActivityAlertMessagesDe: SecurityActivityAlertMessages = {
   lang: 'de',
   subject: ({ activity, targetName }) => `${activity.title} – ${targetName}`,
-  preview: ({ activity, occurredAt }) => `${activity.actorName} · ${occurredAt}`,
-  summary: ({ activity, occurredAt }) => `${activity.actorName} hat am ${occurredAt} etwas geändert, das die Sicherheit betrifft.`,
-  guidance: () => 'Wenn du diese Änderung nicht erwartet hast, prüfe die Aktivität jetzt.',
-  reviewButton: 'Aktivität prüfen',
+  preview: ({ activity, occurredAt }) => (activity.actorName ? `${activity.actorName} · ${occurredAt}` : occurredAt),
+  summary: ({ activity, target, occurredAt }) =>
+    activity.actorName
+      ? `${activity.actorName} hat am ${occurredAt} etwas geändert, das die Sicherheit betrifft.`
+      : `Am ${occurredAt} wurde etwas ${target.type === 'account' ? 'an deinem Konto ' : ''}geändert, das die Sicherheit betrifft.`,
+  guidance: ({ target }) =>
+    target.type === 'account' ? 'Wenn du das nicht warst, sichere dein Konto jetzt.' : 'Wenn du diese Änderung nicht erwartet hast, prüfe die Aktivität jetzt.',
+  reviewButton: ({ target }) => (target.type === 'account' ? 'Konto prüfen' : 'Aktivität prüfen'),
   activityLogHint: (link) => <>Alle sicherheitsrelevanten Aktivitäten findest du im {link('Aktivitätsprotokoll')}.</>,
   footer: ({ target }) =>
     target.type === 'workspace'
@@ -24,10 +28,14 @@ export const securityActivityAlertMessagesDe: SecurityActivityAlertMessages = {
 export const securityActivityAlertMessagesEn: SecurityActivityAlertMessages = {
   lang: 'en',
   subject: ({ activity, targetName }) => `${activity.title} – ${targetName}`,
-  preview: ({ activity, occurredAt }) => `${activity.actorName} · ${occurredAt}`,
-  summary: ({ activity, occurredAt }) => `${activity.actorName} made a security-relevant change on ${occurredAt}.`,
-  guidance: () => "If you didn't expect this change, review the activity now.",
-  reviewButton: 'Review activity',
+  preview: ({ activity, occurredAt }) => (activity.actorName ? `${activity.actorName} · ${occurredAt}` : occurredAt),
+  summary: ({ activity, target, occurredAt }) =>
+    activity.actorName
+      ? `${activity.actorName} made a security-relevant change on ${occurredAt}.`
+      : `Something security-relevant changed ${target.type === 'account' ? 'on your account ' : ''}on ${occurredAt}.`,
+  guidance: ({ target }) =>
+    target.type === 'account' ? "If this wasn't you, secure your account now." : "If you didn't expect this change, review the activity now.",
+  reviewButton: ({ target }) => (target.type === 'account' ? 'Review account' : 'Review activity'),
   activityLogHint: (link) => <>You can see all security-relevant activity in the {link('activity log')}.</>,
   footer: ({ target }) =>
     target.type === 'workspace'
