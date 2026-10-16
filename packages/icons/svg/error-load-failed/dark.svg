@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 32 320 320">
+<defs>
+    <g id="limbs" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M176 290 V322" />
+      <path d="M224 290 V322" />
+      <path d="M142 236 C122 236 112 226 104 218" />
+      <path d="M258 236 C276 230 286 214 290 196" />
+    </g>
+    <path id="cable" fill="none" stroke-linecap="round"
+      d="M84 234 C82 300 112 314 150 270" />
+  </defs>
+
+  
+  <g fill="#212528" stroke="#171a1c" stroke-width="6" paint-order="stroke">
+    <path d="M60 104 a22 22 0 0 1 6-42 a28 28 0 0 1 52-6 a22 22 0 0 1 22 48 Z" />
+  </g>
+
+  
+  <ellipse cx="200" cy="336" rx="74" ry="8" fill="#abb4ba" opacity="0.08" />
+
+  
+  <use href="#cable" xlink:href="#cable" stroke="#171a1c" stroke-width="11" />
+  <use href="#cable" xlink:href="#cable" stroke="#8f9ba3" stroke-width="5" />
+
+  
+  <rect x="12" y="194" width="32" height="44" rx="9" fill="#212528" stroke="#2c3135" stroke-width="4" />
+  <rect x="24" y="204" width="8" height="8" rx="3" fill="#8f9ba3" />
+  <rect x="24" y="220" width="8" height="8" rx="3" fill="#8f9ba3" />
+
+  
+  <g stroke="#febe3e" stroke-width="4" stroke-linecap="round">
+    <path d="M50 186 L44 176" />
+    <path d="M52 216 L44 216" />
+    <path d="M50 246 L44 256" />
+  </g>
+
+  
+  <rect x="56" y="206" width="14" height="6" rx="2" fill="#4d575e" />
+  <rect x="56" y="222" width="14" height="6" rx="2" fill="#4d575e" />
+  <rect x="68" y="198" width="34" height="38" rx="10" fill="#40aafd" stroke="#171a1c" stroke-width="4" paint-order="stroke" />
+
+  
+  <use href="#limbs" xlink:href="#limbs" stroke="#171a1c" stroke-width="22" />
+  <use href="#limbs" xlink:href="#limbs" stroke="#8f9ba3" stroke-width="14" />
+  <rect x="160" y="318" width="26" height="14" rx="7" fill="#8f9ba3" stroke="#171a1c" stroke-width="4" paint-order="stroke" />
+  <rect x="214" y="318" width="26" height="14" rx="7" fill="#8f9ba3" stroke="#171a1c" stroke-width="4" paint-order="stroke" />
+  <circle cx="102" cy="216" r="10" fill="#8f9ba3" stroke="#171a1c" stroke-width="4" paint-order="stroke" />
+  <circle cx="291" cy="192" r="10" fill="#8f9ba3" stroke="#171a1c" stroke-width="4" paint-order="stroke" />
+
+  
+  <path d="M154 130 H232 L262 160 V278 Q262 292 248 292 H154 Q140 292 140 278 V144 Q140 130 154 130 Z"
+    fill="#171a1c" stroke="#2c3135" stroke-width="4" stroke-linejoin="round" />
+  <path d="M232 130 V150 Q232 160 242 160 H262 Z" fill="#2b3135" stroke="#2c3135" stroke-width="4" stroke-linejoin="round" />
+
+  
+  <g stroke="#8f9ba3" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M170 182 L184 178" />
+    <path d="M230 182 L216 178" />
+    <path d="M188 228 Q200 216 212 228" stroke-width="5" />
+  </g>
+  <circle cx="180" cy="198" r="6.5" fill="#8f9ba3" />
+  <circle cx="220" cy="198" r="6.5" fill="#8f9ba3" />
+  <ellipse cx="164" cy="214" rx="11" ry="6.5" fill="#faa694" />
+  <ellipse cx="236" cy="214" rx="11" ry="6.5" fill="#faa694" />
+
+  
+  <circle cx="290" cy="118" r="18" fill="#ef5f4e" stroke="#171a1c" stroke-width="5" paint-order="stroke" />
+  <path d="M290 108 V120" stroke="#171a1c" stroke-width="5" stroke-linecap="round" />
+  <circle cx="290" cy="128" r="3" fill="#171a1c" />
+</svg>
