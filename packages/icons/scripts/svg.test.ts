@@ -20,6 +20,11 @@ describe('toNestedSvg', () => {
     );
   });
 
+  it("drops the root's inline style, which would override the variant switch", () => {
+    const { markup } = toNestedSvg('<svg style="display: block;" viewBox="0 0 1 1"><path d="M0 0"/></svg>', opts);
+    expect(markup).not.toContain('style=');
+  });
+
   it('derives the viewBox from width and height when there is none', () => {
     expect(toNestedSvg('<svg width="96" height="96px"><path d="M0 0"/></svg>', opts).viewBox).toBe('0 0 96 96');
   });

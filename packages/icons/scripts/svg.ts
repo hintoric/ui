@@ -22,7 +22,9 @@ const FORBIDDEN: [RegExp, string][] = [
 
 // Attributes of the source root that say nothing about how it paints: the
 // component sets size and class itself, and namespaces are implied inline.
-const DROPPED_ROOT_ATTRS = new Set(['xmlns', 'version', 'width', 'height', 'id', 'class', 'x', 'y', 'viewbox']);
+// `style` too: Recraft writes `display: block` there, which as an inline style
+// would beat the stylesheet that hides the inactive variant.
+const DROPPED_ROOT_ATTRS = new Set(['xmlns', 'version', 'width', 'height', 'id', 'class', 'style', 'x', 'y', 'viewbox']);
 
 export interface NestedSvg {
   viewBox: string;
