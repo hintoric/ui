@@ -20,6 +20,8 @@ import { FileInputPage } from './pages/FileInputPage';
 import { BlurhashImagePage } from './pages/BlurhashImagePage';
 import { FloatingBarPage } from './pages/FloatingBarPage';
 import { InputPage } from './pages/InputPage';
+import { NumberInputPage } from './pages/NumberInputPage';
+import { OtpInputPage } from './pages/OtpInputPage';
 import { TextareaPage } from './pages/TextareaPage';
 import { CheckboxPage } from './pages/CheckboxPage';
 import { RadioPage } from './pages/RadioPage';
@@ -104,6 +106,8 @@ export function App() {
             <Route path="/icon-button" element={<IconButtonPage />} />
             <Route path="/floating-bar" element={<FloatingBarPage />} />
             <Route path="/input" element={<InputPage />} />
+            <Route path="/number-input" element={<NumberInputPage />} />
+            <Route path="/otp-input" element={<OtpInputPage />} />
             <Route path="/textarea" element={<TextareaPage />} />
             <Route path="/checkbox" element={<CheckboxPage />} />
             <Route path="/radio" element={<RadioPage />} />

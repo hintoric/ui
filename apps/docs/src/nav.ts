@@ -40,6 +40,8 @@ export const NAV: NavGroup[] = [
       { to: '/button-group', label: 'ButtonGroup' },
       { to: '/icon-button', label: 'IconButton' },
       { to: '/input', label: 'Input' },
+      { to: '/number-input', label: 'NumberInput' },
+      { to: '/otp-input', label: 'OtpInput' },
       { to: '/textarea', label: 'Textarea' },
       { to: '/checkbox', label: 'Checkbox' },
       { to: '/radio', label: 'Radio' },
