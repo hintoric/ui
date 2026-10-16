@@ -788,12 +788,26 @@ h1 .docs-badge-deprecated {
 }
 
 .docs-icon-preview {
+  display: block;
   width: 100%;
-  max-width: 128px;
+  max-width: 160px;
   aspect-ratio: 1;
   padding: 8px;
   margin-bottom: 8px;
+  border: 0;
   border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  cursor: zoom-in;
+}
+
+.docs-icon-preview:hover {
+  background-color: var(--color-neutral-plain-hover-bg);
+}
+
+.docs-icon-preview:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
 }
 
 /* A pinned variant is previewed on the surface it was made for, whatever the docs' own scheme. */
@@ -807,18 +821,16 @@ h1 .docs-badge-deprecated {
 
 .docs-icon-name {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
+  overflow-wrap: anywhere;
   font-weight: 600;
   font-size: 0.875rem;
 }
 
 .docs-icon-slug {
   max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
+  overflow-wrap: anywhere;
   font-size: 0.75rem;
   color: var(--color-ink-tertiary);
 }
@@ -833,6 +845,56 @@ h1 .docs-badge-deprecated {
 .docs-icon-more {
   padding-inline: 0;
   aspect-ratio: 1;
+}
+
+/* Large preview: both variants side by side, each on the surface it was made for. */
+.docs-icon-dialog {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.docs-icon-dialog-variants {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 12px 0 16px;
+}
+
+.docs-icon-dialog-variant {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 24px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-divider);
+}
+
+.docs-icon-dialog-variant[data-mode='light'] {
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-700);
+}
+
+.docs-icon-dialog-variant[data-mode='dark'] {
+  background-color: var(--color-neutral-900);
+  color: var(--color-neutral-300);
+}
+
+.docs-icon-dialog-variant > svg {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.docs-icon-dialog-variant figcaption {
+  font-size: 0.75rem;
+}
+
+.docs-icon-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 @media (max-width: 640px) {

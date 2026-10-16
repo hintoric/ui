@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { componentName, toNestedSvg } from './svg.ts';
+import { componentName, outerViewBox, toNestedSvg } from './svg.ts';
 
 const opts = { idPrefix: 'hi-x-light-', className: 'hi-icon-light' };
 
@@ -55,6 +55,13 @@ describe('toNestedSvg', () => {
   it('refuses a file that is not an svg or has no size', () => {
     expect(() => toNestedSvg('<html></html>', opts)).toThrow('not an <svg>');
     expect(() => toNestedSvg('<svg><path/></svg>', opts)).toThrow('viewBox');
+  });
+});
+
+describe('outerViewBox', () => {
+  it('keeps the size and moves the origin to 0 0, where the nested <svg> sits', () => {
+    expect(outerViewBox('61.98 119.33 773.78 773.78')).toBe('0 0 773.78 773.78');
+    expect(outerViewBox('0,0,2048,2048')).toBe('0 0 2048 2048');
   });
 });
 

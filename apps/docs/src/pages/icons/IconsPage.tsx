@@ -1,6 +1,21 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Button, ColorSchemeMenu, Dropdown, Input, Menu, MenuButton, MenuItem, Snackbar, useColorScheme } from '@hintoric/ui';
+import {
+  Button,
+  ColorSchemeMenu,
+  DialogContent,
+  DialogTitle,
+  Dropdown,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+  Modal,
+  ModalClose,
+  ModalDialog,
+  Snackbar,
+  useColorScheme,
+} from '@hintoric/ui';
 import { icons, type HintoricIcon, type IconMode } from '@hintoric/icons';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
@@ -37,6 +52,8 @@ export function IconsPage() {
   const [mode, setMode] = useState<IconMode>('auto');
   const [copied, setCopied] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
+  const Preview = icons.find((Icon) => Icon.slug === previewSlug);
   const copiedTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const closeSnackbar = useCallback(() => setCopied(null), []);
 
@@ -129,9 +146,14 @@ export function IconsPage() {
               const justCopied = copiedKey === Icon.slug;
               return (
                 <li key={Icon.slug} className="docs-icon-tile" data-mode={mode}>
-                  <div className="docs-icon-preview">
+                  <button
+                    type="button"
+                    className="docs-icon-preview"
+                    aria-label={`Preview ${Icon.displayName}`}
+                    onClick={() => setPreviewSlug(Icon.slug)}
+                  >
                     <Icon mode={mode} size="100%" />
-                  </div>
+                  </button>
                   <div className="docs-icon-name">{Icon.displayName}</div>
                   <code className="docs-icon-slug">{Icon.slug}</code>
                   <div className="docs-icon-actions">
@@ -170,6 +192,52 @@ export function IconsPage() {
           </ul>
         )}
       </main>
+
+      <Modal open={Preview !== undefined} onClose={() => setPreviewSlug(null)}>
+        <ModalDialog size="lg" className="docs-icon-dialog" aria-label={Preview?.displayName}>
+          <ModalClose onClick={() => setPreviewSlug(null)} />
+          {Preview && (
+            <>
+              <DialogTitle>{Preview.displayName}</DialogTitle>
+              <DialogContent>
+                <code className="docs-icon-slug">{Preview.slug}</code>
+                <div className="docs-icon-dialog-variants">
+                  {(['light', 'dark'] as const).map((variant) => (
+                    <figure key={variant} className="docs-icon-dialog-variant" data-mode={variant}>
+                      <Preview mode={variant} size="100%" />
+                      <figcaption>{variant === 'light' ? 'Light' : 'Dark'}</figcaption>
+                    </figure>
+                  ))}
+                </div>
+                <div className="docs-icon-dialog-actions">
+                  {(
+                    [
+                      ['import', snippets(Preview).import, `import { ${Preview.displayName} }`],
+                      ['JSX', snippets(Preview).jsx, 'JSX'],
+                      ['light URL', snippets(Preview).light, 'light URL'],
+                      ...(Preview.cdn.dark ? [['dark URL', Preview.cdn.dark, 'dark URL']] : []),
+                    ] as [string, string, string][]
+                  ).map(([label, text, what]) => {
+                    const key = `${Preview.slug}:${label}`;
+                    return (
+                      <Button
+                        key={label}
+                        size="sm"
+                        variant="soft"
+                        color={copiedKey === key ? 'success' : 'neutral'}
+                        startDecorator={copyIcon(key)}
+                        onClick={() => copy(text, what, key)}
+                      >
+                        Copy {label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </DialogContent>
+            </>
+          )}
+        </ModalDialog>
+      </Modal>
 
       <Snackbar open={copied !== null} onClose={closeSnackbar} autoHideDuration={1500} size="sm">
         Copied {copied}

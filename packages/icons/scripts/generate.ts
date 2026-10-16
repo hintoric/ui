@@ -6,7 +6,7 @@
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { SLUG, componentName, toNestedSvg } from './svg.ts';
+import { SLUG, componentName, outerViewBox, toNestedSvg } from './svg.ts';
 
 const pkg = join(import.meta.dirname, '..');
 const svgRoot = join(pkg, 'svg');
@@ -42,7 +42,7 @@ for (const slug of slugs) {
   const def = {
     slug,
     name,
-    viewBox: light.viewBox,
+    viewBox: outerViewBox(light.viewBox),
     light: light.markup,
     dark: dark?.markup ?? null,
     cdn: {

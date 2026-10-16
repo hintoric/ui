@@ -96,6 +96,17 @@ function viewBoxFromSize(attrs: Map<string, string>): string | undefined {
   return Number.isFinite(w) && Number.isFinite(h) ? `0 0 ${w} ${h}` : undefined;
 }
 
+/**
+ * The component's own viewBox: the same size as the icon's, but at the origin.
+ * The nested <svg> sits at x=0, y=0 of it and maps its own viewBox from there,
+ * so an outer viewBox that kept the icon's origin (say `62 119 774 774`) would
+ * shift the drawing up and left by that much and cut it off.
+ */
+export function outerViewBox(viewBox: string): string {
+  const [, , width, height] = viewBox.trim().split(/[\s,]+/);
+  return `0 0 ${width} ${height}`;
+}
+
 /** `empty-documents-upload` → `EmptyDocumentsUploadIcon`. */
 export function componentName(slug: string): string {
   const pascal = slug
