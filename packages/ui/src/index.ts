@@ -64,6 +64,10 @@ export type {
 
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
+export { NumberInput } from './components/NumberInput';
+export type { NumberInputProps } from './components/NumberInput';
+export { OtpInput } from './components/OtpInput';
+export type { OtpInputProps } from './components/OtpInput';
 
 export { Textarea } from './components/Textarea';
 export type { TextareaProps } from './components/Textarea';

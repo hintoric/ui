@@ -380,6 +380,45 @@ export const SELECT_COLOR_CLASSES: Record<JoyVariant, Record<JoyColor, string>> 
 // outline offset/gap), colored by `--Input-focusedHighlight`, which maps
 // `color="neutral"` to primary-500 and every other color to its own 500.
 // Confirmed against @mui/joy's real focus-within `::before` box-shadow.
+// INPUT_COLOR_CLASSES' disabled colours, keyed on `data-disabled` instead of
+// `:disabled`. Those `disabled:` utilities only ever match when the classes sit
+// on the <input> itself (Textarea, OtpInput's slots). On a wrapper — Input's
+// <span>, Autocomplete's <div>, NumberInput's Base UI root — `:disabled` never
+// matches, so the pill kept its resting colours where @mui/joy dims it.
+// NumberInput's visual test caught this against Joy (border neutral-300 where
+// Joy shows neutral-200); Base UI's NumberField root sets data-disabled, which
+// is what these key on. Input and Autocomplete still have the gap.
+export const INPUT_WRAPPER_DISABLED_CLASSES: Record<JoyVariant, Record<JoyColor, string>> = {
+  solid: {
+    primary: 'data-[disabled]:bg-primary-solid-disabled-bg data-[disabled]:text-primary-solid-disabled-color',
+    neutral: 'data-[disabled]:bg-neutral-solid-disabled-bg data-[disabled]:text-neutral-solid-disabled-color',
+    danger: 'data-[disabled]:bg-danger-solid-disabled-bg data-[disabled]:text-danger-solid-disabled-color',
+    success: 'data-[disabled]:bg-success-solid-disabled-bg data-[disabled]:text-success-solid-disabled-color',
+    warning: 'data-[disabled]:bg-warning-solid-disabled-bg data-[disabled]:text-warning-solid-disabled-color',
+  },
+  soft: {
+    primary: 'data-[disabled]:bg-primary-soft-disabled-bg data-[disabled]:text-primary-soft-disabled-color',
+    neutral: 'data-[disabled]:bg-neutral-soft-disabled-bg data-[disabled]:text-neutral-soft-disabled-color',
+    danger: 'data-[disabled]:bg-danger-soft-disabled-bg data-[disabled]:text-danger-soft-disabled-color',
+    success: 'data-[disabled]:bg-success-soft-disabled-bg data-[disabled]:text-success-soft-disabled-color',
+    warning: 'data-[disabled]:bg-warning-soft-disabled-bg data-[disabled]:text-warning-soft-disabled-color',
+  },
+  outlined: {
+    primary: 'data-[disabled]:text-primary-outlined-disabled-color data-[disabled]:border-primary-outlined-disabled-border',
+    neutral: 'data-[disabled]:text-neutral-outlined-disabled-color data-[disabled]:border-neutral-outlined-disabled-border',
+    danger: 'data-[disabled]:text-danger-outlined-disabled-color data-[disabled]:border-danger-outlined-disabled-border',
+    success: 'data-[disabled]:text-success-outlined-disabled-color data-[disabled]:border-success-outlined-disabled-border',
+    warning: 'data-[disabled]:text-warning-outlined-disabled-color data-[disabled]:border-warning-outlined-disabled-border',
+  },
+  plain: {
+    primary: 'data-[disabled]:text-primary-plain-disabled-color',
+    neutral: 'data-[disabled]:text-neutral-plain-disabled-color',
+    danger: 'data-[disabled]:text-danger-plain-disabled-color',
+    success: 'data-[disabled]:text-success-plain-disabled-color',
+    warning: 'data-[disabled]:text-warning-plain-disabled-color',
+  },
+};
+
 export const INPUT_FOCUS_RING_CLASSES: Record<JoyColor, string> = {
   primary: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
   neutral: 'focus-within:shadow-[inset_0_0_0_2px_var(--color-primary-500)]',
