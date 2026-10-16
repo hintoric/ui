@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { LIST_ITEM_SIZE_CLASS } from '../List/listItemSize';
 import { ACTIVE_BG_CLASS, INTERACTIVE_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import type { JoyColor, JoyVariant } from '../../utils/colorVariantClasses';
 
@@ -24,7 +25,8 @@ export const ListItemButton = React.forwardRef<HTMLButtonElement, ListItemButton
       ref={ref}
       type={type}
       className={cx(
-        'flex min-h-9 w-full items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500',
+        LIST_ITEM_SIZE_CLASS,
+        'flex w-full items-center rounded-[inherit] border border-transparent text-left transition-colors cursor-pointer disabled:pointer-events-none disabled:cursor-default disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500',
         INTERACTIVE_COLOR_CLASSES[variant][color],
         selected && cx(ACTIVE_BG_CLASS[variant][color], 'font-medium'),
         className,

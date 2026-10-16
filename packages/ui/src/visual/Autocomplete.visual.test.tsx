@@ -9,6 +9,7 @@ import {
   ListItem as JoyListItem,
 } from '@mui/joy';
 import { Autocomplete as HintoricAutocomplete } from '../components/Autocomplete';
+import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 import { describeErrorParity } from './errorParity';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
@@ -25,22 +26,26 @@ describe('Autocomplete visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
-              <JoyAutocomplete
+            <div style={{ width: 400 }}>
+              <JoyCssVarsProvider defaultMode={scheme}>
+                <JoyAutocomplete
+                  options={OPTIONS}
+                  variant={variant}
+                  color={color}
+                  data-testid={`joy-${variant}-${color}`}
+                />
+              </JoyCssVarsProvider>
+            </div>,
+          );
+          render(
+            <div style={{ width: 400 }}>
+              <HintoricAutocomplete
                 options={OPTIONS}
                 variant={variant}
                 color={color}
-                data-testid={`joy-${variant}-${color}`}
+                data-testid={`hintoric-${variant}-${color}`}
               />
-            </JoyCssVarsProvider>,
-          );
-          render(
-            <HintoricAutocomplete
-              options={OPTIONS}
-              variant={variant}
-              color={color}
-              data-testid={`hintoric-${variant}-${color}`}
-            />,
+            </div>,
           );
 
           // Joy's data-testid lands on its outer root div; ours lands on the
@@ -61,6 +66,11 @@ describe('Autocomplete visual parity with @mui/joy', () => {
           expect(hintoricStyle.minHeight).toBe(joyStyle.minHeight);
           expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
           expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          // Inside the 400px parent: Joy's root is `display: flex` and fills
+          // it (P1 of the 2026-09-06 audit — ours used to shrink to 229px).
+          expect(hintoricStyle.display).toBe(joyStyle.display);
+          expect(hintoricStyle.width).toBe(joyStyle.width);
 
           await expect(page.getByTestId(`joy-${variant}-${color}`)).toMatchScreenshot(`autocomplete-${variant}-${color}-joy-${scheme}`);
           await expect(hintoricRoot).toMatchScreenshot(`autocomplete-${variant}-${color}-hintoric-${scheme}`);
@@ -69,38 +79,99 @@ describe('Autocomplete visual parity with @mui/joy', () => {
     }
 
     for (const size of ['sm', 'md', 'lg'] as const) {
-      it(`size=${size} matches Joy UI's computed min-height in ${scheme}`, async () => {
+      it(`size=${size} matches Joy UI's computed metrics in ${scheme}`, async () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
-            <JoyAutocomplete options={OPTIONS} size={size} data-testid={`joy-size-${size}`} />
-          </JoyCssVarsProvider>,
+          <div data-testid={`joy-size-box-${size}`} style={{ width: 400 }}>
+            <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyAutocomplete options={OPTIONS} size={size} data-testid={`joy-size-${size}`} />
+            </JoyCssVarsProvider>
+          </div>,
         );
-        render(<HintoricAutocomplete options={OPTIONS} size={size} data-testid={`hintoric-size-${size}`} />);
+        render(
+          <div data-testid={`hintoric-size-box-${size}`} style={{ width: 400 }}>
+            <ColorSchemeProvider defaultMode={scheme}>
+              <HintoricAutocomplete options={OPTIONS} size={size} data-testid={`hintoric-size-${size}`} />
+            </ColorSchemeProvider>
+          </div>,
+        );
 
         const joyStyle = getComputedStyle(page.getByTestId(`joy-size-${size}`).element());
         const hintoricInput = page.getByTestId(`hintoric-size-${size}`).element();
         const hintoricStyle = getComputedStyle(hintoricInput.closest('div') as HTMLElement);
 
         expect(hintoricStyle.minHeight).toBe(joyStyle.minHeight);
+        expect(hintoricStyle.height).toBe(joyStyle.height);
+        expect(hintoricStyle.paddingLeft).toBe(joyStyle.paddingLeft);
+        expect(hintoricStyle.paddingRight).toBe(joyStyle.paddingRight);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
+        expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
+        // Joy's body-sm/-lg use line-height 1.5 (21px/27px); Tailwind's
+        // text-sm/-lg carry 20px/28px, invisible behind min-height until now.
+        expect(hintoricStyle.lineHeight).toBe(joyStyle.lineHeight);
+        expect(hintoricStyle.display).toBe(joyStyle.display);
+        expect(hintoricStyle.width).toBe(joyStyle.width);
+
+        await expect(page.getByTestId(`joy-size-box-${size}`)).toMatchScreenshot(`autocomplete-size-${size}-joy-${scheme}`);
+        await expect(page.getByTestId(`hintoric-size-box-${size}`)).toMatchScreenshot(
+          `autocomplete-size-${size}-hintoric-${scheme}`,
+        );
       });
     }
 
-    it(`disabled input matches Joy UI in ${scheme}`, async () => {
-      await setColorScheme(scheme);
+    // The root is a <div> in both libraries, so `:disabled` can't style it —
+    // this matrix is what proves the data-disabled classes reach the pill.
+    for (const variant of VARIANTS) {
+      for (const color of COLORS) {
+        it(`${variant}/${color} disabled matches Joy UI in ${scheme}`, async () => {
+          await setColorScheme(scheme);
 
-      render(
-        <JoyCssVarsProvider defaultMode={scheme}>
-          <JoyAutocomplete options={OPTIONS} disabled data-testid="joy-disabled" />
-        </JoyCssVarsProvider>,
-      );
-      render(<HintoricAutocomplete options={OPTIONS} disabled data-testid="hintoric-disabled" />);
+          render(
+            <div style={{ width: 400 }}>
+              <JoyCssVarsProvider defaultMode={scheme}>
+                <JoyAutocomplete
+                  options={OPTIONS}
+                  disabled
+                  variant={variant}
+                  color={color}
+                  data-testid={`joy-dis-${variant}-${color}`}
+                />
+              </JoyCssVarsProvider>
+            </div>,
+          );
+          render(
+            <div style={{ width: 400 }}>
+              <HintoricAutocomplete
+                options={OPTIONS}
+                disabled
+                variant={variant}
+                color={color}
+                data-testid={`hintoric-dis-${variant}-${color}`}
+              />
+            </div>,
+          );
 
-      expect((page.getByTestId('hintoric-disabled').element() as HTMLInputElement).disabled).toBe(true);
-      expect(page.getByTestId('joy-disabled').element().querySelector('input')).toBeDisabled();
-    });
+          const joyRoot = page.getByTestId(`joy-dis-${variant}-${color}`).element();
+          const hintoricInput = page.getByTestId(`hintoric-dis-${variant}-${color}`).element() as HTMLInputElement;
+          const hintoricRoot = hintoricInput.closest('div') as HTMLElement;
+          expect(hintoricInput.disabled).toBe(true);
+          expect(joyRoot.querySelector('input')).toBeDisabled();
+
+          const joyStyle = getComputedStyle(joyRoot);
+          const hintoricStyle = getComputedStyle(hintoricRoot);
+          expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
+          expect(hintoricStyle.color).toBe(joyStyle.color);
+          expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
+          expect(hintoricStyle.display).toBe(joyStyle.display);
+          expect(hintoricStyle.width).toBe(joyStyle.width);
+
+          await expect(page.getByTestId(`joy-dis-${variant}-${color}`)).toMatchScreenshot(`autocomplete-disabled-${variant}-${color}-joy-${scheme}`);
+          await expect(hintoricRoot).toMatchScreenshot(`autocomplete-disabled-${variant}-${color}-hintoric-${scheme}`);
+        });
+      }
+    }
 
     // Forcing Joy's real Autocomplete popup open from the outside turned out to
     // be unreliable in this test harness (its `open` state is internal to

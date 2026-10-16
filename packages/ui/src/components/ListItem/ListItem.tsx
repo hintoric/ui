@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { cx } from '../../utils/cx';
+import { LIST_ITEM_SIZE_CLASS } from '../List/listItemSize';
 
 export type ListItemProps = React.ComponentPropsWithoutRef<'li'>;
 
@@ -19,7 +20,8 @@ export const ListItem = React.forwardRef<HTMLLIElement, ListItemProps>(function 
       // is the element whose readability matters, and List's own colour is
       // left alone so its existing comparison stays meaningful.
       className={cx(
-        'flex min-h-9 items-center gap-2.5 rounded-[inherit] px-3 py-1 text-ink-secondary',
+        LIST_ITEM_SIZE_CLASS,
+        'flex items-center rounded-[inherit] text-ink-secondary',
         className,
       )}
       {...props}

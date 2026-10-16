@@ -12,4 +12,10 @@ export interface TextareaProps
   helperText?: React.ReactNode;
   /** Forces the error look. OR-ed with the bound field's own error state. */
   error?: boolean;
+  /** Smallest height, in rows. The field grows with its content from here, as Joy's does. Defaults to `rows`, else 1. */
+  minRows?: number;
+  /** Largest height, in rows. Past it the content scrolls. Unbounded when omitted. */
+  maxRows?: number;
+  /** Read as `minRows` when that is unset: the field no longer stays at a fixed number of rows. */
+  rows?: number;
 }

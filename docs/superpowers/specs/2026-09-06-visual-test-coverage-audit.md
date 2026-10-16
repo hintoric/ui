@@ -31,7 +31,7 @@ Measured directly, each rendered inside a 400px-wide parent, comparing each comp
 |---|---|---|
 | Select | `DIV` `flex` / 400px | fixed 2026-09-06 |
 | Input | `DIV` `flex` / 400px | `SPAN` `inline-flex` / **201px** |
-| Textarea | `DIV` `flex` / 400px | `TEXTAREA` `inline-flex` / **210px** |
+| Textarea | `DIV` `flex` / 400px | fixed 2026-10-16 (`TEXTAREA` `flex` + `w-full`, no wrapper) |
 | Autocomplete | `DIV` `flex` / 353.5px | `DIV` `inline-flex` / **229px** |
 
 All four shrink to content where Joy fills the container. These are the library's most-used components and the divergence is immediately visible in any real form layout.

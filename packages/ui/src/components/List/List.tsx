@@ -18,15 +18,19 @@ export interface ListProps extends React.ComponentPropsWithoutRef<'ul'> {
 // Measured 2026-09-07 against real @mui/joy: a ListItem in a 320px-wide list
 // came out 312px for us against Joy's 320px. Same shape of divergence as
 // MenuList's padding, found in the same pass.
+//
+// Per size, measured against real @mui/joy 2026-10-16: no gap between rows
+// (ours had gap-1/1.5, Joy stacks them flush); block padding 4/6/8px; and
+// Joy's body-sm/-lg line-height 1.5 (21/27px), which Tailwind's bare
+// text-sm/-lg (20/28px) miss. The `--list-item-*` variables are what Joy's
+// `--ListItem-*` cascade does: ListItem and ListItemButton read them, falling
+// back to the md values when used outside a List.
 const SIZE_CLASS = {
-  sm: 'gap-1 px-0 py-1 text-sm',
-  md: 'gap-1 px-0 py-1 text-base',
-  lg: 'gap-1.5 px-0 py-1.5 text-lg',
+  sm: 'px-0 py-1 text-sm/[1.5] [--list-item-min-h:2rem] [--list-item-py:3px] [--list-item-px:0.5rem] [--list-item-gap:0.5rem]',
+  md: 'px-0 py-1.5 text-base [--list-item-min-h:2.25rem] [--list-item-py:0.25rem] [--list-item-px:0.75rem] [--list-item-gap:0.625rem]',
+  lg: 'px-0 py-2 text-lg/[1.5] [--list-item-min-h:2.75rem] [--list-item-py:0.375rem] [--list-item-px:1rem] [--list-item-gap:0.75rem]',
 } as const;
 
-// Scope note: this v1 doesn't cascade --ListItem-* CSS variables down to
-// ListItem/ListItemButton children the way Joy UI's List does — each item
-// carries its own reasonable md-equivalent defaults instead.
 export const List = React.forwardRef<HTMLUListElement, ListProps>(function List(
   { component: Component = 'ul', variant, color, size = 'md', orientation = 'vertical', className, ...props },
   ref,
