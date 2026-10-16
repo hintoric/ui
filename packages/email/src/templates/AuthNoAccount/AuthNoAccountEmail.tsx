@@ -8,8 +8,8 @@ import { emailFonts } from '../../tokens';
 import type { RenderedEmail } from '../SecurityActivityAlert';
 import type { AuthNoAccountContext, AuthNoAccountProps } from './types';
 
-function contextOf({ purpose, email }: AuthNoAccountProps): AuthNoAccountContext {
-  return { purpose, email };
+function contextOf({ purpose, channel = 'code', email }: AuthNoAccountProps): AuthNoAccountContext {
+  return { purpose, channel, email };
 }
 
 /**

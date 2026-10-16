@@ -92,7 +92,7 @@ export function SecurityActivityAlertContent(props: SecurityActivityAlertProps) 
         {props.activity.description?.trim() || messages.summary(ctx)} {messages.guidance(ctx)}
       </Typography>
       <Button href={props.reviewUrl} size="lg" fullWidth>
-        {messages.reviewButton}
+        {typeof messages.reviewButton === 'function' ? messages.reviewButton(ctx) : messages.reviewButton}
       </Button>
       {activityLogUrl && (
         <Typography level="body-xs" component="p" textAlign="center" style={{ marginTop: '24px', fontWeight: 400 }}>

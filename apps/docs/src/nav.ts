@@ -153,6 +153,7 @@ export const EMAIL_NAV: NavGroup[] = [
     title: 'Templates',
     links: [
       { to: '/email/templates/auth-code', label: 'Auth code' },
+      { to: '/email/templates/auth-link', label: 'Auth link' },
       { to: '/email/templates/auth-no-account', label: 'Auth no-account' },
       { to: '/email/templates/security-activity-alert', label: 'Security activity alert' },
       { to: '/email/templates/waitlist-welcome', label: 'Waitlist welcome', deprecated: true },
