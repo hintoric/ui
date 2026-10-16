@@ -1,5 +1,34 @@
 # @hintoric/ui
 
+## 0.12.0
+
+### Minor Changes
+
+- 586c44d: New `NumberInput` and `OtpInput` components, both in Input's look and both binding to a `<Form>` by `name` like every other field.
+
+  - **`NumberInput`** is a number field with − / + buttons. It parses and formats with `Intl` (`format`, `locale`), steps with the arrow keys (Shift/Alt for large/small steps), clamps to `min`/`max`, and reports a `number | null` rather than a string — so a schema is plain `z.number()`. Unlike `Input`, it fills the width of its container, as Joy's input does.
+  - **`OtpInput`** is a one-time-code field with one slot per character (`length`, default 6). Focus moves on while typing, a pasted or SMS-autofilled code spreads across the slots, `validationType` filters what is accepted, `mask` hides the characters, and `onComplete` fires once the code is full. Inside a `<Form>`, a half-typed code is left to the schema instead of being blocked by the browser's own pattern check.
+
+### Patch Changes
+
+- aa15f99: `Checkbox`, `Radio`, `List` and `Input` now match `@mui/joy`'s sizes more closely:
+
+  - **`Checkbox` and `Radio` labels** now have Joy's line height, which equals the box size: 16px, 20px and 24px at `sm`, `md` and `lg`. Before, they were 20px, 24px and 28px, so a labelled control was 4px taller than in Joy. The label also uses Joy's text colour now, and a dimmed colour when disabled. Before, it took the page's text colour, which made it black on a dark background.
+  - **`List`** now passes its `size` to its `ListItem` and `ListItemButton` rows. Rows are 32px, 36px and 44px high at `sm`, `md` and `lg`, with Joy's padding and gap. Before, every row was `md`-sized. Rows now touch each other with no gap between them, the list's top and bottom padding is 4px, 6px or 8px, and at `sm` and `lg` the line height is 1.5 (21px and 27px). Outside a `List`, a row keeps the `md` size.
+  - **`Input`**: the inner `<input>` now fills the whole height of the field, like Joy's. Before, it was only one line high. Clicks above or below the text missed it, and the browser's autofill highlight showed as a strip across the middle of the field.
+
+- aa15f99: `Input` and `Autocomplete` now match `@mui/joy` in two places they didn't before:
+
+  - **They fill their container.** Both used to be `inline-flex` and shrink to roughly 200px. They are now `display: flex` like Joy, so they stretch to the width of their parent. If you relied on the old shrink-to-content width, set a width yourself.
+  - **Disabled fields look disabled.** A disabled `Input` or `Autocomplete` kept its resting border, text and background colours, and its text cursor. It now uses Joy's dimmed disabled colours for every variant and colour, plus the default cursor.
+
+- aa15f99: `Input`, `NumberInput`, `Autocomplete` and `Select` now use Joy UI's line-height at `size="sm"` and `size="lg"`: 1.5, which is 21px at sm and 27px at lg. Before, they took 20px and 28px from Tailwind's `text-sm` and `text-lg`. The control's height does not change, but text and placeholders now sit at the same position as in Joy.
+- aa15f99: `Textarea` now matches Joy UI's height: it starts at one row instead of the browser's default two, and grows with its content as you type. New `minRows` and `maxRows` props set the smallest and largest height in rows; past `maxRows` the content scrolls. An existing `rows` prop is read as `minRows`. The vertical padding and the `sm`/`lg` line height now also match Joy, so each size has Joy's height (32px, 36px and 51px at one row).
+
+  To measure its content, `Textarea` renders a second, hidden `<textarea aria-hidden>` right after the real one. `className`, `ref` and every other prop still reach the real field, which stays the first element; only code that counts all `<textarea>` elements on a page sees the extra one.
+
+- aa15f99: `Textarea` now fills its container, like `@mui/joy`'s. It used to be `inline-flex` and settle at the browser's default textarea width of roughly 210px; it is now `display: flex` with `width: 100%`, so it stretches to the width of its parent. It is still a single `<textarea>` — `className`, `ref` and the disabled styling all reach the same element as before. If you relied on the old width, set a width yourself.
+
 ## 0.11.0
 
 ### Minor Changes
