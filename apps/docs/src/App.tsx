@@ -81,6 +81,7 @@ import { AuthLinkPage } from './pages/email/AuthLinkPage';
 import { AuthNoAccountPage } from './pages/email/AuthNoAccountPage';
 import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
 import { WaitlistWelcomePage } from './pages/email/WaitlistWelcomePage';
+import { IconsPage } from './pages/icons/IconsPage';
 
 export function App() {
   return (
@@ -177,6 +178,9 @@ export function App() {
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
             <Route path="/email/templates/waitlist-welcome" element={<WaitlistWelcomePage />} />
           </Route>
+
+          {/* The icon gallery: full screen on purpose, without the docs' sidebar. */}
+          <Route path="/icons" element={<IconsPage />} />
         </Routes>
       </BrowserRouter>
     </ColorSchemeProvider>

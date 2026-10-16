@@ -1,0 +1,2 @@
+# Written by scripts/generate.ts from svg/ on every build, test and typecheck.
+src/generated/

@@ -697,3 +697,158 @@ h1 .docs-badge-deprecated {
     transition: none;
   }
 }
+
+/* Icon gallery (/icons): a full-screen tile view outside the docs layout. */
+.docs-icons-page {
+  min-height: 100dvh;
+  background-color: var(--color-canvas);
+  color: var(--color-ink-primary);
+}
+
+.docs-icons-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--color-divider);
+  background-color: var(--color-canvas);
+}
+
+.docs-icons-brand img {
+  display: block;
+  height: 32px;
+  width: auto;
+}
+
+.docs-icons-title {
+  margin: 0;
+  font-family: var(--font-display, inherit);
+  font-size: 1.25rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.docs-icons-title span {
+  margin-left: 4px;
+  color: var(--color-ink-tertiary);
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.docs-icons-search {
+  flex: 1 1 220px;
+  max-width: 360px;
+}
+
+.docs-icons-install code {
+  font-size: 0.8125rem;
+}
+
+.docs-icons-header-end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.docs-icons-main {
+  padding: 24px;
+}
+
+.docs-icons-empty {
+  margin: 0;
+  color: var(--color-ink-tertiary);
+}
+
+.docs-icons-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.docs-icon-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 16px 12px 12px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.docs-icon-preview {
+  width: 100%;
+  max-width: 128px;
+  aspect-ratio: 1;
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* A pinned variant is previewed on the surface it was made for, whatever the docs' own scheme. */
+.docs-icon-tile[data-mode='light'] .docs-icon-preview {
+  background-color: var(--color-neutral-50);
+}
+
+.docs-icon-tile[data-mode='dark'] .docs-icon-preview {
+  background-color: var(--color-neutral-900);
+}
+
+.docs-icon-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.docs-icon-slug {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--color-ink-tertiary);
+}
+
+.docs-icon-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* Icon-only trigger: square, like an IconButton next to the copy button. */
+.docs-icon-more {
+  padding-inline: 0;
+  aspect-ratio: 1;
+}
+
+@media (max-width: 640px) {
+  .docs-icons-header {
+    padding: 12px 16px;
+  }
+
+  .docs-icons-main {
+    padding: 16px;
+  }
+
+  .docs-icons-header-end {
+    margin-left: 0;
+  }
+
+  .docs-icons-install {
+    display: none;
+  }
+}

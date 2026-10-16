@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { EMAIL_NAV, NAV as SITE_NAV } from '../nav.ts';
-import { buildEntries, search, withGroupPrefix } from './search.ts';
+import { buildEntries, buildIconEntries, search, withGroupPrefix } from './search.ts';
 import type { DocsPage } from './types.ts';
 
 const INDEX: DocsPage[] = [
@@ -83,5 +83,20 @@ describe('search', () => {
 
   it('finds nothing for a query no title carries', () => {
     expect(search(entries, 'quantum')).toEqual([]);
+  });
+});
+
+describe('buildIconEntries', () => {
+  it('makes one entry per icon that opens the gallery filtered to it', () => {
+    const entries = buildIconEntries([{ displayName: 'EmptyTemplatesUploadIcon', slug: 'empty-templates-upload' }], 'Icons');
+    expect(entries).toEqual([
+      {
+        path: '/icons?q=empty-templates-upload',
+        title: 'EmptyTemplatesUploadIcon',
+        page: 'EmptyTemplatesUploadIcon',
+        group: 'Icons',
+      },
+    ]);
+    expect(search(entries, 'upload')).toHaveLength(1);
   });
 });

@@ -22,7 +22,7 @@ function copyWithExecCommand(text: string): void {
   document.body.removeChild(textarea);
 }
 
-async function copyToClipboard(text: string): Promise<void> {
+export async function copyToClipboard(text: string): Promise<void> {
   try {
     await navigator.clipboard.writeText(text);
   } catch {

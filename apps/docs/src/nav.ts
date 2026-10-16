@@ -161,6 +161,21 @@ export const EMAIL_NAV: NavGroup[] = [
   },
 ];
 
+/**
+ * The icon gallery under `/icons` — `@hintoric/icons`, the third side of the switch. It has no
+ * sidebar of its own (the page is full screen); this only names it for the search palette.
+ */
+export const ICONS_NAV: NavGroup[] = [
+  {
+    title: 'Icons',
+    links: [{ to: '/icons', label: 'Icons' }],
+  },
+];
+
+export function isIconsPath(pathname: string): boolean {
+  return pathname === '/icons' || pathname.startsWith('/icons/');
+}
+
 export function isEmailPath(pathname: string): boolean {
   return pathname === '/email' || pathname.startsWith('/email/');
 }

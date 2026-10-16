@@ -1,0 +1,55 @@
+{
+  "name": "@hintoric/icons",
+  "version": "0.0.0",
+  "description": "hintoric's icons and spot illustrations as React components, light and dark.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://ui.hintoric.dev/icons",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hintoric/ui.git",
+    "directory": "packages/icons"
+  },
+  "bugs": "https://github.com/hintoric/ui/issues",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.0.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.1.0",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "sync": "node scripts/sync.ts && node scripts/generate.ts",
+    "generate": "node scripts/generate.ts",
+    "build": "node scripts/generate.ts && vite build",
+    "test": "node scripts/generate.ts && vitest run",
+    "typecheck": "node scripts/generate.ts && tsc --noEmit"
+  }
+}
