@@ -33,6 +33,19 @@ export function buildEntries(index: DocsPage[], nav: NavGroupLike[]): SearchEntr
   return entries;
 }
 
+/**
+ * One entry per icon, opening the gallery filtered to it. The gallery is a
+ * single page without headings, so its icons are what is worth finding there.
+ */
+export function buildIconEntries(icons: readonly { displayName: string; slug: string }[], group: string): SearchEntry[] {
+  return icons.map((icon) => ({
+    path: `/icons?q=${encodeURIComponent(icon.slug)}`,
+    title: icon.displayName,
+    page: icon.displayName,
+    group,
+  }));
+}
+
 /** The same nav with every group title prefixed — to tell two sections' groups apart in results. */
 export function withGroupPrefix<T extends NavGroupLike>(nav: T[], prefix: string): T[] {
   return nav.map((group) => ({ ...group, title: `${prefix}${group.title}` }));

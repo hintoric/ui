@@ -177,10 +177,10 @@ export function App() {
             <Route path="/email/templates/auth-no-account" element={<AuthNoAccountPage />} />
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
             <Route path="/email/templates/waitlist-welcome" element={<WaitlistWelcomePage />} />
-
-            {/* The icon gallery — @hintoric/icons, see ICONS_NAV. */}
-            <Route path="/icons" element={<IconsPage />} />
           </Route>
+
+          {/* The icon gallery: full screen on purpose, without the docs' sidebar. */}
+          <Route path="/icons" element={<IconsPage />} />
         </Routes>
       </BrowserRouter>
     </ColorSchemeProvider>

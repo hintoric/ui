@@ -23,7 +23,7 @@ export function SegmentedToggle<T extends string>({ value, options, onChange, ..
       }}
     >
       {options.map((option) => (
-        <Button key={option.value} value={option.value} size="sm" variant="outlined" color="neutral">
+        <Button key={option.value} value={option.value} size="sm" variant="outlined" color="neutral" style={{ whiteSpace: 'nowrap' }}>
           {option.label}
         </Button>
       ))}

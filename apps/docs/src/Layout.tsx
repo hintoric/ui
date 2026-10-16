@@ -13,7 +13,7 @@ import {
   useColorScheme,
 } from '@hintoric/ui';
 import { ColorSchemeStyles } from '@hintoric/email';
-import { EMAIL_NAV, ICONS_NAV, NAV } from './nav';
+import { EMAIL_NAV, NAV } from './nav';
 import { PlatformToggle, usePlatform } from './platform';
 import { DocsSearch } from './search/DocsSearch.tsx';
 import { applyHeadingIds, scrollToAnchor } from './search/anchors.ts';
@@ -34,7 +34,7 @@ export function Layout() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { pathname, hash } = useLocation();
   const platform = usePlatform();
-  const nav = platform === 'email' ? EMAIL_NAV : platform === 'icons' ? ICONS_NAV : NAV;
+  const nav = platform === 'email' ? EMAIL_NAV : NAV;
   const content = useRef<HTMLDivElement>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   // Closing on navigation lives on each NavLink's own onClick below, not in
@@ -80,7 +80,7 @@ export function Layout() {
                 <NavLink
                   key={link.to}
                   to={link.to}
-                  end={link.to === '/' || link.to === '/email' || link.to === '/icons'}
+                  end={link.to === '/' || link.to === '/email'}
                   className={({ isActive }) => `docs-nav-link${isActive ? ' active' : ''}`}
                   onClick={closeMobileNav}
                 >
