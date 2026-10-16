@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SegmentedToggle } from './components/SegmentedToggle';
-import { counterpartPath, isEmailPath } from './nav';
+import { counterpartPath, isEmailPath, isIconsPath } from './nav';
 
 /*
  * The docs' global Web / E-Mail switch. The two are separate sections — the
@@ -8,19 +8,25 @@ import { counterpartPath, isEmailPath } from './nav';
  * simply the URL: a shared /email/... link opens the email docs, and there is
  * no stored state to disagree with it. Switching jumps to the counterpart
  * page where one exists (/button ↔ /email/button), otherwise to the other
- * side's overview.
+ * side's overview. Icons is a third side with nothing to map onto: it always
+ * opens the gallery, and leaving it opens the chosen side's overview.
  */
 
-export type Platform = 'web' | 'email';
+export type Platform = 'web' | 'email' | 'icons';
+
+function platformOf(pathname: string): Platform {
+  if (isIconsPath(pathname)) return 'icons';
+  return isEmailPath(pathname) ? 'email' : 'web';
+}
 
 export function usePlatform(): Platform {
-  return isEmailPath(useLocation().pathname) ? 'email' : 'web';
+  return platformOf(useLocation().pathname);
 }
 
 export function PlatformToggle() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const platform: Platform = isEmailPath(pathname) ? 'email' : 'web';
+  const platform = platformOf(pathname);
   return (
     <SegmentedToggle<Platform>
       aria-label="Platform"
@@ -28,8 +34,13 @@ export function PlatformToggle() {
       options={[
         { value: 'web', label: 'Web' },
         { value: 'email', label: 'E-Mail' },
+        { value: 'icons', label: 'Icons' },
       ]}
-      onChange={() => navigate(counterpartPath(pathname))}
+      onChange={(next) => {
+        if (next === 'icons') navigate('/icons');
+        else if (platform === 'icons') navigate(next === 'email' ? '/email' : '/');
+        else navigate(counterpartPath(pathname));
+      }}
     />
   );
 }

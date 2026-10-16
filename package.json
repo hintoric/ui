@@ -4,8 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@10.24.0",
   "scripts": {
-    "build": "pnpm --filter @hintoric/ui --filter @hintoric/email build",
-    "test": "pnpm --filter @hintoric/ui --filter @hintoric/email test",
+    "build": "pnpm --filter @hintoric/ui --filter @hintoric/email --filter @hintoric/icons build",
+    "test": "pnpm --filter @hintoric/ui --filter @hintoric/email --filter @hintoric/icons test",
     "typecheck": "pnpm build && pnpm -r typecheck",
     "lint": "eslint .",
     "dev:playground": "pnpm --filter playground dev",

@@ -697,3 +697,84 @@ h1 .docs-badge-deprecated {
     transition: none;
   }
 }
+
+/* Icon gallery (/icons) */
+.docs-icons-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.docs-icons-search {
+  flex: 1 1 240px;
+}
+
+.docs-icons-empty {
+  color: var(--color-ink-tertiary);
+}
+
+.docs-content ul.docs-icons-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.docs-content li.docs-icon-tile {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 12px 12px;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+  min-width: 0;
+}
+
+.docs-icon-preview {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 128px;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+/* A pinned variant is previewed on the surface it was made for, whatever the docs' own scheme. */
+.docs-icon-tile[data-mode='light'] .docs-icon-preview {
+  background-color: var(--color-neutral-50);
+}
+
+.docs-icon-tile[data-mode='dark'] .docs-icon-preview {
+  background-color: var(--color-neutral-900);
+}
+
+.docs-icon-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docs-icon-slug {
+  font-size: 0.75rem;
+  color: var(--color-ink-tertiary);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docs-icon-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}

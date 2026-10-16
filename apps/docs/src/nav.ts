@@ -161,6 +161,18 @@ export const EMAIL_NAV: NavGroup[] = [
   },
 ];
 
+/** The icon gallery under `/icons` — `@hintoric/icons`, the third side of the switch. */
+export const ICONS_NAV: NavGroup[] = [
+  {
+    title: 'Icons',
+    links: [{ to: '/icons', label: 'All icons' }],
+  },
+];
+
+export function isIconsPath(pathname: string): boolean {
+  return pathname === '/icons' || pathname.startsWith('/icons/');
+}
+
 export function isEmailPath(pathname: string): boolean {
   return pathname === '/email' || pathname.startsWith('/email/');
 }
