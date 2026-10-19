@@ -115,6 +115,39 @@ export { MapImage } from './components/MapImage';
 export type { MapImageProps } from './components/MapImage';
 export { AnimatedMapImage } from './components/AnimatedMapImage';
 export type { AnimatedMapImageProps } from './components/AnimatedMapImage';
+export {
+  MailCard,
+  MailCardAction,
+  MailCardFooter,
+  MailCardHeader,
+  MailCardIcon,
+  MailCardLogo,
+  MailCardRow,
+  MailCardRows,
+  MailCardStatus,
+  jsonLdToSpec,
+  parseCardSpec,
+} from './components/MailCard';
+export type {
+  CardSpec,
+  MailCardActionData,
+  MailCardActionProps,
+  MailCardAlternative,
+  MailCardBlock,
+  MailCardFooterProps,
+  MailCardHeaderProps,
+  MailCardIconName,
+  MailCardIconProps,
+  MailCardLogoProps,
+  MailCardMessages,
+  MailCardProps,
+  MailCardRowData,
+  MailCardRowProps,
+  MailCardRowsProps,
+  MailCardStatusProps,
+  MailCardStatusTone,
+  MailCardValue,
+} from './components/MailCard';
 
 export { Link } from './components/Link';
 export type { LinkProps } from './components/Link';

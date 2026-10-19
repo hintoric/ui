@@ -1,0 +1,93 @@
+import type * as React from 'react';
+import type { MailCardMessages } from './messages';
+import type {
+  CardSpec,
+  MailCardActionData,
+  MailCardAlternative,
+  MailCardIconName,
+  MailCardRowData,
+  MailCardStatusTone,
+} from './spec';
+
+export interface MailCardProps {
+  /**
+   * The card as blocks, as Core sends it once `parseCardSpec` has checked it. Trusted: rendered as
+   * given. Ignored when there are `children`.
+   */
+  spec?: CardSpec;
+  /**
+   * A schema.org object from the mail (JSON-LD), mapped with `jsonLdToSpec`. Ignored when there are
+   * `children` or a `spec`. A type that does not map, or one missing a required field, renders
+   * nothing.
+   */
+  jsonLd?: unknown;
+  /** The card composed from the block components, which takes precedence over `spec` and `jsonLd`. */
+  children?: React.ReactNode;
+  /** Whose layout the blocks follow. `outlook` comes later. @default 'google' */
+  provider?: 'google';
+  /** Whose look: colours, font, surface. @default 'joy' */
+  theme?: 'joy' | 'google';
+  /**
+   * Sets `data-color-scheme` on the card, which is all the `joy` theme needs to turn dark — no
+   * `ColorSchemeProvider` required, so it works inside a shadow root. Without it the card follows
+   * the page.
+   */
+  colorScheme?: 'light' | 'dark';
+  /** Every string the card shows that is not in its input — the package ships no translations. */
+  messages: MailCardMessages;
+  /** Formats dates and amounts. Falls back to the `DateTimeProvider` / `LocaleProvider` locale. */
+  locale?: string;
+  /** The Hintoric mark in front of the title. Without it the text keeps its edge. @default true */
+  showLogo?: boolean;
+  /**
+   * Called by an `offer` action: without an argument from the button itself, with the chosen
+   * variant from the menu of a split button.
+   */
+  onOffer?(alternative?: MailCardAlternative): void;
+  /** Called with the reader's answer to the `feedback` question. */
+  onFeedback?(answer: 'yes' | 'no'): void;
+  className?: string;
+}
+
+export interface MailCardHeaderProps {
+  title: string;
+  subtitle?: string;
+  className?: string;
+}
+
+export interface MailCardRowsProps {
+  /** `MailCardRow`s. They fill two columns, left to right. */
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export interface MailCardRowProps extends MailCardRowData {
+  className?: string;
+}
+
+export interface MailCardFooterProps {
+  /**
+   * Actions or a status, aligned right. The feedback block goes first and keeps to the left.
+   */
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export interface MailCardActionProps {
+  /** Primary: a pill button. Otherwise a text link. A `url` opens in a new tab. */
+  action: MailCardActionData;
+  className?: string;
+}
+
+export interface MailCardStatusProps {
+  /** What happened, in the passive ("Bestätigung wurde ausgestellt und versendet."). */
+  label: string;
+  tone: MailCardStatusTone;
+  className?: string;
+}
+
+export interface MailCardIconProps extends Omit<React.SVGProps<SVGSVGElement>, 'name'> {
+  name: MailCardIconName;
+}
+
+export type MailCardLogoProps = React.SVGProps<SVGSVGElement>;
