@@ -25,16 +25,25 @@ export interface MailCardProps {
   children?: React.ReactNode;
   /** Whose layout the blocks follow. `outlook` comes later. @default 'google' */
   provider?: 'google';
-  /** Whose look: colours, font, surface. @default 'joy' */
+  /**
+   * Whose look: colours, font, surface. `joy` is the library's own tokens; `google` is Gmail's
+   * measured values and font (its dark values are provisional until measured on a dark Gmail).
+   * @default 'joy'
+   */
   theme?: 'joy' | 'google';
   /**
-   * Sets `data-color-scheme` on the card. `'dark'` is all the `joy` theme needs to turn dark — no
-   * `ColorSchemeProvider` required, so it works inside a shadow root. Without it the card follows
-   * the page.
+   * The colour scheme to paint in. `'dark'` is all either theme needs to turn dark: it sets
+   * `data-color-scheme` on the card and picks the dark values of the theme, with no
+   * `ColorSchemeProvider` required, so it works inside a shadow root.
    *
-   * `'light'` cannot turn the card light inside a dark document: the library's light tokens live
+   * Without it the card follows the `ColorSchemeProvider` above it. With neither, `joy` follows the
+   * page (its tokens follow `data-color-scheme`), and `google`, whose colours are concrete values
+   * and not tokens, is light.
+   *
+   * `'light'` cannot turn a `joy` card light inside a dark document: the library's light tokens live
    * only on `:root`, so a light island in a dark page stays dark. It is light wherever the page
-   * around it is not dark — a shadow root in an unmarked host such as Gmail included.
+   * around it is not dark — a shadow root in an unmarked host such as Gmail included. A `google`
+   * card has no such limit: its values are concrete, and `'light'` makes it light on any page.
    */
   colorScheme?: 'light' | 'dark';
   /** Every string the card shows that is not in its input — the package ships no translations. */
@@ -80,6 +89,33 @@ export interface MailCardFooterProps {
 export interface MailCardActionProps {
   /** Primary: a pill button. Otherwise a text link. A `url` opens in a new tab. */
   action: MailCardActionData;
+  className?: string;
+}
+
+/** What the feedback block shows besides the question; the package ships no translations. */
+export interface MailCardFeedbackLabels {
+  /** `aria-label` of the thumbs-up button. */
+  yes: string;
+  /** `aria-label` of the thumbs-down button. */
+  no: string;
+  /** Shown in place of the question and the buttons once an answer is given. */
+  thanks: string;
+}
+
+export interface MailCardFeedbackProps {
+  /** The question, in the reader's language ("Ist das richtig?"). */
+  question: string;
+  /**
+   * Called once, with the reader's answer. Inside a `MailCard` it defaults to the card's
+   * `onFeedback`; without either the answer is only acknowledged.
+   */
+  onAnswer?(answer: 'yes' | 'no'): void;
+  /**
+   * Inside a `MailCard` it defaults to the card's `messages` (`feedbackYes`, `feedbackNo`,
+   * `feedbackThanks`). Without either there is nothing to name the buttons with, and nothing is
+   * rendered.
+   */
+  labels?: MailCardFeedbackLabels;
   className?: string;
 }
 

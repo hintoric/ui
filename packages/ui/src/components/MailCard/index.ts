@@ -1,6 +1,7 @@
 export { MailCard } from './MailCard';
 export {
   MailCardAction,
+  MailCardFeedback,
   MailCardFooter,
   MailCardHeader,
   MailCardRow,
@@ -12,6 +13,8 @@ export { parseCardSpec } from './spec';
 export { jsonLdToSpec } from './schemaOrg';
 export type {
   MailCardActionProps,
+  MailCardFeedbackLabels,
+  MailCardFeedbackProps,
   MailCardFooterProps,
   MailCardHeaderProps,
   MailCardIconProps,

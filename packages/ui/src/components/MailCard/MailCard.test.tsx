@@ -1,14 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ColorSchemeProvider } from '../../theme/ColorSchemeProvider';
 import { DateTimeProvider } from '../../theme/DateTimeProvider';
 import { WOHNUNGSGEBER_EXAMPLE } from './examples';
 import { MAIL_CARD_ICON_NAMES } from './spec';
 import type { CardSpec } from './spec';
 import type { MailCardMessages } from './messages';
+import { mailCardThemeStyle } from './themes';
 import {
   MailCard,
   MailCardAction,
+  MailCardFeedback,
   MailCardFooter,
   MailCardHeader,
   MailCardIcon,
@@ -534,5 +537,375 @@ describe('MailCardIcon', () => {
     const cell = label.closest('[data-mail-card-row]') as HTMLElement;
     expect(within(cell).getByText('Tobias Maurer')).toBeInTheDocument();
     expect(cell.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+  });
+});
+
+describe('MailCard feedback', () => {
+  it('answers feedback once and then thanks', async () => {
+    const onFeedback = vi.fn();
+    render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} onFeedback={onFeedback} />,
+    );
+    expect(screen.getByText('Ist das richtig?')).toBeInTheDocument();
+    expect(screen.queryByText('Danke für deine Rückmeldung')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ja, das stimmt' }));
+
+    expect(onFeedback).toHaveBeenCalledTimes(1);
+    expect(onFeedback).toHaveBeenCalledWith('yes');
+    expect(screen.queryByRole('button', { name: 'Ja, das stimmt' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Nein, das stimmt nicht' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText('Danke für deine Rückmeldung')).toBeInTheDocument();
+  });
+
+  it('reports a no', async () => {
+    const onFeedback = vi.fn();
+    render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} onFeedback={onFeedback} />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Nein, das stimmt nicht' }));
+    expect(onFeedback).toHaveBeenCalledTimes(1);
+    expect(onFeedback).toHaveBeenCalledWith('no');
+    expect(screen.getByText('Danke für deine Rückmeldung')).toBeInTheDocument();
+  });
+
+  it('names the two buttons from messages and hides their icons', () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    for (const name of ['Ja, das stimmt', 'Nein, das stimmt nicht']) {
+      const button = screen.getByRole('button', { name });
+      expect(button).toHaveAttribute('aria-label', name);
+      expect(button).toHaveAttribute('type', 'button');
+      expect(button.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    }
+  });
+
+  it('groups the buttons under the question', () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    expect(screen.getByRole('group', { name: 'Ist das richtig?' })).toContainElement(
+      screen.getByRole('button', { name: 'Ja, das stimmt' }),
+    );
+  });
+
+  it('is a mock without onFeedback: it still renders and thanks', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Ja, das stimmt' }));
+    expect(screen.getByText('Danke für deine Rückmeldung')).toBeInTheDocument();
+  });
+
+  it('puts the thanks in a live region that is there before the answer', async () => {
+    const { container } = render(
+      <MailCard
+        spec={specWith({ type: 'feedback', question: 'Passt?' })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    const live = container.querySelector('[aria-live="polite"]');
+    expect(container.querySelectorAll('[aria-live]')).toHaveLength(1);
+    expect(live).toBeInTheDocument();
+    expect(live).toBeEmptyDOMElement();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ja, das stimmt' }));
+    expect(live).toHaveTextContent('Danke für deine Rückmeldung');
+  });
+
+  it('moves focus to the thanks when the pressed button was focused', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    const yes = screen.getByRole('button', { name: 'Ja, das stimmt' });
+    yes.focus();
+    expect(yes).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+
+    const thanks = screen.getByText('Danke für deine Rückmeldung');
+    expect(thanks).toHaveFocus();
+    expect(thanks).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('leaves focus alone when the answer comes from a click that did not focus a button', () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    const pill = screen.getByRole('button', { name: 'Bestätigung ausstellen' });
+    pill.focus();
+
+    // A synthetic click does not move focus, as in Safari, so the focus is elsewhere in the card.
+    fireEvent.click(screen.getByRole('button', { name: 'Ja, das stimmt' }));
+
+    expect(screen.getByText('Danke für deine Rückmeldung')).not.toHaveFocus();
+    expect(pill).toHaveFocus();
+  });
+
+  it('shows the question in the footer, left of the actions, even without any action', () => {
+    const { container } = render(
+      <MailCard
+        spec={specWith(
+          { type: 'feedback', question: 'Passt?' },
+          {
+            type: 'actions',
+            actions: [{ label: 'Starten', offer: true, primary: true }],
+          },
+        )}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    const question = screen.getByText('Passt?');
+    const action = screen.getByRole('button', { name: 'Starten' });
+    expect(
+      question.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(container.querySelector('hr')).not.toBeNull();
+
+    const alone = render(
+      <MailCard
+        spec={specWith({ type: 'feedback', question: 'Nur Frage?' })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    expect(alone.container.querySelector('hr')).not.toBeNull();
+    expect(screen.getByText('Nur Frage?')).toBeInTheDocument();
+  });
+
+  it('works composed in JSX, with its own labels and callback', async () => {
+    const onAnswer = vi.fn();
+    render(
+      <MailCardFooter>
+        <MailCardFeedback
+          question="Passt das?"
+          onAnswer={onAnswer}
+          labels={{ yes: 'Yes', no: 'No', thanks: 'Thanks' }}
+        />
+      </MailCardFooter>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'No' }));
+    expect(onAnswer).toHaveBeenCalledWith('no');
+    expect(screen.getByText('Thanks')).toBeInTheDocument();
+  });
+
+  it('prefers its own callback and labels over the card’s', async () => {
+    const onFeedback = vi.fn();
+    const onAnswer = vi.fn();
+    render(
+      <MailCard messages={TEST_MESSAGES} onFeedback={onFeedback}>
+        <MailCardHeader title="Titel" />
+        <MailCardFooter>
+          <MailCardFeedback
+            question="Passt?"
+            onAnswer={onAnswer}
+            labels={{ yes: 'Ja', no: 'Nö', thanks: 'Danke' }}
+          />
+        </MailCardFooter>
+      </MailCard>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Ja' }));
+    expect(onAnswer).toHaveBeenCalledWith('yes');
+    expect(onFeedback).not.toHaveBeenCalled();
+    expect(screen.getByText('Danke')).toBeInTheDocument();
+  });
+
+  it('takes callback and labels from the card when composed inside one', async () => {
+    const onFeedback = vi.fn();
+    render(
+      <MailCard messages={TEST_MESSAGES} onFeedback={onFeedback}>
+        <MailCardHeader title="Titel" />
+        <MailCardFooter>
+          <MailCardFeedback question="Passt?" />
+        </MailCardFooter>
+      </MailCard>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Ja, das stimmt' }));
+    expect(onFeedback).toHaveBeenCalledWith('yes');
+  });
+
+  it('renders nothing outside a card when it has no labels to name its buttons', () => {
+    const { container } = render(<MailCardFeedback question="Passt?" />);
+    expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('MailCard announcements', () => {
+  const actions = specWith({
+    type: 'actions',
+    actions: [{ label: 'Starten', offer: true, primary: true }],
+  });
+  const status = specWith({
+    type: 'status',
+    label: 'Bestätigung wurde ausgestellt.',
+    tone: 'success',
+  });
+
+  it('keeps one status element mounted, empty, before there is a status', () => {
+    const { container, rerender } = render(<MailCard spec={actions} messages={TEST_MESSAGES} />);
+    const live = screen.getByRole('status');
+    expect(container.querySelectorAll('[role="status"]')).toHaveLength(1);
+    expect(live).toBeEmptyDOMElement();
+
+    rerender(<MailCard spec={status} messages={TEST_MESSAGES} />);
+    expect(screen.getByRole('status')).toBe(live);
+    expect(live).toHaveTextContent('Bestätigung wurde ausgestellt.');
+    expect(live).toHaveAttribute('data-tone', 'success');
+
+    rerender(<MailCard spec={actions} messages={TEST_MESSAGES} />);
+    expect(screen.getByRole('status')).toBe(live);
+    expect(live).toBeEmptyDOMElement();
+    expect(screen.getByRole('button', { name: 'Starten' })).toBeInTheDocument();
+  });
+
+  it('takes the empty status out of the flow, so it costs no gap in the footer', () => {
+    render(<MailCard spec={actions} messages={TEST_MESSAGES} />);
+    expect(screen.getByRole('status')).toHaveClass('empty:absolute');
+  });
+
+  it('keeps the actions out of any live region', () => {
+    render(<MailCard spec={actions} messages={TEST_MESSAGES} />);
+    expect(
+      screen.getByRole('button', { name: 'Starten' }).closest('[aria-live], [role="status"]'),
+    ).toBeNull();
+  });
+
+  it('keeps the split menu out of any live region', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Weitere Aktionen' }));
+    const menu = screen.getByRole('menu');
+    expect(menu.closest('[aria-live], [role="status"]')).toBeNull();
+  });
+
+  it('keeps the feedback buttons out of any live region', () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />);
+    expect(
+      screen
+        .getByRole('button', { name: 'Ja, das stimmt' })
+        .closest('[aria-live], [role="status"]'),
+    ).toBeNull();
+  });
+});
+
+describe('MailCard status tones', () => {
+  it.each([
+    ['neutral', 'label'],
+    ['success', 'success'],
+    ['warning', 'warning'],
+    ['danger', 'danger'],
+  ] as const)('paints a %s status with --mail-card-%s', (tone, variable) => {
+    render(<MailCardStatus label="Text" tone={tone} />);
+    expect(screen.getByRole('status')).toHaveClass(`text-[var(--mail-card-${variable})]`);
+  });
+
+  it('treats a tone it does not know like neutral', () => {
+    render(<MailCardStatus label="Text" tone={'toString' as never} />);
+    expect(screen.getByRole('status')).toHaveClass('text-[var(--mail-card-label)]');
+  });
+});
+
+/** The `--mail-card-*` properties of a card's inline style. */
+const variablesOf = (element: HTMLElement) => {
+  const found: Record<string, string> = {};
+  for (let i = 0; i < element.style.length; i++) {
+    const name = element.style[i];
+    if (name.startsWith('--mail-card-')) found[name] = element.style.getPropertyValue(name);
+  }
+  return found;
+};
+
+const COMBINATIONS = (['joy', 'google'] as const).flatMap((theme) =>
+  (['light', 'dark'] as const).map((scheme) => [theme, scheme] as const),
+);
+
+describe('MailCard themes', () => {
+  it('google theme sets the measured light variables', () => {
+    const { container } = render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} theme="google" />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.getAttribute('style')).toContain('--mail-card-accent: #1a73e8');
+    expect(variablesOf(root)).toMatchObject({
+      '--mail-card-surface': '#fff',
+      '--mail-card-shadow': '0 1px 2px rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15)',
+      '--mail-card-title': '#222',
+      '--mail-card-label': '#5f6368',
+      '--mail-card-text': '#202124',
+      '--mail-card-link': '#1a73e8',
+      '--mail-card-on-accent': '#fff',
+      '--mail-card-rule': '#c4c7c5',
+      '--mail-card-font': '"Google Sans", Roboto, Arial, sans-serif',
+    });
+  });
+
+  it.each(COMBINATIONS)('puts exactly the %s / %s variables on the root', (theme, scheme) => {
+    const { container } = render(
+      <MailCard
+        spec={WOHNUNGSGEBER_EXAMPLE}
+        messages={TEST_MESSAGES}
+        theme={theme}
+        colorScheme={scheme}
+      />,
+    );
+    expect(variablesOf(container.firstElementChild as HTMLElement)).toEqual(
+      mailCardThemeStyle(theme, scheme),
+    );
+  });
+
+  it('turns the google card dark with colorScheme alone, without a ColorSchemeProvider', () => {
+    const { container } = render(
+      <MailCard
+        spec={WOHNUNGSGEBER_EXAMPLE}
+        messages={TEST_MESSAGES}
+        theme="google"
+        colorScheme="dark"
+      />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute('data-color-scheme', 'dark');
+    expect(variablesOf(root)).toMatchObject({
+      '--mail-card-surface': '#282a2c',
+      '--mail-card-title': '#e3e3e3',
+      '--mail-card-text': '#e3e3e3',
+      '--mail-card-label': '#c4c7c5',
+      '--mail-card-accent': '#a8c7fa',
+      '--mail-card-link': '#a8c7fa',
+      '--mail-card-on-accent': '#062e6f',
+    });
+  });
+
+  it('turns the joy card dark with colorScheme alone, through the library’s own tokens', () => {
+    const { container } = render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} colorScheme="dark" />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveAttribute('data-color-scheme', 'dark');
+    expect(variablesOf(root)['--mail-card-surface']).toBe('var(--color-surface)');
+  });
+
+  it('follows the ColorSchemeProvider when there is no colorScheme prop', () => {
+    const { container } = render(
+      <ColorSchemeProvider defaultMode="dark">
+        <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} theme="google" />
+      </ColorSchemeProvider>,
+    );
+    const root = container.querySelector('[style*="--mail-card-surface"]') as HTMLElement;
+    expect(variablesOf(root)['--mail-card-surface']).toBe('#282a2c');
+  });
+
+  it('lets the colorScheme prop win over the ColorSchemeProvider', () => {
+    const { container } = render(
+      <ColorSchemeProvider defaultMode="dark">
+        <MailCard
+          spec={WOHNUNGSGEBER_EXAMPLE}
+          messages={TEST_MESSAGES}
+          theme="google"
+          colorScheme="light"
+        />
+      </ColorSchemeProvider>,
+    );
+    const root = container.querySelector('[style*="--mail-card-surface"]') as HTMLElement;
+    expect(variablesOf(root)['--mail-card-surface']).toBe('#fff');
+  });
+
+  it('is light for google with neither a prop nor a provider', () => {
+    const { container } = render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} theme="google" />,
+    );
+    expect(variablesOf(container.firstElementChild as HTMLElement)['--mail-card-surface']).toBe(
+      '#fff',
+    );
   });
 });

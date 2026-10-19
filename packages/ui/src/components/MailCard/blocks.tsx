@@ -4,12 +4,13 @@ import { cx } from '../../utils/cx';
 import { useDateTimeDefaults } from '../../theme/DateTimeProvider';
 import { MailCardContext } from './MailCardContext';
 import { FOCUS_RING, PILL_SURFACE_CLASSES } from './classes';
-import { MailCardIcon, MailCardLogo } from './icons';
+import { MailCardIcon, MailCardLogo, ThumbDownOutlinedIcon, ThumbUpOutlinedIcon } from './icons';
 import { SplitAction } from './SplitAction';
 import { isHttpsUrl } from './spec';
-import type { MailCardActionData } from './spec';
+import type { MailCardActionData, MailCardStatusTone } from './spec';
 import type {
   MailCardActionProps,
+  MailCardFeedbackProps,
   MailCardFooterProps,
   MailCardHeaderProps,
   MailCardRowProps,
@@ -205,9 +206,25 @@ export function MailCardAction({ action, className }: MailCardActionProps) {
   );
 }
 
+// A tone is a colour from the theme. `neutral` is the label colour, the quiet grey of everything
+// secondary; the other three are the theme's tone colours, readable on the card's surface in both
+// schemes. The classes are written out whole so Tailwind finds them.
+const TONE_CLASSES: Record<MailCardStatusTone, string> = {
+  neutral: 'text-[var(--mail-card-label)]',
+  success: 'text-[var(--mail-card-success)]',
+  warning: 'text-[var(--mail-card-warning)]',
+  danger: 'text-[var(--mail-card-danger)]',
+};
+
 /**
- * What happened, in place of the actions. A live region, so a status that replaces the buttons
- * after a click is read out.
+ * What happened, in place of the actions, coloured by `tone`. A `tone` it does not know (a typed
+ * `spec` is not parsed) reads as `neutral`.
+ *
+ * It is a live region (`role="status"`), and a live region only announces text that arrives after
+ * it is in the page. So a footer that swaps its actions for a status should keep one
+ * `MailCardStatus` mounted throughout, with an empty `label` until there is something to say —
+ * `MailCard` does. Empty, it is taken out of the flow (`empty:absolute`) and costs no gap. Keep the
+ * live region apart from the actions: controls inside it get their own text announced as well.
  */
 export function MailCardStatus({ label, tone, className }: MailCardStatusProps) {
   return (
@@ -215,11 +232,114 @@ export function MailCardStatus({ label, tone, className }: MailCardStatusProps) 
       role="status"
       data-tone={tone}
       className={cx(
-        'm-0 min-w-0 text-right text-[14px]/[20px] font-normal text-[var(--mail-card-label)]',
+        'm-0 min-w-0 text-right text-[14px]/[20px] font-normal empty:absolute',
+        Object.hasOwn(TONE_CLASSES, tone) ? TONE_CLASSES[tone] : TONE_CLASSES.neutral,
         className,
       )}
     >
       {label}
     </p>
+  );
+}
+
+// An icon button as Gmail's feedback has them: 36 px round, the icon 20 px in the value colour. The
+// wash under the pointer is the menu's highlight (`--mail-card-menu-hover`: the label colour at a
+// low alpha), the one translucent tint the theme has.
+const FEEDBACK_BUTTON_CLASSES = cx(
+  'inline-flex h-[36px] w-[36px] shrink-0 cursor-pointer items-center justify-center',
+  'rounded-[9999px] border-0 bg-transparent p-0 text-[var(--mail-card-text)] transition-colors',
+  'hover:bg-[var(--mail-card-menu-hover)]',
+  FOCUS_RING,
+);
+
+/**
+ * The feedback question with a thumbs-up and a thumbs-down, for the footer's left slot: its text on
+ * the text edge, 30 px in like every other text of the card. The first answer calls `onAnswer`
+ * once and replaces the question and the buttons with the thanks text; the state is the block's
+ * own, so a card stays answered however its host re-renders it.
+ *
+ * Inside a `MailCard`, `onAnswer` and `labels` default to the card's `onFeedback` and `messages`.
+ * The block renders even without a callback, which makes the thumbs a mock; with no `labels` to
+ * name its buttons from, it renders nothing.
+ *
+ * The thanks text sits in a `aria-live="polite"` paragraph that is in the page, empty, from the
+ * start, so a screen reader announces it. When the button that was pressed had the focus, the focus
+ * moves to that paragraph (`tabIndex={-1}`, out of the tab order) as the button goes, instead of
+ * dropping onto the page. Pressed without focus (Safari does not focus a clicked button), it
+ * stays where it was.
+ */
+export function MailCardFeedback({
+  question,
+  onAnswer,
+  labels: labelsProp,
+  className,
+}: MailCardFeedbackProps) {
+  const card = React.useContext(MailCardContext);
+  const [answered, setAnswered] = React.useState(false);
+  const questionId = React.useId();
+  const thanksRef = React.useRef<HTMLParagraphElement>(null);
+  // Set by the click that answers, read by the effect once the buttons are gone.
+  const restoreFocus = React.useRef(false);
+
+  React.useEffect(() => {
+    if (answered && restoreFocus.current) thanksRef.current?.focus();
+  }, [answered]);
+
+  const labels =
+    labelsProp ??
+    (card.messages && {
+      yes: card.messages.feedbackYes,
+      no: card.messages.feedbackNo,
+      thanks: card.messages.feedbackThanks,
+    });
+  if (!labels) return null;
+
+  const answer = (value: 'yes' | 'no', button: HTMLButtonElement) => {
+    if (answered) return;
+    // `:focus` rather than `document.activeElement`, which in a shadow root is the host.
+    restoreFocus.current = button.matches(':focus');
+    setAnswered(true);
+    (onAnswer ?? card.onFeedback)?.(value);
+  };
+
+  return (
+    <div className={cx('mr-auto flex min-h-[36px] min-w-0 items-center pl-[30px]', className)}>
+      {!answered && (
+        <div className="flex min-w-0 items-center gap-x-[8px]">
+          <span
+            id={questionId}
+            className="min-w-0 text-[14px]/[20px] font-medium text-[var(--mail-card-label)]"
+          >
+            {question}
+          </span>
+          <div role="group" aria-labelledby={questionId} className="flex shrink-0 items-center">
+            <button
+              type="button"
+              aria-label={labels.yes}
+              className={FEEDBACK_BUTTON_CLASSES}
+              onClick={(event) => answer('yes', event.currentTarget)}
+            >
+              <ThumbUpOutlinedIcon />
+            </button>
+            <button
+              type="button"
+              aria-label={labels.no}
+              className={FEEDBACK_BUTTON_CLASSES}
+              onClick={(event) => answer('no', event.currentTarget)}
+            >
+              <ThumbDownOutlinedIcon />
+            </button>
+          </div>
+        </div>
+      )}
+      <p
+        ref={thanksRef}
+        tabIndex={-1}
+        aria-live="polite"
+        className="m-0 min-w-0 text-[14px]/[20px] font-medium text-[var(--mail-card-label)] outline-none"
+      >
+        {answered ? labels.thanks : null}
+      </p>
+    </div>
   );
 }

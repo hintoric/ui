@@ -118,6 +118,7 @@ export type { AnimatedMapImageProps } from './components/AnimatedMapImage';
 export {
   MailCard,
   MailCardAction,
+  MailCardFeedback,
   MailCardFooter,
   MailCardHeader,
   MailCardIcon,
@@ -134,6 +135,8 @@ export type {
   MailCardActionProps,
   MailCardAlternative,
   MailCardBlock,
+  MailCardFeedbackLabels,
+  MailCardFeedbackProps,
   MailCardFooterProps,
   MailCardHeaderProps,
   MailCardIconName,

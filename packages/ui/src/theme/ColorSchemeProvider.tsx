@@ -132,3 +132,12 @@ export function useColorScheme(): ColorSchemeContextValue {
   }
   return context;
 }
+
+/**
+ * Like `useColorScheme`, but `null` where there is no provider instead of an error. For components
+ * that work with or without one — `MailCard` renders inside a shadow root, which has none. Internal:
+ * not exported from the package.
+ */
+export function useOptionalColorScheme(): ColorSchemeContextValue | null {
+  return React.useContext(ColorSchemeContext);
+}
