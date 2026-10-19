@@ -8,7 +8,7 @@ import type * as React from 'react';
  * Every theme must set every property in every scheme: a `var()` whose property is unset is
  * invalid at computed-value time, which drops the whole declaration — the text would silently fall
  * back to the inherited colour. The `Record` type below makes a forgotten one a compile error, and
- * `MailCard.test.tsx` reads the variables out of the sources to check the values at run time.
+ * `themes.test.ts` reads the variables out of the sources to check the values at run time.
  */
 type MailCardVariable =
   // The card: fill, 1 px border, elevation, and the font all text inherits.
@@ -132,6 +132,18 @@ const GOOGLE_LIGHT: MailCardThemeValues = {
 // TODO(mail-card): PROVISIONAL — Gmail was in its light theme on 2026-10-19, so these are Gmail's
 // GM3 dark tokens read from its stylesheet over CDP, mapped by role. Re-measure the computed styles
 // of a Gmail card with Gmail's dark theme on.
+//
+// Not measured in either scheme, even in light: hover and active of the pill, the focus ring, and
+// the menu's surface, shadow and hover. They are derived from a measured value (the accent mixed
+// with black, the card's own surface and shadow, the label colour at 10 %) or mapped to a GM3
+// role, because a Gmail card has no split menu to measure. Re-check the dark menu in particular:
+// #1e1f20 (surface-container) on the card's #282a2c (surface-container-high) is one step apart
+// and may not read as a separate surface; it may need a lighter fill or a visible border.
+//
+// This comment is the only record in the repo of where these values came from. Light: Gmail web,
+// computed styles and resolved tokens read over CDP on 2026-10-19, in Gmail's light theme. Dark:
+// GM3 dark system tokens from Gmail's stylesheet, mapped by role. The measurements themselves
+// (the mail-cards design spec, "Provider-Layout google") live outside this repository.
 const GOOGLE_DARK_ACCENT = '#a8c7fa'; // GM3 primary (dark)
 const GOOGLE_DARK_LABEL = '#c4c7c5'; // GM3 on-surface-variant (dark)
 const GOOGLE_DARK_SHADOW = '0 1px 2px rgba(0,0,0,.3), 0 2px 6px 2px rgba(0,0,0,.15)'; // same geometry, GM3 shadow #000

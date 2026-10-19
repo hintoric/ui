@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   Button,
   MailCard,
@@ -205,18 +206,273 @@ const PARCEL = {
   trackingUrl: 'https://www.dhl.example/sendungsverfolgung?id=00340434161234567890',
 };
 
+/** One property the mapping reads, and what it becomes in the card. */
+interface FieldRow {
+  /** The properties it reads, as paths into the markup; `price` and its currency share a row. */
+  fields: string[];
+  required?: boolean;
+  /** What it becomes: a row (named by its key in `messages.schemaOrg`), the title, or the link. */
+  shows: ReactNode;
+  /** What a missing optional field costs, when it is not a row. */
+  leaves?: string;
+}
+
+// Read off `schemaOrg.ts`: the required fields are the ones its mapping returns `null` without.
+const OFFER_FIELDS: FieldRow[] = [
+  {
+    fields: ['name'],
+    required: true,
+    shows: (
+      <>
+        The title: <code>offerTitle({'{ name, seller }'})</code>
+      </>
+    ),
+  },
+  {
+    fields: ['seller.name'],
+    required: true,
+    shows: (
+      <>
+        The title, and the row <code>labels.seller</code>
+      </>
+    ),
+  },
+  {
+    fields: ['price', 'priceCurrency'],
+    required: true,
+    shows: (
+      <>
+        The row <code>labels.amount</code> (payments icon), written with <code>locale</code>
+      </>
+    ),
+  },
+  {
+    fields: ['priceValidUntil'],
+    shows: (
+      <>
+        The row <code>labels.validUntil</code> (schedule icon), a date
+      </>
+    ),
+  },
+  {
+    fields: ['identifier'],
+    shows: (
+      <>
+        The row <code>labels.number</code>
+      </>
+    ),
+  },
+  {
+    fields: ['url'],
+    leaves: 'Link left out',
+    shows: (
+      <>
+        A text link, <code>view</code>
+      </>
+    ),
+  },
+];
+
+const INVOICE_FIELDS: FieldRow[] = [
+  {
+    fields: ['provider.name'],
+    required: true,
+    shows: (
+      <>
+        The title: <code>invoiceTitle({'{ provider }'})</code>, and the row{' '}
+        <code>labels.provider</code>
+      </>
+    ),
+  },
+  {
+    fields: ['totalPaymentDue.price', 'totalPaymentDue.priceCurrency'],
+    required: true,
+    shows: (
+      <>
+        The row <code>labels.amount</code> (payments icon), written with <code>locale</code>
+      </>
+    ),
+  },
+  {
+    fields: ['paymentDue'],
+    shows: (
+      <>
+        The row <code>labels.dueDate</code> (schedule icon), a date
+      </>
+    ),
+  },
+  {
+    fields: ['accountId'],
+    shows: (
+      <>
+        The row <code>labels.account</code>
+      </>
+    ),
+  },
+  {
+    fields: ['url'],
+    leaves: 'Link left out',
+    shows: (
+      <>
+        A text link, <code>view</code>
+      </>
+    ),
+  },
+];
+
+const ORDER_FIELDS: FieldRow[] = [
+  {
+    fields: ['merchant.name'],
+    required: true,
+    shows: (
+      <>
+        The title: <code>orderTitle({'{ merchant, orderNumber }'})</code>, and the row{' '}
+        <code>labels.merchant</code>
+      </>
+    ),
+  },
+  {
+    fields: ['orderNumber'],
+    required: true,
+    shows: (
+      <>
+        The title, and the row <code>labels.orderNumber</code>
+      </>
+    ),
+  },
+  {
+    fields: ['price', 'priceCurrency'],
+    shows: (
+      <>
+        The row <code>labels.amount</code> (payments icon), written with <code>locale</code>. Both
+        are read from the order itself, not from its items
+      </>
+    ),
+  },
+  {
+    fields: ['acceptedOffer[0].itemOffered.name'],
+    shows: (
+      <>
+        The row <code>labels.item</code> (shopping cart icon): the first item. A single{' '}
+        <code>acceptedOffer</code> object, not a list, works too
+      </>
+    ),
+  },
+  {
+    fields: ['url'],
+    leaves: 'Link left out',
+    shows: (
+      <>
+        A text link, <code>view</code>
+      </>
+    ),
+  },
+];
+
+const PARCEL_FIELDS: FieldRow[] = [
+  {
+    fields: ['carrier.name'],
+    required: true,
+    shows: (
+      <>
+        The title: <code>parcelTitle({'{ carrier, item }'})</code>, and the row{' '}
+        <code>labels.carrier</code> (shipping icon)
+      </>
+    ),
+  },
+  {
+    fields: ['expectedArrivalUntil'],
+    required: true,
+    shows: (
+      <>
+        The row <code>labels.expectedArrival</code> (schedule icon), a date
+      </>
+    ),
+  },
+  {
+    fields: ['itemShipped.name'],
+    shows: (
+      <>
+        The row <code>labels.item</code> (shopping cart icon), and <code>item</code> in the title.
+        Without it <code>parcelTitle</code> gets no <code>item</code>
+      </>
+    ),
+  },
+  {
+    fields: ['trackingNumber'],
+    shows: (
+      <>
+        The row <code>labels.trackingNumber</code>
+      </>
+    ),
+  },
+  {
+    fields: ['trackingUrl'],
+    leaves: 'Link left out',
+    shows: (
+      <>
+        A text link, <code>track</code>
+      </>
+    ),
+  },
+];
+
+/** The fields of one schema.org type: what it must have, and what it may have. */
+function FieldTable({ type, rows }: { type: string; rows: FieldRow[] }) {
+  return (
+    <div className="docs-table-scroll" tabIndex={0}>
+      <table className="docs-props-table" aria-label={`Fields of ${type}`}>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>If it is missing</th>
+            <th>Becomes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.fields.join('+')}>
+              <td>
+                {row.fields.map((field, i) => (
+                  <span key={field}>
+                    {i > 0 && ' + '}
+                    <code>{field}</code>
+                  </span>
+                ))}
+              </td>
+              <td>{row.required ? <strong>No card</strong> : (row.leaves ?? 'Row left out')}</td>
+              <td>{row.shows}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 const json = (value: unknown) => JSON.stringify(value, null, 2);
 
 type SharedProps = Omit<MailCardProps, 'spec' | 'jsonLd' | 'children'>;
 
-/** A schema.org example: the card, and the markup it was made from. */
-function SchemaOrgExample({ jsonLd, shared }: { jsonLd: object; shared: SharedProps }) {
+/** A schema.org example: the card, the markup it was made from, and the fields it reads. */
+function SchemaOrgExample({
+  type,
+  jsonLd,
+  fields,
+  shared,
+}: {
+  type: string;
+  jsonLd: object;
+  fields: FieldRow[];
+  shared: SharedProps;
+}) {
   return (
     <>
       <Demo>
         <MailCard jsonLd={jsonLd} {...shared} />
       </Demo>
       <CodeBlock language="javascript">{json(jsonLd)}</CodeBlock>
+      <FieldTable type={type} rows={fields} />
     </>
   );
 }
@@ -280,10 +536,16 @@ export function MailCardPage() {
       <h2>From Core&rsquo;s block JSON</h2>
       <p>
         Core sends a card as a list of blocks: <code>header</code>, <code>rows</code>,{' '}
-        <code>actions</code>, <code>feedback</code> and <code>status</code>. The JSON is untrusted,
-        so it goes through <code>parseCardSpec</code> first, which drops what it cannot use: unknown
-        blocks, broken rows, and every link that is not <code>https:</code>. A spec without a header
-        renders nothing — never a broken card.
+        <code>actions</code>, <code>feedback</code> and <code>status</code>. The JSON is untrusted.{' '}
+        <code>parseCardSpec</code> drops what it cannot use: unknown blocks, broken rows, and every
+        link that is not <code>https:</code>. A spec without a header renders nothing — never a
+        broken card.
+      </p>
+      <p>
+        <code>MailCard</code> runs its <code>spec</code> through <code>parseCardSpec</code> again,
+        so JSON that a host forwards with a cast to <code>CardSpec</code> cannot crash the page.
+        Call it yourself to learn whether there is a card at all before you place a container for
+        it: it returns <code>null</code> when there is none.
       </p>
       <p>
         A primary <code>offer</code> with <code>alternatives</code> becomes a split button: the main
@@ -364,18 +626,50 @@ const spec = parseCardSpec(await response.json()); // null if there is no card
         with <code>locale</code>, and the link is a text link. Any other type, or one that lacks a
         required field, renders nothing.
       </p>
+      <p>
+        The tables below list what each type reads, as paths into the markup. A required field that
+        is missing, blank or unusable means no card: <code>MailCard</code> renders nothing and{' '}
+        <code>jsonLdToSpec</code> returns <code>null</code>. A missing optional field leaves out its
+        row. The row names are keys of <code>messages.schemaOrg.labels</code>. A few rules apply to
+        every type:
+      </p>
+      <ul>
+        <li>
+          <code>@type</code> must be exactly one of the four names. A list of types, or an{' '}
+          <code>@graph</code>, is not mapped yet, and <code>@context</code> is not read.
+        </li>
+        <li>Text is shown as the markup gives it. A blank string counts as missing.</li>
+        <li>
+          A price is a number or a decimal string such as <code>&quot;2380.00&quot;</code>, with a
+          currency code that <code>Intl</code> accepts, such as <code>EUR</code>. Otherwise the
+          amount counts as missing.
+        </li>
+        <li>
+          A date is ISO 8601, a date or a date-time, and has to exist on the calendar. Otherwise it
+          counts as missing.
+        </li>
+        <li>
+          A link is <code>https:</code> only. Any other URL leaves the link out.
+        </li>
+      </ul>
+
       <h3>Offer</h3>
-      <SchemaOrgExample jsonLd={OFFER} shared={shared} />
+      <SchemaOrgExample type="Offer" jsonLd={OFFER} fields={OFFER_FIELDS} shared={shared} />
 
       <h3>Invoice</h3>
-      <SchemaOrgExample jsonLd={INVOICE} shared={shared} />
+      <SchemaOrgExample type="Invoice" jsonLd={INVOICE} fields={INVOICE_FIELDS} shared={shared} />
 
       <h3>Order</h3>
       <p>An order shows its first item.</p>
-      <SchemaOrgExample jsonLd={ORDER} shared={shared} />
+      <SchemaOrgExample type="Order" jsonLd={ORDER} fields={ORDER_FIELDS} shared={shared} />
 
       <h3>ParcelDelivery</h3>
-      <SchemaOrgExample jsonLd={PARCEL} shared={shared} />
+      <SchemaOrgExample
+        type="ParcelDelivery"
+        jsonLd={PARCEL}
+        fields={PARCEL_FIELDS}
+        shared={shared}
+      />
 
       <Code>{`<MailCard jsonLd={jsonLdFromTheMail} messages={messages} locale="de-DE" />`}</Code>
 
@@ -461,6 +755,36 @@ import Ajv from 'ajv/dist/2020';
 const validate = new Ajv().compile(schema);
 if (!validate(card)) throw new Error(JSON.stringify(validate.errors));`}</Code>
 
+      <h2>Routing Core&rsquo;s card</h2>
+      <p>
+        The <code>card</code> that Core sends is either a <code>CardSpec</code> or a schema.org
+        object. Pass it as both <code>spec</code> and <code>jsonLd</code>:{' '}
+        <code>parseCardSpec</code> gives the spec if <code>card</code> is one and{' '}
+        <code>undefined</code> if not, and <code>spec</code> wins over <code>jsonLd</code> whenever
+        it is there.
+      </p>
+      <Code>{`import { MailCard, parseCardSpec } from '@hintoric/ui';
+
+<MailCard
+  key={messageId}
+  spec={parseCardSpec(card) ?? undefined}
+  jsonLd={card}
+  messages={messages}
+  locale={locale}
+  colorScheme={gmailScheme}
+/>`}</Code>
+      <p>
+        A <code>MailCard</code> with nothing to show renders nothing, not even an empty box. To know
+        that before you place a container for it in Gmail, check{' '}
+        <code>parseCardSpec(card) ?? jsonLdToSpec(card, messages.schemaOrg, locale)</code> for{' '}
+        <code>null</code>:
+      </p>
+      <Code>{`import { jsonLdToSpec, parseCardSpec } from '@hintoric/ui';
+
+const hasCard =
+  (parseCardSpec(card) ?? jsonLdToSpec(card, messages.schemaOrg, locale)) !== null;
+if (hasCard) placeContainerInGmail();`}</Code>
+
       <h2>In the host</h2>
       <ul>
         <li>
@@ -493,7 +817,7 @@ if (!validate(card)) throw new Error(JSON.stringify(validate.errors));`}</Code>
             name: 'spec',
             type: 'CardSpec',
             description:
-              'The card as blocks, after parseCardSpec. Ignored when there are children.',
+              'The card as blocks. MailCard runs it through parseCardSpec itself, so a malformed spec renders nothing. Wins over jsonLd; ignored when there are children.',
           },
           {
             name: 'jsonLd',
