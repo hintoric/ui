@@ -1,0 +1,182 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CardSpec",
+  "description": "A mail card as a list of blocks. Core validates the cards it sends against this schema; @hintoric/ui renders them. The schema is strict, the client lenient: it drops what it cannot use instead of failing. Only https: links are shown.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "blocks"],
+  "properties": {
+    "kind": {
+      "description": "What the card is about, for example \"workflow\".",
+      "$ref": "#/$defs/text"
+    },
+    "blocks": {
+      "description": "The card from top to bottom. There must be a header block.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/block" },
+      "contains": { "$ref": "#/$defs/header" }
+    }
+  },
+  "$defs": {
+    "text": {
+      "description": "Text that is shown as sent. At least one character that is not whitespace.",
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "block": {
+      "oneOf": [
+        { "$ref": "#/$defs/header" },
+        { "$ref": "#/$defs/rows" },
+        { "$ref": "#/$defs/actions" },
+        { "$ref": "#/$defs/feedback" },
+        { "$ref": "#/$defs/status" }
+      ]
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title"],
+      "properties": {
+        "type": { "const": "header" },
+        "title": { "$ref": "#/$defs/text" },
+        "subtitle": { "$ref": "#/$defs/text" }
+      }
+    },
+    "rows": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "rows"],
+      "properties": {
+        "type": { "const": "rows" },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/row" }
+        }
+      }
+    },
+    "row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "value"],
+      "properties": {
+        "icon": {
+          "enum": [
+            "person",
+            "event",
+            "place",
+            "payments",
+            "schedule",
+            "shopping_cart",
+            "local_shipping",
+            "receipt",
+            "confirmation_number",
+            "store",
+            "description"
+          ]
+        },
+        "label": { "$ref": "#/$defs/text" },
+        "value": {
+          "anyOf": [{ "$ref": "#/$defs/text" }, { "$ref": "#/$defs/dateValue" }]
+        }
+      }
+    },
+    "dateValue": {
+      "description": "A point in time the client formats for the reader.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date"],
+      "properties": {
+        "date": {
+          "description": "ISO 8601: a date (2026-11-01) or a date-time (2026-11-01T09:30:00+01:00).",
+          "type": "string",
+          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])(T([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d(\\.\\d+)?)?(Z|[+-]([01]\\d|2[0-3]):[0-5]\\d)?)?$"
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "actions"],
+      "properties": {
+        "type": { "const": "actions" },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/action" }
+        }
+      }
+    },
+    "action": {
+      "description": "A link, or an offer. Never both.",
+      "oneOf": [{ "$ref": "#/$defs/linkAction" }, { "$ref": "#/$defs/offerAction" }]
+    },
+    "linkAction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "url"],
+      "properties": {
+        "label": { "$ref": "#/$defs/text" },
+        "url": {
+          "description": "Only https: links are shown. Any other scheme drops the action.",
+          "type": "string",
+          "pattern": "^https://[^\\s/?#]\\S*$"
+        },
+        "primary": { "type": "boolean" },
+        "alternatives": { "$ref": "#/$defs/alternatives" }
+      }
+    },
+    "offerAction": {
+      "description": "Starts or resumes the workflow behind the card.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "offer"],
+      "properties": {
+        "label": { "$ref": "#/$defs/text" },
+        "offer": { "const": true },
+        "primary": { "type": "boolean" },
+        "alternatives": { "$ref": "#/$defs/alternatives" }
+      }
+    },
+    "alternatives": {
+      "description": "Variants behind the arrow of the primary button.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/alternative" }
+    },
+    "alternative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "preapprove"],
+      "properties": {
+        "label": { "$ref": "#/$defs/text" },
+        "hint": { "$ref": "#/$defs/text" },
+        "preapprove": {
+          "description": "The workflow steps this variant approves up front, for example [\"send_reply\"].",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "question"],
+      "properties": {
+        "type": { "const": "feedback" },
+        "question": { "$ref": "#/$defs/text" }
+      }
+    },
+    "status": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "label", "tone"],
+      "properties": {
+        "type": { "const": "status" },
+        "label": { "$ref": "#/$defs/text" },
+        "tone": { "enum": ["neutral", "success", "warning", "danger"] }
+      }
+    }
+  }
+}

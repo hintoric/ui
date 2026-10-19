@@ -306,6 +306,9 @@ importers:
       '@vitest/browser-playwright':
         specifier: ^4.1.11
         version: 4.1.11(playwright@1.62.1)(vite@8.2.2(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.0))(vitest@4.1.11)
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
       jsdom:
         specifier: ^30.0.1
         version: 30.0.1

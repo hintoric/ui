@@ -18,7 +18,8 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "src/components/MailCard/card-spec.schema.json"
   ],
   "exports": {
     ".": {
@@ -26,7 +27,8 @@
       "import": "./dist/index.js"
     },
     "./styles.css": "./dist/style.css",
-    "./tailwind.css": "./dist/tailwind.css"
+    "./tailwind.css": "./dist/tailwind.css",
+    "./card-spec.schema.json": "./src/components/MailCard/card-spec.schema.json"
   },
   "publishConfig": {
     "access": "public"
@@ -68,6 +70,7 @@
     "@typescript/typescript6": "^6.0.2",
     "@vitejs/plugin-react": "^6.1.1",
     "@vitest/browser-playwright": "^4.1.11",
+    "ajv": "^8.20.0",
     "jsdom": "^30.0.1",
     "playwright": "^1.62.1",
     "react": "^19.2.8",
