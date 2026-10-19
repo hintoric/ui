@@ -17,6 +17,7 @@ import {
 } from './blocks';
 import { jsonLdToSpec } from './schemaOrg';
 import { mailCardThemeStyle } from './themes';
+import { parseCardSpec } from './spec';
 import type { CardSpec, MailCardBlock } from './spec';
 import type { MailCardProps } from './types';
 
@@ -86,8 +87,10 @@ function GoogleLayout({ spec }: { spec: CardSpec }) {
  * status.
  *
  * Three inputs, first one present wins: `children` composed from the `MailCard*` blocks, a `spec`
- * (Core's block JSON after `parseCardSpec`), or a schema.org `jsonLd` object. A `spec` without a
- * header, or `jsonLd` that is not a card, renders nothing at all — not an empty card.
+ * (Core's block JSON), or a schema.org `jsonLd` object. A `spec` is run through `parseCardSpec`
+ * here too, so a host that forwards Core's JSON cast to `CardSpec` cannot crash the page with a
+ * malformed one: what the parser cannot use is dropped. A `spec` without a header, or `jsonLd` that
+ * is not a card, renders nothing at all — not an empty card.
  *
  * Shows no text of its own: everything comes from the input or from `messages`. Self-contained for
  * a shadow root: `colorScheme` alone sets the scheme, and nothing is portalled out of the card.
@@ -121,9 +124,20 @@ export function MailCard({
   );
 
   const composed = React.Children.toArray(children).length > 0;
-  const card = composed
-    ? null
-    : (spec ?? (jsonLd === undefined ? null : jsonLdToSpec(jsonLd, messages.schemaOrg, locale)));
+
+  // A `spec` is only typed, never checked: a cast of untrusted JSON gets here as it came. The
+  // parser never throws, and hands a valid spec back as it is. A `spec` that is present decides,
+  // even when it turns out to be no card: `jsonLd` is only for a card without one.
+  const parsedSpec = React.useMemo(
+    () => (composed || spec == null ? null : parseCardSpec(spec)),
+    [composed, spec],
+  );
+
+  let card: CardSpec | null = null;
+  if (!composed) {
+    if (spec != null) card = parsedSpec;
+    else if (jsonLd !== undefined) card = jsonLdToSpec(jsonLd, messages.schemaOrg, locale);
+  }
   if (!composed && !card?.blocks.some((block) => block.type === 'header')) return null;
 
   return (

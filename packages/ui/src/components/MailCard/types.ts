@@ -11,8 +11,11 @@ import type {
 
 export interface MailCardProps {
   /**
-   * The card as blocks, as Core sends it once `parseCardSpec` has checked it. Trusted: rendered as
-   * given. Ignored when there are `children`.
+   * The card as blocks, as Core sends it. The card runs it through `parseCardSpec` itself, so JSON
+   * forwarded with a cast cannot crash the page: what the parser cannot use is dropped, and a spec
+   * that is no card (no header with a title) renders nothing. A valid spec renders as given.
+   * Ignored when there are `children`. When present it wins over `jsonLd`, even if it is no card;
+   * pass `parseCardSpec(card) ?? undefined` to let `jsonLd` take over then.
    */
   spec?: CardSpec;
   /**

@@ -127,6 +127,62 @@ describe('MailCard', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  // `spec` is typed `CardSpec`, but a host forwards Core's JSON with a cast. The card parses it
+  // itself, so a malformed one costs the card and not the page's React root.
+  it.each([
+    ['blocks that is an object', { kind: 'test', blocks: {} }],
+    ['no blocks', { kind: 'test' }],
+    ['a null block', { kind: 'test', blocks: [null] }],
+    ['a title that is an object', { kind: 'test', blocks: [{ type: 'header', title: { a: 1 } }] }],
+    ['a title that is a number', { kind: 'test', blocks: [{ type: 'header', title: 42 }] }],
+    ['no kind', { blocks: [{ type: 'header', title: 'Titel' }] }],
+    ['a string', 'Titel'],
+    ['an array', [{ type: 'header', title: 'Titel' }]],
+  ])('renders nothing and does not throw for a spec cast from JSON with %s', (_, malformed) => {
+    const { container } = render(
+      <MailCard spec={malformed as unknown as CardSpec} messages={TEST_MESSAGES} />,
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('drops what it cannot use from a spec cast from JSON and keeps the rest', () => {
+    const cast = {
+      kind: 'test',
+      extra: 'ignored',
+      blocks: [
+        { type: 'header', title: 'Titel', subtitle: { not: 'text' } },
+        {
+          type: 'rows',
+          rows: [{ label: { not: 'text' }, value: 'A' }, null, { label: 'Gut', value: 'Wert' }],
+        },
+        { type: 'actions', actions: [null, { label: 'Ansehen', url: 'https://example.com/a' }] },
+        { type: 'unknown-block' },
+      ],
+    };
+    render(<MailCard spec={cast as unknown as CardSpec} messages={TEST_MESSAGES} />);
+
+    expect(screen.getByText('Titel')).toBeInTheDocument();
+    expect(screen.getByText('Gut')).toBeInTheDocument();
+    expect(screen.getByText('Wert')).toBeInTheDocument();
+    expect(screen.queryByText('A')).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ansehen' })).toBeInTheDocument();
+  });
+
+  it('does not fall back to jsonLd when the spec it was given is no card', () => {
+    const { container } = render(
+      <MailCard
+        spec={{ kind: 'test', blocks: {} } as unknown as CardSpec}
+        jsonLd={{
+          '@type': 'Invoice',
+          provider: { name: 'Stadtwerke' },
+          totalPaymentDue: { price: '42.00', priceCurrency: 'EUR' },
+        }}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('renders only the first header block', () => {
     render(
       <MailCard
@@ -222,15 +278,36 @@ describe('MailCard', () => {
     expect(screen.getByText('Nov 1')).toBeInTheDocument();
   });
 
-  it('shows a date it cannot read as given instead of failing', () => {
+  it('shows a date it cannot read as given instead of failing, in a row composed in JSX', () => {
+    render(
+      <MailCard messages={TEST_MESSAGES} locale="de-DE">
+        <MailCardHeader title="Titel" />
+        <MailCardRows>
+          <MailCardRow label="Datum" value={{ date: 'demnächst' }} />
+        </MailCardRows>
+      </MailCard>,
+    );
+    expect(screen.getByText('demnächst')).toBeInTheDocument();
+  });
+
+  it('leaves out a spec row whose date is not on the calendar, as parseCardSpec does', () => {
     render(
       <MailCard
-        spec={specWith({ type: 'rows', rows: [{ label: 'Datum', value: { date: 'demnächst' } }] })}
+        spec={specWith({
+          type: 'rows',
+          rows: [
+            { label: 'Datum', value: { date: 'demnächst' } },
+            { label: 'Frist', value: { date: '2026-02-30' } },
+          ],
+        })}
         messages={TEST_MESSAGES}
         locale="de-DE"
       />,
     );
-    expect(screen.getByText('demnächst')).toBeInTheDocument();
+    expect(screen.getByText('Titel')).toBeInTheDocument();
+    expect(screen.getByText('Bezeichnung')).toBeInTheDocument();
+    expect(screen.queryByText('Datum')).not.toBeInTheDocument();
+    expect(screen.queryByText('Frist')).not.toBeInTheDocument();
   });
 
   it('shows a status block in place of the actions', () => {
