@@ -67,6 +67,7 @@ import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 import { AccountMenuPage } from './pages/AccountMenuPage';
 import { MapImagePage } from './pages/MapImagePage';
+import { MailCardPage } from './pages/MailCardPage';
 import { EmailOverviewPage } from './pages/email/EmailOverviewPage';
 import { EmailTypographyPage } from './pages/email/EmailTypographyPage';
 import { EmailButtonPage } from './pages/email/EmailButtonPage';
@@ -161,6 +162,7 @@ export function App() {
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
             <Route path="/account-menu" element={<AccountMenuPage />} />
             <Route path="/map-image" element={<MapImagePage />} />
+            <Route path="/mail-card" element={<MailCardPage />} />
 
             {/* The email section — its own navigation, see EMAIL_NAV. */}
             <Route path="/email" element={<EmailOverviewPage />} />

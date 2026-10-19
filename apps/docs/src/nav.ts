@@ -103,6 +103,7 @@ export const NAV: NavGroup[] = [
       { to: '/account-menu', label: 'AccountMenu' },
       { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
       { to: '/locale-switcher', label: 'LocaleSwitcher' },
+      { to: '/mail-card', label: 'MailCard' },
       { to: '/map-image', label: 'MapImage' },
     ],
   },
