@@ -4,6 +4,7 @@ import { cx } from '../../utils/cx';
 import { useDateTimeDefaults } from '../../theme/DateTimeProvider';
 import { MailCardContext } from './MailCardContext';
 import { MailCardIcon, MailCardLogo } from './icons';
+import { isHttpsUrl } from './spec';
 import type { MailCardActionData } from './spec';
 import type {
   MailCardActionProps,
@@ -32,7 +33,11 @@ const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
  * value as midnight UTC, so it is formatted in UTC — in the reader's zone it would turn into the
  * day before everywhere west of Greenwich. A date-time is a moment and follows `timeZone`.
  */
-function formatDate(date: string, locale: string | undefined, timeZone: string | undefined): string {
+function formatDate(
+  date: string,
+  locale: string | undefined,
+  timeZone: string | undefined,
+): string {
   try {
     return new Intl.DateTimeFormat(locale, {
       day: 'numeric',
@@ -46,14 +51,12 @@ function formatDate(date: string, locale: string | undefined, timeZone: string |
   }
 }
 
-/** Links leave for `https:` only — `parseCardSpec` drops the rest, and so does a block given one. */
+/**
+ * Links leave for `https:` only. `parseCardSpec` drops the rest from untrusted JSON; this is the
+ * same rule (`isHttpsUrl`) for a typed `spec` or JSX, which no parser has seen.
+ */
 export function isRenderableAction(action: MailCardActionData): boolean {
-  if (!('url' in action)) return true;
-  try {
-    return new URL(action.url).protocol === 'https:';
-  } catch {
-    return false;
-  }
+  return !('url' in action) || isHttpsUrl(action.url);
 }
 
 /** The title and subtitle, with the Hintoric mark in the icon column. */
@@ -65,7 +68,9 @@ export function MailCardHeader({ title, subtitle, className }: MailCardHeaderPro
       <div className="col-start-2 min-w-0">
         <div className="text-[16px]/[20px] font-medium text-[var(--mail-card-title)]">{title}</div>
         {subtitle && (
-          <div className="text-[14px]/[20px] font-normal text-[var(--mail-card-label)]">{subtitle}</div>
+          <div className="text-[14px]/[20px] font-normal text-[var(--mail-card-label)]">
+            {subtitle}
+          </div>
         )}
       </div>
     </div>
@@ -136,27 +141,33 @@ export function MailCardFooter({ children, className }: MailCardFooterProps) {
   );
 }
 
+// `Button`'s focus ring as it renders (buttonVariants.ts, where tailwind-merge folds `outline` into
+// `outline-2`): 2 px, 2 px off the edge, in a colour from the theme — primary-500 in joy, as there.
 const FOCUS_RING =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mail-card-accent)]';
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mail-card-focus)]';
 
 /**
- * The primary action: a pill, 36 px high, 14 px / 500, in the accent colour. Hover and press lay
- * the text colour over the fill (8 % / 12 %), Material's state layers, so they work for any theme.
- * `max-w-full` and the inherited `overflow-wrap: anywhere` wrap a long label inside the pill.
+ * The primary action: a pill, 36 px high, 14 px / 500, in the accent colour, darkening on hover
+ * and press like a solid primary `Button`. Built by hand rather than on `Button` because every
+ * colour has to come from the theme's variables, and `Button` paints from Joy's tokens in all of
+ * its states. `max-w-full` and the inherited `overflow-wrap: anywhere` wrap a long label inside
+ * the pill.
  */
 export const PILL_CLASSES = cx(
   'inline-flex min-h-[36px] max-w-full cursor-pointer items-center justify-center rounded-[9999px] border-0 px-[20px] py-[8px]',
   'text-center text-[14px]/[20px] font-medium no-underline transition-colors',
   'bg-[var(--mail-card-accent)] text-[var(--mail-card-on-accent)]',
-  'hover:bg-[color-mix(in_srgb,var(--mail-card-accent),var(--mail-card-on-accent)_8%)]',
-  'active:bg-[color-mix(in_srgb,var(--mail-card-accent),var(--mail-card-on-accent)_12%)]',
+  'hover:bg-[var(--mail-card-accent-hover)] active:bg-[var(--mail-card-accent-active)]',
   FOCUS_RING,
 );
 
-/** Any other action: a text link, 14 px / 500, in the accent colour. */
+/**
+ * Any other action: a text link, 14 px / 500. Its own colour, not the accent: a fill colour that
+ * carries white text is too dark to be text itself on a dark surface.
+ */
 const LINK_CLASSES = cx(
   'inline max-w-full cursor-pointer rounded-[2px] border-0 bg-transparent p-0 text-left',
-  'text-[14px]/[20px] font-medium text-[var(--mail-card-accent)] no-underline hover:underline',
+  'text-[14px]/[20px] font-medium text-[var(--mail-card-link)] no-underline hover:underline',
   FOCUS_RING,
 );
 

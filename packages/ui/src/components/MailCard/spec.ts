@@ -84,6 +84,14 @@ const isTone = (value: unknown): value is MailCardStatusTone =>
 // a scheme that is not spelled exactly like this is not worth guessing at.
 const HTTPS_URL = /^https:\/\/[^\s/?#]\S*$/;
 
+/**
+ * The one rule for links, shared by the parser and the renderer: `https://`, a host, no
+ * whitespace — exactly the schema's pattern. Anything else (`javascript:`, `http:`, relative,
+ * `https:host` without the slashes) is not a link the card shows.
+ */
+export const isHttpsUrl = (value: unknown): value is string =>
+  typeof value === 'string' && HTTPS_URL.test(value);
+
 // A date, or a date-time with optional seconds and zone. Ranges are checked here, and the calendar
 // in `isIsoDate`, because `Intl` throws on a date it cannot read (or a browser rolls 2026-02-31
 // over to March, which shows a value the input never said). Either would turn one bad row into a
@@ -148,9 +156,7 @@ function parseAction(raw: unknown): MailCardActionData | null {
   // A link and an offer are different things. An action that claims to be both is invalid, and
   // dropping it is the safe reading: a `javascript:` url must never survive as "just an offer".
   if (raw.offer === true) return raw.url === undefined ? { ...common, offer: true } : null;
-  return typeof raw.url === 'string' && HTTPS_URL.test(raw.url)
-    ? { ...common, url: raw.url }
-    : null;
+  return isHttpsUrl(raw.url) ? { ...common, url: raw.url } : null;
 }
 
 function parseBlock(raw: unknown): MailCardBlock | null {

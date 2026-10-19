@@ -28,9 +28,13 @@ export interface MailCardProps {
   /** Whose look: colours, font, surface. @default 'joy' */
   theme?: 'joy' | 'google';
   /**
-   * Sets `data-color-scheme` on the card, which is all the `joy` theme needs to turn dark — no
+   * Sets `data-color-scheme` on the card. `'dark'` is all the `joy` theme needs to turn dark — no
    * `ColorSchemeProvider` required, so it works inside a shadow root. Without it the card follows
    * the page.
+   *
+   * `'light'` cannot turn the card light inside a dark document: the library's light tokens live
+   * only on `:root`, so a light island in a dark page stays dark. It is light wherever the page
+   * around it is not dark — a shadow root in an unmarked host such as Gmail included.
    */
   colorScheme?: 'light' | 'dark';
   /** Every string the card shows that is not in its input — the package ships no translations. */

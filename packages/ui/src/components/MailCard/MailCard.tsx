@@ -25,7 +25,10 @@ type Theme = NonNullable<MailCardProps['theme']>;
  * `joy` is the library's own look, from the tokens `Card` (outlined, neutral), the ink scale and a
  * solid primary `Button` use — and so it follows `data-color-scheme` the way they do. Text colours
  * as in the reference screenshot of the card: title ink-primary, values ink-secondary, subtitle and
- * labels ink-tertiary, and the rule is the library's divider.
+ * labels ink-tertiary, and the rule is the library's divider. The pill takes the solid primary
+ * button's fill, hover, press and focus ring. Text links take the plain primary colour (500 light,
+ * 300 dark): primary-500 as text on the dark surface is about 3.7:1, below the 4.5:1 that 14 px
+ * text needs.
  */
 const JOY_THEME = {
   '--mail-card-surface': 'var(--color-surface)',
@@ -35,7 +38,11 @@ const JOY_THEME = {
   '--mail-card-text': 'var(--color-ink-secondary)',
   '--mail-card-label': 'var(--color-ink-tertiary)',
   '--mail-card-accent': 'var(--color-primary-solid-bg)',
+  '--mail-card-accent-hover': 'var(--color-primary-solid-hover-bg)',
+  '--mail-card-accent-active': 'var(--color-primary-solid-active-bg)',
   '--mail-card-on-accent': 'var(--color-primary-solid-color)',
+  '--mail-card-focus': 'var(--color-primary-500)',
+  '--mail-card-link': 'var(--color-primary-plain-color)',
   '--mail-card-rule': 'var(--color-divider)',
   '--mail-card-font': 'var(--font-body)',
 } as React.CSSProperties;

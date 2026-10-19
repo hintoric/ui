@@ -237,7 +237,11 @@ describe('MailCard', () => {
           ...WOHNUNGSGEBER_EXAMPLE,
           blocks: [
             ...WOHNUNGSGEBER_EXAMPLE.blocks,
-            { type: 'status', label: 'Bestätigung wurde ausgestellt und versendet.', tone: 'success' },
+            {
+              type: 'status',
+              label: 'Bestätigung wurde ausgestellt und versendet.',
+              tone: 'success',
+            },
           ],
         }}
         messages={TEST_MESSAGES}
@@ -246,7 +250,9 @@ describe('MailCard', () => {
     expect(screen.getByRole('status')).toHaveTextContent(
       'Bestätigung wurde ausgestellt und versendet.',
     );
-    expect(screen.queryByRole('button', { name: 'Bestätigung ausstellen' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Bestätigung ausstellen' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders url actions as links with target _blank and noreferrer', () => {
@@ -263,6 +269,44 @@ describe('MailCard', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/rechnung');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noreferrer');
+  });
+
+  it.each([
+    ['javascript:', 'javascript:alert(1)'],
+    ['http:', 'http://example.com/rechnung'],
+    ['relative', '/rechnung'],
+    ['https: without slashes', 'https:example.com'],
+  ])('drops a %s url action from a typed spec, and the footer with it', (_, url) => {
+    const { container } = render(
+      <MailCard
+        spec={specWith({
+          type: 'actions',
+          actions: [{ label: 'Rechnung ansehen', url, primary: true }],
+        })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    expect(screen.getByText('Titel')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByText('Rechnung ansehen')).not.toBeInTheDocument();
+    expect(container.querySelector('hr')).toBeNull();
+  });
+
+  it('keeps the https actions when another one is dropped', () => {
+    render(
+      <MailCard
+        spec={specWith({
+          type: 'actions',
+          actions: [
+            { label: 'Böse', url: 'javascript:alert(1)' },
+            { label: 'Ansehen', url: 'https://example.com/a' },
+          ],
+        })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+    expect(screen.getByRole('link', { name: 'Ansehen' })).toBeInTheDocument();
   });
 
   it('renders a primary url action as a link too', () => {
@@ -336,10 +380,49 @@ describe('MailCard', () => {
     expect(root.style.getPropertyValue('--mail-card-accent')).toBe('var(--color-primary-solid-bg)');
   });
 
-  it('shows the Hintoric mark beside the title, unless showLogo is false', () => {
-    const { container, rerender } = render(
-      <MailCard spec={specWith()} messages={TEST_MESSAGES} />,
+  it("gives the joy pill the solid primary Button's hover, press and focus ring", () => {
+    const { container } = render(
+      <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={TEST_MESSAGES} />,
     );
+    const root = container.firstElementChild as HTMLElement;
+    expect(root.style.getPropertyValue('--mail-card-accent-hover')).toBe(
+      'var(--color-primary-solid-hover-bg)',
+    );
+    expect(root.style.getPropertyValue('--mail-card-accent-active')).toBe(
+      'var(--color-primary-solid-active-bg)',
+    );
+    expect(root.style.getPropertyValue('--mail-card-focus')).toBe('var(--color-primary-500)');
+    expect(screen.getByRole('button', { name: 'Bestätigung ausstellen' })).toHaveClass(
+      'hover:bg-[var(--mail-card-accent-hover)]',
+      'active:bg-[var(--mail-card-accent-active)]',
+      'focus-visible:outline-2',
+      'focus-visible:outline-offset-2',
+      'focus-visible:outline-[var(--mail-card-focus)]',
+    );
+  });
+
+  it('colours text links with the plain primary colour, not the button fill', () => {
+    const { container } = render(
+      <MailCard
+        spec={specWith({
+          type: 'actions',
+          actions: [{ label: 'Ansehen', url: 'https://example.com' }],
+        })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    const root = container.firstElementChild as HTMLElement;
+    // primary-500 in light and primary-300 in dark: primary-500 text on the dark surface is ~3.7:1.
+    expect(root.style.getPropertyValue('--mail-card-link')).toBe(
+      'var(--color-primary-plain-color)',
+    );
+    expect(screen.getByRole('link', { name: 'Ansehen' })).toHaveClass(
+      'text-[var(--mail-card-link)]',
+    );
+  });
+
+  it('shows the Hintoric mark beside the title, unless showLogo is false', () => {
+    const { container, rerender } = render(<MailCard spec={specWith()} messages={TEST_MESSAGES} />);
     expect(container.querySelector('[data-mail-card-logo]')).toHaveAttribute('aria-hidden', 'true');
 
     rerender(<MailCard spec={specWith()} messages={TEST_MESSAGES} showLogo={false} />);
@@ -364,13 +447,26 @@ describe('MailCard', () => {
     );
     expect(screen.getByText('Angebot')).toBeInTheDocument();
     expect(screen.getByText('30. Nov.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Angebot ansehen' })).toHaveAttribute('target', '_blank');
+    expect(screen.getByRole('link', { name: 'Angebot ansehen' })).toHaveAttribute(
+      'target',
+      '_blank',
+    );
     await userEvent.click(screen.getByRole('button', { name: 'Annehmen' }));
     expect(onOffer).toHaveBeenCalledWith();
   });
 });
 
 describe('MailCard blocks', () => {
+  it.each(['javascript:alert(1)', 'http://example.com', 'https:example.com'])(
+    'MailCardAction renders nothing for %s',
+    (url) => {
+      const { container } = render(
+        <MailCardAction action={{ label: 'Los', url, primary: true }} />,
+      );
+      expect(container).toBeEmptyDOMElement();
+    },
+  );
+
   it('render outside a MailCard', () => {
     render(
       <div>
@@ -404,6 +500,28 @@ describe('MailCardIcon', () => {
     expect(svg).toHaveAttribute('height', '20');
     expect(svg).toHaveAttribute('fill', 'currentColor');
     expect(svg?.querySelector('path')?.getAttribute('d')).toBeTruthy();
+  });
+
+  it.each(['rocket', 'toString', 'constructor'])(
+    'draws nothing for a name it has no path for (%s)',
+    (name) => {
+      const { container } = render(<MailCardIcon name={name as never} />);
+      expect(container).toBeEmptyDOMElement();
+    },
+  );
+
+  it('keeps the row when its icon is unknown', () => {
+    render(
+      <MailCard
+        spec={specWith({
+          type: 'rows',
+          rows: [{ icon: 'rocket' as never, label: 'Start', value: 'Morgen' }],
+        })}
+        messages={TEST_MESSAGES}
+      />,
+    );
+    expect(screen.getByText('Start')).toBeInTheDocument();
+    expect(screen.getByText('Morgen')).toBeInTheDocument();
   });
 
   it('is part of the row, in front of the label', () => {

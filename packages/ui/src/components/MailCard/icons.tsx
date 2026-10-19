@@ -39,8 +39,13 @@ const PATHS: Record<MailCardIconName, readonly string[]> = {
   ],
 };
 
-/** A row symbol: 20 px, in the colour of the text around it. Decorative — the label says it. */
+/**
+ * A row symbol: 20 px, in the colour of the text around it. Decorative — the label says it. A name
+ * it has no path for (a typed `spec` is not parsed) draws nothing, and the row keeps its text edge.
+ */
 export function MailCardIcon({ name, ...props }: MailCardIconProps) {
+  // `hasOwn`, not `PATHS[name]`: a name like `toString` would find a function on the prototype.
+  if (!Object.hasOwn(PATHS, name)) return null;
   return (
     <svg
       width="20"
@@ -77,7 +82,10 @@ export function MailCardLogo(props: MailCardLogoProps) {
       data-mail-card-logo=""
       {...props}
     >
-      <path d="M224.696 226.063L224.624 208.164L323.964 216.739L224.696 226.063Z" fill="currentColor" />
+      <path
+        d="M224.696 226.063L224.624 208.164L323.964 216.739L224.696 226.063Z"
+        fill="currentColor"
+      />
       <path
         d="M162.146 96.1494C222.522 96.1494 271.48 145.133 271.48 205.575C271.48 266.017 222.522 315 162.146 315C101.771 315 52.8127 266.017 52.8125 205.575C52.8125 145.133 101.771 96.1495 162.146 96.1494Z"
         stroke="currentColor"
@@ -88,8 +96,14 @@ export function MailCardLogo(props: MailCardLogoProps) {
         stroke="currentColor"
         strokeWidth="20"
       />
-      <path d="M171.659 154.399L153.773 154.471L161.64 0.0377281L171.659 154.399Z" fill="currentColor" />
-      <path d="M99.3041 226.063L99.3759 208.164L0.0357722 216.739L99.3041 226.063Z" fill="currentColor" />
+      <path
+        d="M171.659 154.399L153.773 154.471L161.64 0.0377281L171.659 154.399Z"
+        fill="currentColor"
+      />
+      <path
+        d="M99.3041 226.063L99.3759 208.164L0.0357722 216.739L99.3041 226.063Z"
+        fill="currentColor"
+      />
     </svg>
   );
 }
