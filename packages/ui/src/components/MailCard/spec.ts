@@ -67,11 +67,11 @@ export type CardSpec = { readonly kind: string; readonly blocks: readonly MailCa
 
 type Json = Record<string, unknown>;
 
-const isRecord = (value: unknown): value is Json =>
+export const isRecord = (value: unknown): value is Json =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /** A string with something to show: empty and whitespace-only strings paint nothing. */
-const isText = (value: unknown): value is string =>
+export const isText = (value: unknown): value is string =>
   typeof value === 'string' && value.trim() !== '';
 
 const isIconName = (value: unknown): value is MailCardIconName =>
@@ -92,7 +92,7 @@ const ISO_DATE =
   /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])(T([01]\d|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]([01]\d|2[0-3]):[0-5]\d)?)?$/;
 
 /** An ISO 8601 date or date-time whose day exists in its month (leap years included). */
-function isIsoDate(value: unknown): value is string {
+export function isIsoDate(value: unknown): value is string {
   if (typeof value !== 'string' || !ISO_DATE.test(value)) return false;
   const [year, month, day] = value.slice(0, 10).split('-').map(Number);
   // `setUTCFullYear` rather than `Date.UTC`, which maps years 0 to 99 onto 1900 to 1999.
