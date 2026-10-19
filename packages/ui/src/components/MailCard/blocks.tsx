@@ -3,7 +3,9 @@ import * as React from 'react';
 import { cx } from '../../utils/cx';
 import { useDateTimeDefaults } from '../../theme/DateTimeProvider';
 import { MailCardContext } from './MailCardContext';
+import { FOCUS_RING, PILL_SURFACE_CLASSES } from './classes';
 import { MailCardIcon, MailCardLogo } from './icons';
+import { SplitAction } from './SplitAction';
 import { isHttpsUrl } from './spec';
 import type { MailCardActionData } from './spec';
 import type {
@@ -129,10 +131,13 @@ export function MailCardRow({ icon, label, value, className }: MailCardRowProps)
  * The children line up on the right. The feedback block goes first and takes `margin-right: auto`,
  * which keeps it on the left and the rest on the right; on a narrow card the row wraps, still
  * aligned right.
+ *
+ * The footer is a size container, so the menu of a split button can cap its width at the card's
+ * content width (`100cqw`) however narrow the card is.
  */
 export function MailCardFooter({ children, className }: MailCardFooterProps) {
   return (
-    <div className={cx('mt-[16px]', className)}>
+    <div className={cx('mt-[16px] [container-type:inline-size]', className)}>
       <hr className="m-0 h-px border-0 bg-[var(--mail-card-rule)]" />
       <div className="mt-[12px] flex min-h-[36px] flex-wrap items-center justify-end gap-x-[24px] gap-y-[8px]">
         {children}
@@ -141,24 +146,14 @@ export function MailCardFooter({ children, className }: MailCardFooterProps) {
   );
 }
 
-// `Button`'s focus ring as it renders (buttonVariants.ts, where tailwind-merge folds `outline` into
-// `outline-2`): 2 px, 2 px off the edge, in a colour from the theme — primary-500 in joy, as there.
-const FOCUS_RING =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mail-card-focus)]';
-
 /**
  * The primary action: a pill, 36 px high, 14 px / 500, in the accent colour, darkening on hover
- * and press like a solid primary `Button`. Built by hand rather than on `Button` because every
- * colour has to come from the theme's variables, and `Button` paints from Joy's tokens in all of
- * its states. `max-w-full` and the inherited `overflow-wrap: anywhere` wrap a long label inside
- * the pill.
+ * and press like a solid primary `Button` (`PILL_SURFACE_CLASSES`, which a split button shares).
+ * `max-w-full` and the inherited `overflow-wrap: anywhere` wrap a long label inside the pill.
  */
 export const PILL_CLASSES = cx(
-  'inline-flex min-h-[36px] max-w-full cursor-pointer items-center justify-center rounded-[9999px] border-0 px-[20px] py-[8px]',
-  'text-center text-[14px]/[20px] font-medium no-underline transition-colors',
-  'bg-[var(--mail-card-accent)] text-[var(--mail-card-on-accent)]',
-  'hover:bg-[var(--mail-card-accent-hover)] active:bg-[var(--mail-card-accent-active)]',
-  FOCUS_RING,
+  PILL_SURFACE_CLASSES,
+  'max-w-full rounded-[9999px] px-[20px] py-[8px]',
 );
 
 /**
@@ -174,9 +169,14 @@ const LINK_CLASSES = cx(
 /**
  * An action: a pill when it is primary, a text link otherwise. A `url` opens in a new tab and tells
  * the target nothing about the mail it came from; an `offer` calls the card's `onOffer`.
+ *
+ * A primary offer with `alternatives` is a split button: the main part calls `onOffer()` as a plain
+ * offer does, an item of the menu behind the arrow calls `onOffer(alternative)`. Only that case —
+ * a link has nothing to pre-approve, and a text action has no pill to attach an arrow to. Outside a
+ * `MailCard` there are no `messages` to name the arrow, so there the offer stays a plain pill.
  */
 export function MailCardAction({ action, className }: MailCardActionProps) {
-  const { onOffer } = React.useContext(MailCardContext);
+  const { onOffer, messages } = React.useContext(MailCardContext);
   if (!isRenderableAction(action)) return null;
 
   const classes = cx(action.primary ? PILL_CLASSES : LINK_CLASSES, className);
@@ -187,8 +187,17 @@ export function MailCardAction({ action, className }: MailCardActionProps) {
       </a>
     );
   }
-  // A primary offer with `alternatives` becomes a split button here (main part plus a menu). The
-  // main part does what this button does: start the offer without pre-approving anything.
+  if (action.primary && action.alternatives?.length && messages) {
+    return (
+      <SplitAction
+        action={{ label: action.label, alternatives: action.alternatives }}
+        onMain={() => onOffer?.()}
+        onAlternative={(alternative) => onOffer?.(alternative)}
+        moreActionsLabel={messages.moreActions}
+        className={className}
+      />
+    );
+  }
   return (
     <button type="button" className={classes} onClick={() => onOffer?.()}>
       {action.label}

@@ -1,3 +1,4 @@
+import type * as React from 'react';
 import type { MailCardIconName } from './spec';
 import type { MailCardIconProps, MailCardLogoProps } from './types';
 
@@ -104,6 +105,27 @@ export function MailCardLogo(props: MailCardLogoProps) {
         d="M99.3041 226.063L99.3759 208.164L0.0357722 216.739L99.3041 226.063Z"
         fill="currentColor"
       />
+    </svg>
+  );
+}
+
+/**
+ * The arrow of a split button: Material Icons `ArrowDropDown` (filled), Apache License 2.0, path
+ * copied verbatim from @mui/icons-material 9.4.0, 24 px, in `currentColor`. Not one of the row
+ * icons, so it is not in `MailCardIconName` and a spec cannot ask for it.
+ */
+export function ArrowDropDownIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path d="m7 10 5 5 5-5z" />
     </svg>
   );
 }

@@ -28,7 +28,9 @@ type Theme = NonNullable<MailCardProps['theme']>;
  * labels ink-tertiary, and the rule is the library's divider. The pill takes the solid primary
  * button's fill, hover, press and focus ring. Text links take the plain primary colour (500 light,
  * 300 dark): primary-500 as text on the dark surface is about 3.7:1, below the 4.5:1 that 14 px
- * text needs.
+ * text needs. The menu of a split button is a joy `Menu`: it paints with the popup surface (white
+ * in light, black in dark) and `shadow.md`, and the item under the pointer or the keyboard takes
+ * the plain neutral hover background of a `MenuItem`; its border is the card's.
  */
 const JOY_THEME = {
   '--mail-card-surface': 'var(--color-surface)',
@@ -44,6 +46,9 @@ const JOY_THEME = {
   '--mail-card-focus': 'var(--color-primary-500)',
   '--mail-card-link': 'var(--color-primary-plain-color)',
   '--mail-card-rule': 'var(--color-divider)',
+  '--mail-card-menu-surface': 'var(--color-surface-popup)',
+  '--mail-card-menu-shadow': 'var(--shadow-md)',
+  '--mail-card-menu-hover': 'var(--color-neutral-plain-hover-bg)',
   '--mail-card-font': 'var(--font-body)',
 } as React.CSSProperties;
 
