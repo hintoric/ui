@@ -42,6 +42,19 @@ function cardWith(action: object): CardSpec {
 
 const arrow = () => screen.getByRole('button', { name: 'Weitere Aktionen' });
 
+/**
+ * Opens the list as a keyboard user does: focus on the arrow, then Enter or Space (a click whose
+ * `detail` is 0), or as a pointer user does: a real click (`detail` 1).
+ */
+async function openWith(how: 'pointer' | 'enter' | 'space') {
+  if (how === 'pointer') {
+    await userEvent.click(arrow());
+    return;
+  }
+  act(() => arrow().focus());
+  await userEvent.keyboard(how === 'enter' ? '{Enter}' : ' ');
+}
+
 describe('SplitAction in MailCard', () => {
   it('opens the list from the arrow and names it', async () => {
     render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
@@ -247,23 +260,58 @@ describe('SplitAction in MailCard', () => {
     }
   });
 
-  it('moves focus to the first item when it opens', async () => {
+  it('opened with the pointer, focuses the list itself and highlights no item', async () => {
     render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
-    await userEvent.click(arrow());
-    expect(screen.getByRole('menuitem', { name: 'Ausstellen und versenden' })).toHaveFocus();
+    await openWith('pointer');
+
+    // The first item is the most consequential choice: a click on the arrow must not pre-select it.
+    const menu = screen.getByRole('menu');
+    expect(menu).toHaveFocus();
+    expect(menu).toHaveAttribute('tabindex', '-1');
+    // The highlight is the focus background, so an item that has no focus has none.
+    for (const item of screen.getAllByRole('menuitem')) expect(item).not.toHaveFocus();
+    // The list is a place for the focus to rest, not a control: no outline of its own.
+    expect(menu).toHaveClass('outline-none');
   });
 
-  it('closes on Escape and returns focus to the arrow', async () => {
-    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
-    await userEvent.click(arrow());
-    expect(screen.getByRole('menuitem', { name: 'Ausstellen und versenden' })).toHaveFocus();
+  it.each(['enter', 'space'] as const)(
+    'opened from the keyboard (%s), focuses the first item',
+    async (how) => {
+      render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
+      await openWith(how);
+      expect(screen.getByRole('menuitem', { name: 'Ausstellen und versenden' })).toHaveFocus();
+      expect(screen.getByRole('menu')).not.toHaveFocus();
+    },
+  );
 
+  it('decides again how it was opened each time', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
+    await openWith('enter');
+    expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
     await userEvent.keyboard('{Escape}');
 
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-    expect(arrow()).toHaveFocus();
-    expect(arrow()).toHaveAttribute('aria-expanded', 'false');
+    await openWith('pointer');
+    expect(screen.getByRole('menu')).toHaveFocus();
+    await userEvent.keyboard('{Escape}');
+
+    await openWith('space');
+    expect(screen.getAllByRole('menuitem')[0]).toHaveFocus();
   });
+
+  it.each(['pointer', 'enter'] as const)(
+    'closes on Escape and returns focus to the arrow, opened by %s',
+    async (how) => {
+      render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
+      await openWith(how);
+      expect(screen.getByRole('menu')).toBeInTheDocument();
+
+      await userEvent.keyboard('{Escape}');
+
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+      expect(arrow()).toHaveFocus();
+      expect(arrow()).toHaveAttribute('aria-expanded', 'false');
+    },
+  );
 
   it('keeps Escape to itself while the list is open, so the host page does not see it', async () => {
     const onKeyDown = vi.fn();
@@ -295,7 +343,7 @@ describe('SplitAction in MailCard', () => {
         messages={MESSAGES}
       />,
     );
-    await userEvent.click(arrow());
+    await openWith('enter');
     const [first, second, third] = screen.getAllByRole('menuitem');
     expect(first).toHaveFocus();
 
@@ -317,12 +365,55 @@ describe('SplitAction in MailCard', () => {
     expect(third).toHaveFocus();
   });
 
+  // Focus on the list itself (a pointer open) counts as "before the first item".
+  it.each([
+    ['ArrowDown', 0],
+    ['ArrowUp', 2],
+    ['Home', 0],
+    ['End', 2],
+  ] as const)('goes from the list itself on %s', async (key, index) => {
+    const spec = cardWith({
+      label: 'Starten',
+      offer: true,
+      primary: true,
+      alternatives: ALTERNATIVES,
+    });
+    render(<MailCard spec={spec} messages={MESSAGES} />);
+    await openWith('pointer');
+    expect(screen.getByRole('menu')).toHaveFocus();
+
+    await userEvent.keyboard(`{${key}}`);
+
+    expect(screen.getAllByRole('menuitem')[index]).toHaveFocus();
+  });
+
+  it('leaves the arrow keys alone while the focus is on the arrow, not in the list', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
+    await openWith('pointer');
+    // Focus moving inside the component does not close the list.
+    act(() => arrow().focus());
+    expect(screen.getByRole('menu')).toBeInTheDocument();
+
+    await userEvent.keyboard('{ArrowDown}');
+
+    expect(arrow()).toHaveFocus();
+    for (const item of screen.getAllByRole('menuitem')) expect(item).not.toHaveFocus();
+  });
+
   it('chooses the focused item with Enter', async () => {
     const onOffer = vi.fn();
     render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} onOffer={onOffer} />);
-    await userEvent.click(arrow());
+    await openWith('enter');
     await userEvent.keyboard('{ArrowDown}{Enter}');
     expect(onOffer.mock.calls[0][0].preapprove).toEqual(['save_draft']);
+  });
+
+  it('chooses the first item with ArrowDown and Enter from a pointer open', async () => {
+    const onOffer = vi.fn();
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} onOffer={onOffer} />);
+    await openWith('pointer');
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    expect(onOffer.mock.calls[0][0].preapprove).toEqual(['send_reply']);
   });
 
   it('closes on Tab from an item and goes on to what follows the card', async () => {
@@ -332,8 +423,24 @@ describe('SplitAction in MailCard', () => {
         <button type="button">Danach</button>
       </div>,
     );
-    await userEvent.click(arrow());
+    await openWith('enter');
     expect(screen.getByRole('menuitem', { name: 'Ausstellen und versenden' })).toHaveFocus();
+
+    await userEvent.tab();
+
+    expect(screen.getByRole('button', { name: 'Danach' })).toHaveFocus();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+
+  it('closes on Tab from the list itself and goes on to what follows the card', async () => {
+    render(
+      <div>
+        <MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />
+        <button type="button">Danach</button>
+      </div>,
+    );
+    await openWith('pointer');
+    expect(screen.getByRole('menu')).toHaveFocus();
 
     await userEvent.tab();
 
@@ -343,8 +450,20 @@ describe('SplitAction in MailCard', () => {
 
   it('closes on Shift+Tab from an item and goes back to the main part', async () => {
     render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
-    await userEvent.click(arrow());
+    await openWith('enter');
     expect(screen.getByRole('menuitem', { name: 'Ausstellen und versenden' })).toHaveFocus();
+
+    await userEvent.tab({ shift: true });
+
+    expect(screen.getByRole('button', { name: 'Bestätigung ausstellen' })).toHaveFocus();
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(arrow()).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('closes on Shift+Tab from the list itself and goes back to the main part', async () => {
+    render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
+    await openWith('pointer');
+    expect(screen.getByRole('menu')).toHaveFocus();
 
     await userEvent.tab({ shift: true });
 
@@ -370,13 +489,19 @@ describe('SplitAction in MailCard', () => {
 
   it('highlights one item at a time: the pointer moves the focus onto the item it passes over', async () => {
     render(<MailCard spec={WOHNUNGSGEBER_EXAMPLE} messages={MESSAGES} />);
-    await userEvent.click(arrow());
+    await openWith('pointer');
     const [first, second] = screen.getAllByRole('menuitem');
+    // Nothing is highlighted until the pointer is over an item.
+    expect(first).not.toHaveFocus();
+    expect(second).not.toHaveFocus();
+
+    await userEvent.hover(first);
     expect(first).toHaveFocus();
 
     await userEvent.hover(second);
 
     expect(second).toHaveFocus();
+    expect(first).not.toHaveFocus();
     // The highlight is the focus background alone; a hover background of its own would make two.
     for (const item of [first, second]) {
       expect(item).toHaveClass('focus:bg-[var(--mail-card-menu-hover)]');

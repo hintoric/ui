@@ -375,9 +375,35 @@ describe('MailCard visual (self-baseline)', () => {
         expect([itemHint.fontSize, itemHint.fontWeight]).toEqual(['12px', '500']);
         expectSameLineHeight(itemHint.lineHeight, '18px');
 
+        // Opened with the pointer, nothing is highlighted: the list has the focus, and no item is
+        // pre-selected (Gmail's menu shows none). This is asserted on computed styles because the
+        // wash behind a highlighted item is so pale that the screenshot comparison's tolerance
+        // does not see it — the committed PNG alone would stay green with the first item lit.
+        const items = within(menu).getAllByRole('menuitem');
+        const background = (el: Element) => getComputedStyle(el).backgroundColor;
+        expect(document.activeElement).toBe(menu);
+        expect(getComputedStyle(menu).outlineStyle).toBe('none');
+        expect(items.map(background)).toEqual(items.map(() => 'rgba(0, 0, 0, 0)'));
+
         await expect(page.elementLocator(card)).toMatchScreenshot(
           `mail-card-menu-${theme}-${scheme}`,
         );
+
+        // The pointer over an item highlights that one, and only that one: it takes the focus,
+        // and with it the menu's hover wash.
+        const hovered = resolveColor(card, 'var(--mail-card-menu-hover)');
+        expect(hovered).not.toBe('rgba(0, 0, 0, 0)');
+        await userEvent.hover(items[1]);
+        await settleUntilStable(() => background(items[1]));
+        expect(document.activeElement).toBe(items[1]);
+        expect(background(items[1])).toBe(hovered);
+        expect(background(items[0])).toBe('rgba(0, 0, 0, 0)');
+        // Moving to the first item moves the highlight: still exactly one.
+        await userEvent.hover(items[0]);
+        await settleUntilStable(() => background(items[0]));
+        expect(background(items[0])).toBe(hovered);
+        expect(background(items[1])).toBe('rgba(0, 0, 0, 0)');
+        await parkPointer(`menu-${theme}-end`);
       });
 
       it(`shows a status in place of the actions, at the same height, in ${theme}/${scheme}`, async () => {
@@ -560,10 +586,16 @@ describe('MailCard visual (self-baseline)', () => {
   /**
    * A committed screenshot only catches a regression once a human looks at it. This is the
    * assertion a PNG cannot make: that the card's colours follow the scheme at all. The card stays
-   * mounted across the flip; only the document's scheme and the `colorScheme` prop change.
+   * mounted across the flip, with its split menu open; only the document's scheme and the
+   * `colorScheme` prop change.
+   *
+   * The border is joy's alone to change: google keeps the box but paints the border transparent
+   * in both schemes (Gmail's card has none), so for google it is asserted to stay transparent.
+   * The menu is a surface of its own (joy's popup, a GM3 container in google), so it is read
+   * separately from the card.
    */
   for (const theme of THEMES) {
-    it(`paints a different surface and title in dark than in light in ${theme}`, async () => {
+    it(`paints a different surface, title, border and menu in dark than in light in ${theme}`, async () => {
       await setColorScheme('light');
       const { rerender } = render(
         <MailCard
@@ -573,12 +605,18 @@ describe('MailCard visual (self-baseline)', () => {
           messages={MESSAGES}
         />,
       );
+      await userEvent.click(screen.getByRole('button', { name: MESSAGES.moreActions }));
+      await parkPointer(`scheme-${theme}`);
       const title = screen.getByText(TITLE);
       const card = title.closest('[data-color-scheme]') as HTMLElement;
+      const menu = screen.getByRole('menu');
       const read = () => ({
         surface: getComputedStyle(card).backgroundColor,
         title: getComputedStyle(title).color,
+        border: getComputedStyle(card).borderTopColor,
+        menu: getComputedStyle(menu).backgroundColor,
       });
+      await settleTransitions();
       const light = read();
 
       await setColorScheme('dark');
@@ -591,10 +629,18 @@ describe('MailCard visual (self-baseline)', () => {
         />,
       );
       await settleTransitions();
+      // The same open list, not a new one: the flip did not close it.
+      expect(screen.getByRole('menu')).toBe(menu);
       const dark = read();
 
       expect(dark.surface).not.toBe(light.surface);
       expect(dark.title).not.toBe(light.title);
+      expect(dark.menu).not.toBe(light.menu);
+      if (theme === 'joy') {
+        expect(dark.border).not.toBe(light.border);
+      } else {
+        expect([light.border, dark.border]).toEqual(['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0)']);
+      }
     });
 
     /*

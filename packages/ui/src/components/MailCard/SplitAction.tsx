@@ -24,11 +24,13 @@ const ARROW_CLASSES = cx(
  * rows above the footer, hence the `z-index`. `max-width: 100cqw` is a safety net on a card too
  * narrow for 320 px: the footer is the size container (`MailCardFooter`), so the list never gets
  * wider than the card's content box, and `max-height` with a scrollbar keeps a list of long items
- * from growing past the card. Colours and the font come from the `--mail-card-*` variables.
+ * from growing past the card. Colours and the font come from the `--mail-card-*` variables. The
+ * list itself takes the focus when a pointer opens it (see `SplitAction`), so it draws no outline
+ * of its own: it is a place for the focus to rest, not a control.
  */
 const MENU_CLASSES = cx(
   'absolute right-0 bottom-[calc(100%+8px)] z-10 box-border w-[320px] max-w-[100cqw] py-[10px]',
-  'max-h-[320px] overflow-y-auto',
+  'max-h-[320px] overflow-y-auto outline-none',
   'rounded-[12px] border border-[var(--mail-card-border)] bg-[var(--mail-card-menu-surface)] text-left',
   '[box-shadow:var(--mail-card-menu-shadow)] [font-family:var(--mail-card-font)]',
 );
@@ -72,12 +74,16 @@ export interface SplitActionProps {
  * of `alternatives` above it. The main part does what a plain primary offer does; an item is a
  * variant of it, handed to `onAlternative` whole.
  *
- * A menu button as the WAI-ARIA authoring practices describe it, kept small: opening it focuses the
- * first item; the arrow keys move between the items and wrap, `Home` and `End` jump; `Escape`
- * closes and gives the focus back to the arrow; so does choosing an item. `Tab` and `Shift+Tab`
- * close it too and go on from the arrow. A pointerdown outside, or the focus leaving some other
- * way, closes it without moving the focus. The pointer moves the focus onto the item it passes
- * over, so exactly one item is highlighted, whichever of the two moved last.
+ * A menu button as the WAI-ARIA authoring practices describe it, kept small: opened from the
+ * keyboard, it focuses the first item; opened with the pointer, it focuses the list itself and
+ * highlights nothing, so the most consequential choice (the first item) is never pre-selected under
+ * a mouse user's pointer — as in the Gmail card menu this follows, and as the library's `Menu`
+ * does. The arrow keys move between the items and wrap (from the list, `ArrowDown` goes to the
+ * first and `ArrowUp` to the last), `Home` and `End` jump; `Escape` closes and gives the focus back
+ * to the arrow; so does choosing an item. `Tab` and `Shift+Tab` close it too and go on from the
+ * arrow. A pointerdown outside, or the focus leaving some other way, closes it without moving the
+ * focus. The pointer moves the focus onto the item it passes over, so at most one item is
+ * highlighted, whichever of the two moved last.
  */
 export function SplitAction({
   action,
@@ -95,9 +101,14 @@ export function SplitAction({
   const listRef = React.useRef<HTMLDivElement>(null);
   // Set by a pointerdown inside this component while the list is open, read by the outside check.
   const pointerStartedInside = React.useRef(false);
+  // How the list was opened: by the pointer (a click with a position, `detail > 0`) or from the
+  // keyboard (Enter or Space on the arrow click with `detail === 0`). Decides what takes the focus.
+  const openedWithPointer = React.useRef(false);
 
   React.useEffect(() => {
-    if (open) menuItems(listRef.current)[0]?.focus();
+    if (!open) return;
+    if (openedWithPointer.current) listRef.current?.focus({ preventScroll: true });
+    else menuItems(listRef.current)[0]?.focus();
   }, [open]);
 
   React.useEffect(() => {
@@ -142,8 +153,11 @@ export function SplitAction({
       return;
     }
     const items = menuItems(listRef.current);
-    const current = items.indexOf(event.target as HTMLElement);
-    if (current === -1) return;
+    // Focus on the list itself (a pointer open) counts as "before the first item", so ArrowDown
+    // goes to the first item and ArrowUp wraps to the last. Focus anywhere else is not ours.
+    const onList = event.target === listRef.current;
+    const current = onList ? -1 : items.indexOf(event.target as HTMLElement);
+    if (items.length === 0 || (current === -1 && !onList)) return;
     const last = items.length - 1;
     let target: number;
     switch (event.key) {
@@ -151,7 +165,7 @@ export function SplitAction({
         target = current === last ? 0 : current + 1;
         break;
       case 'ArrowUp':
-        target = current === 0 ? last : current - 1;
+        target = current <= 0 ? last : current - 1;
         break;
       case 'Home':
         target = 0;
@@ -203,7 +217,10 @@ export function SplitAction({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
-        onClick={() => setOpen((wasOpen) => !wasOpen)}
+        onClick={(event) => {
+          openedWithPointer.current = event.detail > 0;
+          setOpen((wasOpen) => !wasOpen);
+        }}
       >
         <ArrowDropDownIcon />
       </button>
@@ -212,6 +229,7 @@ export function SplitAction({
           ref={listRef}
           id={menuId}
           role="menu"
+          tabIndex={-1}
           aria-labelledby={arrowId}
           className={MENU_CLASSES}
         >
