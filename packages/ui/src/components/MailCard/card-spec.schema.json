@@ -88,7 +88,7 @@
       "required": ["date"],
       "properties": {
         "date": {
-          "description": "ISO 8601: a date (2026-11-01) or a date-time (2026-11-01T09:30:00+01:00).",
+          "description": "ISO 8601: a date (2026-11-01) or a date-time (2026-11-01T09:30:00+01:00). The pattern checks each field's range, not the calendar: 2026-02-30 passes it, and the client drops the row that holds it. Send dates that exist.",
           "type": "string",
           "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])(T([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d(\\.\\d+)?)?(Z|[+-]([01]\\d|2[0-3]):[0-5]\\d)?)?$"
         }

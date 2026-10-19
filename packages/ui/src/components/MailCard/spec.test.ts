@@ -69,12 +69,17 @@ describe('parseCardSpec', () => {
       ).toStrictEqual(card({ type: 'rows', rows: [{ label: 'ok', value: 'ok' }] }));
     });
 
-    it('drops rows whose date is not an ISO 8601 date or date-time', () => {
+    it('drops rows whose date is not an ISO 8601 date or date-time, or not on the calendar', () => {
       const dates = [
         '2026-11-01',
         '2026-11-01T09:30',
         '2026-11-01T09:30:15Z',
         '2026-11-01T09:30:15.250+01:00',
+        '2028-02-29',
+        '2000-02-29',
+        '2026-02-28',
+        '2026-04-30',
+        '2026-12-31',
       ];
       const bad = [
         '1. Nov. 2026',
@@ -83,6 +88,16 @@ describe('parseCardSpec', () => {
         '2026-11-32',
         '2026-11-01T24:00',
         '',
+        // Calendar-impossible: each field is in range, the day is not in that month.
+        '2026-02-29',
+        '2026-02-30',
+        '2026-02-31',
+        '2026-04-31',
+        '2026-06-31',
+        '2026-09-31',
+        '2026-11-31',
+        '1900-02-29',
+        '2026-02-30T10:00:00Z',
       ];
       const rows = (values: string[]) =>
         values.map((date) => ({ label: 'Einzug', value: { date } }));
@@ -388,7 +403,11 @@ describe('parseCardSpec', () => {
  * The contract. Core validates what it sends against `card-spec.schema.json`; the client parses what
  * arrives with `parseCardSpec`. The schema is strict, the parser lenient — but a card the schema
  * accepts must come through the parser unchanged, and a card the schema rejects must be changed
- * (a piece dropped) or refused. The table below pins that, so the two cannot drift apart silently.
+ * (a piece dropped) or refused. The tables below pin that, so the two cannot drift apart silently.
+ *
+ * One known gap: a date like 2026-02-30 has every field in range, so the schema's pattern accepts
+ * it, while the parser also checks the calendar and drops it. JSON Schema cannot express that
+ * check. It is pinned separately below, not in the tables, which would otherwise claim otherwise.
  */
 describe('card-spec.schema.json', () => {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
@@ -413,6 +432,7 @@ describe('card-spec.schema.json', () => {
     'a date': card(date('2026-11-01')),
     'a date-time with a zone': card(date('2026-11-01T09:30:15.250+01:00')),
     'a date-time without a zone': card(date('2026-11-01T09:30')),
+    'a leap day': card(date('2028-02-29')),
     'a row without an icon': card(rows({ label: 'a', value: 'b' })),
     'every icon': card(
       rows(...MAIL_CARD_ICON_NAMES.map((icon) => ({ icon, label: icon, value: 'v' }))),
@@ -497,6 +517,12 @@ describe('card-spec.schema.json', () => {
       expect(parseCardSpec(overTheWire(spec))).not.toStrictEqual(overTheWire(spec));
     },
   );
+
+  it('cannot tell a date that is not on the calendar; the parser can', () => {
+    const impossible = card(date('2026-02-30'));
+    expect(validate(impossible)).toBe(true);
+    expect(parseCardSpec(overTheWire(impossible))).toStrictEqual(card());
+  });
 
   it('lists the same icons and tones as the parser', () => {
     const defs = schema.$defs;

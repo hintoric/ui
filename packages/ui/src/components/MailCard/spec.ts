@@ -7,8 +7,10 @@
  * something it does not know yet. So the parser drops what it cannot use instead of throwing, and
  * copies only the keys it knows — nothing the backend adds ever reaches the renderer.
  *
- * Whatever the schema accepts passes the parser unchanged. Keep the two in step: the table in
- * `spec.test.ts` fails when they drift apart.
+ * Whatever the schema accepts passes the parser unchanged, with one exception: a date that is not
+ * on the calendar (2026-02-30). Every field of it is in range, so the schema's pattern accepts it,
+ * and JSON Schema cannot express "this day exists in this month". The parser drops it. Keep the two
+ * in step: the tables in `spec.test.ts` fail when they drift apart.
  */
 
 /** The icons a row can show. The renderer maps each name to a Material Symbol. */
@@ -82,10 +84,24 @@ const isTone = (value: unknown): value is MailCardStatusTone =>
 // a scheme that is not spelled exactly like this is not worth guessing at.
 const HTTPS_URL = /^https:\/\/[^\s/?#]\S*$/;
 
-// A date, or a date-time with optional seconds and zone. Ranges are checked here because `Intl`
-// throws on a date it cannot read, which would turn one bad row into a broken card.
+// A date, or a date-time with optional seconds and zone. Ranges are checked here, and the calendar
+// in `isIsoDate`, because `Intl` throws on a date it cannot read (or a browser rolls 2026-02-31
+// over to March, which shows a value the input never said). Either would turn one bad row into a
+// broken or wrong card.
 const ISO_DATE =
   /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])(T([01]\d|2[0-3]):[0-5]\d(:[0-5]\d(\.\d+)?)?(Z|[+-]([01]\d|2[0-3]):[0-5]\d)?)?$/;
+
+/** An ISO 8601 date or date-time whose day exists in its month (leap years included). */
+function isIsoDate(value: unknown): value is string {
+  if (typeof value !== 'string' || !ISO_DATE.test(value)) return false;
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+  // `setUTCFullYear` rather than `Date.UTC`, which maps years 0 to 99 onto 1900 to 1999.
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  return (
+    date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day
+  );
+}
 
 /** Parses each entry of `items` (if it is an array) and keeps what survives. */
 function parseEach<T>(items: unknown, parse: (item: unknown) => T | null): T[] {
@@ -95,9 +111,7 @@ function parseEach<T>(items: unknown, parse: (item: unknown) => T | null): T[] {
 
 function parseValue(value: unknown): MailCardValue | null {
   if (isText(value)) return value;
-  if (isRecord(value) && typeof value.date === 'string' && ISO_DATE.test(value.date)) {
-    return { date: value.date };
-  }
+  if (isRecord(value) && isIsoDate(value.date)) return { date: value.date };
   return null;
 }
 
