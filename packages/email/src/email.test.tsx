@@ -13,6 +13,7 @@ import {
   renderAuthNoAccount,
   renderAuthLink,
   renderCompanyDataFound,
+  COMPANY_DATA_FOUND_ICON,
   companyDataFoundMessagesDe,
   companyDataFoundMessagesEn,
   type CompanyDataFoundProps,
@@ -465,13 +466,13 @@ describe('renderCompanyDataFound', () => {
 
   it('returns subject, HTML and a plain-text part with the review link', async () => {
     const { subject, html, text } = await renderCompanyDataFound(found);
-    expect(subject).toBe('Firmendaten von Muster Bau GmbH gefunden');
+    expect(subject).toBe('Firmendaten von Muster Bau GmbH automatisch gefunden');
     expect(html).toMatch(/^<!DOCTYPE html/);
     expect(html).toContain('lang="de"');
     const doc = parse(html);
-    expect(doc.querySelector('h1')?.textContent).toBe('Firmendaten gefunden');
+    expect(doc.querySelector('h1')?.textContent).toBe('Deine Firmendaten sind\u00a0schon\u00a0da');
     expect([...doc.querySelectorAll('a')].find((a) => a.getAttribute('href') === reviewUrl)?.textContent).toBe('Angaben prüfen');
-    expect(text).toContain('Auf muster-bau.de wurden die Angaben zu Muster Bau GmbH gefunden.');
+    expect(text).toContain('Die Angaben zu Muster Bau GmbH wurden automatisch auf muster-bau.de gefunden. Du musst nichts abtippen, nur prüfen.');
     expect(text).toContain('Erst wenn du bestätigst, werden die Angaben übernommen.');
     expect(text).toContain(reviewUrl);
   });
@@ -479,8 +480,8 @@ describe('renderCompanyDataFound', () => {
   it('speaks of "your company" when no name was found, or only a blank one', async () => {
     for (const companyName of [undefined, '  ']) {
       const { subject, text } = await renderCompanyDataFound({ ...found, companyName });
-      expect(subject).toBe('Deine Firmendaten wurden gefunden');
-      expect(text).toContain('Auf muster-bau.de wurden die Angaben zu deiner Firma gefunden.');
+      expect(subject).toBe('Deine Firmendaten wurden automatisch gefunden');
+      expect(text).toContain('Die Angaben zu deiner Firma wurden automatisch auf muster-bau.de gefunden.');
     }
   });
 
@@ -490,19 +491,20 @@ describe('renderCompanyDataFound', () => {
 
   it('renders in English with its own lang, subject and button', async () => {
     const { subject, html, text } = await renderCompanyDataFound({ ...found, messages: companyDataFoundMessagesEn });
-    expect(subject).toBe('Company details found for Muster Bau GmbH');
+    expect(subject).toBe('Company details for Muster Bau GmbH found automatically');
     expect(html).toContain('lang="en"');
     expect(text).toContain('Review details');
     expect(text).toContain('Nothing is added until you confirm.');
     expect((await renderCompanyDataFound({ ...found, companyName: undefined, messages: companyDataFoundMessagesEn })).subject).toBe(
-      'Your company details were found',
+      'Your company details were found automatically',
     );
   });
 
-  it('lists none of the fields and loads no image but the logo — no tracking pixel', async () => {
+  it('lists none of the fields and loads no image but the logo and its icon — no tracking pixel', async () => {
     const { html } = await renderCompanyDataFound(found);
     const sources = [...parse(html).querySelectorAll('img')].map((img) => img.getAttribute('src'));
-    expect(sources.every((src) => src?.startsWith('https://cdn.hintoric.com/assets/logo/'))).toBe(true);
+    expect(sources).toEqual(expect.arrayContaining([COMPANY_DATA_FOUND_ICON.light, COMPANY_DATA_FOUND_ICON.dark]));
+    expect(sources.every((src) => /^https:\/\/cdn\.hintoric\.com\/assets\/(logo|icons\/company-data-found)\//.test(src ?? ''))).toBe(true);
     expect(html).not.toMatch(/IBAN|USt|Handelsregister/);
   });
 
