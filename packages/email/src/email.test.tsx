@@ -12,6 +12,10 @@ import {
   renderAuthCode,
   renderAuthNoAccount,
   renderAuthLink,
+  renderCompanyDataFound,
+  companyDataFoundMessagesDe,
+  companyDataFoundMessagesEn,
+  type CompanyDataFoundProps,
   renderSecurityActivityAlert,
   renderWaitlistWelcome,
   waitlistWelcomeMessagesDe,
@@ -446,6 +450,76 @@ describe('renderAuthLink', () => {
   it('puts the legal notice under the footer only when given', async () => {
     expect((await renderAuthLink(link)).text).not.toContain('Musterstraße');
     expect((await renderAuthLink({ ...link, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
+  });
+});
+
+describe('renderCompanyDataFound', () => {
+  const reviewUrl = 'https://app.example.com/settings/company?suggestion=1';
+  const found: CompanyDataFoundProps = {
+    companyName: 'Muster Bau GmbH',
+    website: 'muster-bau.de',
+    reviewUrl,
+    workspaceName: 'Muster Bau',
+    messages: companyDataFoundMessagesDe,
+  };
+
+  it('returns subject, HTML and a plain-text part with the review link', async () => {
+    const { subject, html, text } = await renderCompanyDataFound(found);
+    expect(subject).toBe('Firmendaten von Muster Bau GmbH gefunden');
+    expect(html).toMatch(/^<!DOCTYPE html/);
+    expect(html).toContain('lang="de"');
+    const doc = parse(html);
+    expect(doc.querySelector('h1')?.textContent).toBe('Firmendaten gefunden');
+    expect([...doc.querySelectorAll('a')].find((a) => a.getAttribute('href') === reviewUrl)?.textContent).toBe('Angaben prüfen');
+    expect(text).toContain('Auf muster-bau.de wurden die Angaben zu Muster Bau GmbH gefunden.');
+    expect(text).toContain('Erst wenn du bestätigst, werden die Angaben übernommen.');
+    expect(text).toContain(reviewUrl);
+  });
+
+  it('speaks of "your company" when no name was found, or only a blank one', async () => {
+    for (const companyName of [undefined, '  ']) {
+      const { subject, text } = await renderCompanyDataFound({ ...found, companyName });
+      expect(subject).toBe('Deine Firmendaten wurden gefunden');
+      expect(text).toContain('Auf muster-bau.de wurden die Angaben zu deiner Firma gefunden.');
+    }
+  });
+
+  it('names the workspace in the footer', async () => {
+    expect((await renderCompanyDataFound(found)).text).toContain('weil sie deinen Workspace „Muster Bau“ bei hintoric betrifft');
+  });
+
+  it('renders in English with its own lang, subject and button', async () => {
+    const { subject, html, text } = await renderCompanyDataFound({ ...found, messages: companyDataFoundMessagesEn });
+    expect(subject).toBe('Company details found for Muster Bau GmbH');
+    expect(html).toContain('lang="en"');
+    expect(text).toContain('Review details');
+    expect(text).toContain('Nothing is added until you confirm.');
+    expect((await renderCompanyDataFound({ ...found, companyName: undefined, messages: companyDataFoundMessagesEn })).subject).toBe(
+      'Your company details were found',
+    );
+  });
+
+  it('lists none of the fields and loads no image but the logo — no tracking pixel', async () => {
+    const { html } = await renderCompanyDataFound(found);
+    const sources = [...parse(html).querySelectorAll('img')].map((img) => img.getAttribute('src'));
+    expect(sources.every((src) => src?.startsWith('https://cdn.hintoric.com/assets/logo/'))).toBe(true);
+    expect(html).not.toMatch(/IBAN|USt|Handelsregister/);
+  });
+
+  it('refuses to link an unsafe scheme', async () => {
+    const { html, text } = await renderCompanyDataFound({ ...found, reviewUrl: 'javascript:alert(1)' });
+    expect(html).not.toContain('javascript:');
+    expect(text).not.toContain('javascript:');
+  });
+
+  it('escapes a company name read off a website rather than rendering it as markup', async () => {
+    const { html } = await renderCompanyDataFound({ ...found, companyName: '<img src=x onerror=alert(1)>' });
+    expect(html).not.toContain('<img src=x');
+  });
+
+  it('puts the legal notice under the footer only when given', async () => {
+    expect((await renderCompanyDataFound(found)).text).not.toContain('Musterstraße');
+    expect((await renderCompanyDataFound({ ...found, legalNotice: 'Muster GmbH · Musterstraße 1' })).text).toContain('Musterstraße 1');
   });
 });
 

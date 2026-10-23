@@ -79,6 +79,7 @@ import { EmailAlertPage } from './pages/email/EmailAlertPage';
 import { AuthCodePage } from './pages/email/AuthCodePage';
 import { AuthLinkPage } from './pages/email/AuthLinkPage';
 import { AuthNoAccountPage } from './pages/email/AuthNoAccountPage';
+import { CompanyDataFoundPage } from './pages/email/CompanyDataFoundPage';
 import { SecurityActivityAlertPage } from './pages/email/SecurityActivityAlertPage';
 import { WaitlistWelcomePage } from './pages/email/WaitlistWelcomePage';
 import { IconsPage } from './pages/icons/IconsPage';
@@ -175,6 +176,7 @@ export function App() {
             <Route path="/email/templates/auth-code" element={<AuthCodePage />} />
             <Route path="/email/templates/auth-link" element={<AuthLinkPage />} />
             <Route path="/email/templates/auth-no-account" element={<AuthNoAccountPage />} />
+            <Route path="/email/templates/company-data-found" element={<CompanyDataFoundPage />} />
             <Route path="/email/templates/security-activity-alert" element={<SecurityActivityAlertPage />} />
             <Route path="/email/templates/waitlist-welcome" element={<WaitlistWelcomePage />} />
           </Route>
