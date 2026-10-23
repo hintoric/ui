@@ -1,6 +1,6 @@
 {
   "name": "@hintoric/icons",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "hintoric's icons and spot illustrations as React components, light and dark.",
   "type": "module",
   "license": "MIT",
