@@ -21,7 +21,8 @@ against its web component in light and dark.
 
 It also ships `Layout` (a message framed like hintoric's auth screens), `renderEmail` and
 ready-made templates such as `SecurityActivityAlertEmail`, `AuthCodeEmail` (the one-time
-codes of Kratos' sign-in flows) and `AuthLinkEmail` (its link flows).
+codes of Kratos' sign-in flows), `AuthLinkEmail` (its link flows) and `CompanyDataFoundEmail`
+(company details found on the reader's website, ready to review).
 
 ## Install
 
