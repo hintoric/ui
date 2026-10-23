@@ -1,5 +1,11 @@
 # @hintoric/icons
 
+## 0.2.0
+
+### Minor Changes
+
+- ff12697: New illustration `EmptyOpenMailIcon`, with a light and a dark variant: an open envelope with a letter, for an empty state that asks the user to open a mail to see its workflows.
+
 ## 0.1.1
 
 ### Patch Changes
