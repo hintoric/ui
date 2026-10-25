@@ -27,6 +27,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "dependencies": {
+    "lottie-web": "^5.13.0"
+  },
   "peerDependencies": {
     "react": "^19.0.0"
   },
@@ -37,7 +40,9 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.5",
     "@vitejs/plugin-react": "^6.1.1",
+    "@vitest/browser-playwright": "^4.1.11",
     "jsdom": "^30.0.1",
+    "playwright": "^1.62.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "typescript": "^7.0.2",
@@ -50,6 +55,7 @@
     "generate": "node scripts/generate.ts",
     "build": "node scripts/generate.ts && vite build",
     "test": "node scripts/generate.ts && vitest run",
-    "typecheck": "node scripts/generate.ts && tsc --noEmit"
+    "typecheck": "node scripts/generate.ts && tsc --noEmit",
+    "test:visual": "node scripts/generate.ts && vitest run --config vitest.visual.config.ts"
   }
 }
