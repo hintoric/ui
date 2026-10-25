@@ -2,14 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import lottie from 'lottie-web/build/player/lottie_light';
-import { AnimatedIcon } from '../components/AnimatedIcon';
-import { ReducedMotionProvider } from '../theme/ReducedMotionProvider';
-import { COLOR_SCHEMES, setColorScheme, type ColorScheme } from './helpers';
+import { FormReadingLensAnimatedIcon } from '../animated';
+import { COLOR_SCHEMES, setColorScheme, type ColorScheme } from './setup';
 
-// AnimatedIcon has no @mui/joy counterpart, so it is exempt from the parity
-// comparison (see CLAUDE.md) — not from scheme coverage. Like
-// AnimatedMapImage it hits the real CDN: the point is the real file through
-// the real player, recoloured by the real dark-slots.json.
+// No @mui/joy counterpart and no web counterpart to compare against: what
+// matters is the real file through the real player, recoloured by the real
+// dark-slots.json, in both schemes. Hits the live CDN, like @hintoric/ui's
+// AnimatedMapImage test hits its map service.
 //
 // The animation loops forever, so every player screenshot first parks it on
 // one frame (all three frames drawn, before the loop clears them) through lottie-web's global API —
@@ -17,10 +16,10 @@ import { COLOR_SCHEMES, setColorScheme, type ColorScheme } from './helpers';
 const SETTLED_FRAME = 200;
 
 async function renderPlayer(scheme: ColorScheme, testId: string): Promise<HTMLElement> {
-  await setColorScheme(scheme);
+  setColorScheme(scheme);
   render(
     <div style={{ width: 400 }}>
-      <AnimatedIcon name="form-reading-lens" data-testid={testId} />
+      <FormReadingLensAnimatedIcon data-testid={testId} />
     </div>,
   );
   const el = page.getByTestId(testId).element() as HTMLElement;
@@ -63,19 +62,18 @@ describe('AnimatedIcon visual', () => {
   it('recolours a mounted icon when <html> switches scheme', async () => {
     const el = await renderPlayer('light', 'icon');
     const before = fills(el);
-    await setColorScheme('dark');
+    setColorScheme('dark');
     await expect.poll(() => fills(el).has('rgb(22, 26, 28)'), { timeout: 10000 }).toBe(true);
     expect(fills(el)).not.toEqual(before);
   });
 
   it.each(COLOR_SCHEMES)('shows the %s still image under reduced motion', async (scheme) => {
-    await setColorScheme(scheme);
+    setColorScheme(scheme);
+    document.documentElement.setAttribute('data-reduced-motion', 'reduce');
     render(
-      <ReducedMotionProvider reducedMotion>
-        <div style={{ width: 400 }}>
-          <AnimatedIcon name="form-reading-lens" data-testid={`still-${scheme}`} />
-        </div>
-      </ReducedMotionProvider>,
+      <div style={{ width: 400 }}>
+        <FormReadingLensAnimatedIcon data-testid={`still-${scheme}`} />
+      </div>,
     );
     const el = page.getByTestId(`still-${scheme}`).element() as HTMLElement;
     const img = el.querySelector('img') as HTMLImageElement;

@@ -16,7 +16,7 @@ import {
   Snackbar,
   useColorScheme,
 } from '@hintoric/ui';
-import { icons, type HintoricIcon, type IconMode } from '@hintoric/icons';
+import { animatedIcons, icons as staticIcons, type HintoricAnimatedIcon, type HintoricIcon, type IconMode } from '@hintoric/icons';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import MoreHorizRoundedIcon from '@mui/icons-material/MoreHorizRounded';
@@ -27,7 +27,11 @@ import { DocsSearch } from '../../search/DocsSearch';
 
 const INSTALL = 'npm install @hintoric/icons';
 
-function snippets(Icon: HintoricIcon) {
+// Animated icons sit in the same grid: same props, same slug and CDN stills.
+type AnyIcon = HintoricIcon | HintoricAnimatedIcon;
+const icons: readonly AnyIcon[] = [...staticIcons, ...animatedIcons];
+
+function snippets(Icon: AnyIcon) {
   const name = Icon.displayName;
   return {
     import: `import { ${name} } from '@hintoric/icons';`,

@@ -74,7 +74,19 @@ export function App() {
       <p>
         Covered today: image fades and reveals, loading spinners, skeletons, progress indicators,
         radio dots, switch thumbs, data-grid sort icons, tabs, accordions, modals and drawers.
+        The animated icons from <code>@hintoric/icons</code> show a still image instead.
       </p>
+
+      <h2>On &lt;html&gt;</h2>
+      <p>
+        The provider also writes its value to <code>&lt;html data-reduced-motion&gt;</code>:{' '}
+        <code>reduce</code> or <code>no-preference</code>. Code that cannot read the provider uses
+        it, for example the animated icons in <code>@hintoric/icons</code> or your own CSS. Without a
+        provider there is no attribute, and the system setting applies.
+      </p>
+      <Code>{`[data-reduced-motion='reduce'] .my-spinner {
+  animation: none;
+}`}</Code>
 
       <h2>Props</h2>
       <PropsTable

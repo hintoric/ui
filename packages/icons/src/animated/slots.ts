@@ -3,10 +3,11 @@ export type SlotColors = Record<string, number[]>;
 
 const CDN = 'https://cdn.hintoric.com/assets/icons';
 
-export function cdnSources(name: string) {
-  const base = `${CDN}/${name}`;
+/** Every file of an animated icon on the CDN, from its slug. */
+export function cdnSources(slug: string) {
+  const base = `${CDN}/${slug}`;
   return {
-    animation: `${base}/${name}.json`,
+    animation: `${base}/${slug}.json`,
     darkSlots: `${base}/dark-slots.json`,
     light: `${base}/light.svg`,
     dark: `${base}/dark.svg`,

@@ -4,7 +4,7 @@ import dts from 'vite-plugin-dts';
 import { resolve } from 'node:path';
 
 export default defineConfig({
-  plugins: [react(), dts({ include: ['src'], exclude: ['src/test/**', '**/*.test.*'], rollupTypes: true })],
+  plugins: [react(), dts({ include: ['src'], exclude: ['src/test/**', 'src/visual/**', '**/*.test.*'], rollupTypes: true })],
   build: {
     lib: {
       entry: resolve(import.meta.dirname, 'src/index.ts'),
@@ -12,7 +12,10 @@ export default defineConfig({
       fileName: () => 'index.js',
     },
     rollupOptions: {
-      external: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+      // lottie-web is only reached through the dynamic import() in
+      // createAnimatedIcon. Left external, the consumer's bundler splits it
+      // into a chunk of its own that loads with the first animated icon.
+      external: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'lottie-web/build/player/lottie_light'],
       // One module per icon, so a consumer's bundler drops every icon it does
       // not import even without scope hoisting across a single big file.
       output: { preserveModules: true, preserveModulesRoot: 'src', entryFileNames: '[name].js' },
@@ -24,5 +27,7 @@ export default defineConfig({
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
+    // Real-browser tests run separately via `pnpm test:visual` (vitest.visual.config.ts).
+    exclude: ['**/node_modules/**', '**/*.visual.test.tsx'],
   },
 });

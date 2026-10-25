@@ -46,4 +46,24 @@ describe('ReducedMotionProvider', () => {
 
     expect(screen.getByTestId('reduced')).toHaveTextContent('true');
   });
+
+  it('mirrors its value onto <html> and restores the previous one on unmount', () => {
+    const root = document.documentElement;
+    const { rerender, unmount } = render(
+      <ReducedMotionProvider reducedMotion>
+        <Consumer />
+      </ReducedMotionProvider>,
+    );
+    expect(root).toHaveAttribute('data-reduced-motion', 'reduce');
+
+    rerender(
+      <ReducedMotionProvider reducedMotion={false}>
+        <Consumer />
+      </ReducedMotionProvider>,
+    );
+    expect(root).toHaveAttribute('data-reduced-motion', 'no-preference');
+
+    unmount();
+    expect(root).not.toHaveAttribute('data-reduced-motion');
+  });
 });
