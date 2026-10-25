@@ -56,6 +56,10 @@ export default defineConfig({
       // consumer, including the ones that never render a LocaleSwitcher.
       // Left external, it stays a normal dependency and drops out
       // entirely for anyone who tree-shakes LocaleSwitcher away.
+      // lottie-web is external for the same reason, and AnimatedIcon only
+      // ever reaches it through a dynamic import(): left external, the
+      // consumer's bundler splits it into its own chunk that loads on the
+      // first animated icon, instead of a copy baked into our dist/.
       // react-hook-form and zod are peerDependencies and MUST be external.
       // This list is exact-specifier matched, so an omission silently bundles
       // a second copy — and a second react-hook-form module instance makes
@@ -70,6 +74,7 @@ export default defineConfig({
         'react/jsx-dev-runtime',
         'react-dom',
         'country-flag-icons/react/1x1',
+        'lottie-web/build/player/lottie_light',
         'react-hook-form',
         'zod',
       ],

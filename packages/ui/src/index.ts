@@ -34,6 +34,9 @@ export type { HintoricLogoProps } from './components/HintoricLogo';
 export { HintoricIcon } from './components/HintoricIcon';
 export type { HintoricIconProps } from './components/HintoricIcon';
 
+export { AnimatedIcon } from './components/AnimatedIcon';
+export type { AnimatedIconMode, AnimatedIconProps, AnimatedIconSources } from './components/AnimatedIcon';
+
 export { Stack } from './components/Stack';
 export type { StackProps, StackSpacing } from './components/Stack';
 

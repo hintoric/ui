@@ -17,6 +17,7 @@ import { ButtonPage } from './pages/ButtonPage';
 import { ButtonGroupPage } from './pages/ButtonGroupPage';
 import { IconButtonPage } from './pages/IconButtonPage';
 import { FileInputPage } from './pages/FileInputPage';
+import { AnimatedIconPage } from './pages/AnimatedIconPage';
 import { BlurhashImagePage } from './pages/BlurhashImagePage';
 import { FloatingBarPage } from './pages/FloatingBarPage';
 import { InputPage } from './pages/InputPage';
@@ -120,6 +121,7 @@ export function App() {
             <Route path="/address-autofill" element={<AddressAutofillPage />} />
             <Route path="/file-input" element={<FileInputPage />} />
             <Route path="/blurhash-image" element={<BlurhashImagePage />} />
+            <Route path="/animated-icon" element={<AnimatedIconPage />} />
             <Route path="/slider" element={<SliderPage />} />
             <Route path="/toggle-button-group" element={<ToggleButtonGroupPage />} />
             <Route path="/form-control" element={<FormControlPage />} />
