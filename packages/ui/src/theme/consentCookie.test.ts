@@ -5,6 +5,7 @@ import {
   formatConsentCookie,
   parseConsentCookie,
   readCookieValue,
+  readCookieValues,
 } from './consentCookie';
 import type { ConsentState } from './consentCookie';
 
@@ -90,5 +91,13 @@ describe('consent cookie', () => {
     expect(readCookieValue('a=1; hintoric_consent=x; b=2', 'hintoric_consent')).toBe('x');
     expect(readCookieValue('hintoric_consent_old=y; xhintoric_consent=z', 'hintoric_consent')).toBeUndefined();
     expect(readCookieValue('hintoric_consent=a=b', 'hintoric_consent')).toBe('a=b');
+  });
+
+  it('reads every cookie of one name, in header order', () => {
+    expect(readCookieValues('hintoric_consent=old; a=1; hintoric_consent=new', 'hintoric_consent')).toEqual([
+      'old',
+      'new',
+    ]);
+    expect(readCookieValues('a=1', 'hintoric_consent')).toEqual([]);
   });
 });

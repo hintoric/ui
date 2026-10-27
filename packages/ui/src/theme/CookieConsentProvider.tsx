@@ -5,9 +5,9 @@ import {
   CONSENT_MAX_AGE_DAYS,
   formatConsentCookie,
   parseConsentCookie,
-  readCookieValue,
+  readCookieValues,
 } from './consentCookie';
-import type { ConsentState } from './consentCookie';
+import type { ConsentState, ParseConsentCookieOptions } from './consentCookie';
 import { reloadPage } from './reloadPage';
 
 export type { ConsentState } from './consentCookie';
@@ -80,6 +80,23 @@ function notify(): void {
 // A cookie value cannot contain NUL, so this never collides with a real one.
 const NOT_LOOKED = '\u0000';
 
+/**
+ * The raw value of the newest valid decision among all cookies of this name —
+ * an older one, set without or with another Domain, would otherwise hide every
+ * new choice, a withdrawal included.
+ */
+function currentCookie(name: string, options: ParseConsentCookieOptions): string | null {
+  const values = readCookieValues(document.cookie, name);
+  let newest: { raw: string; decidedAt: number } | null = null;
+  for (const raw of values) {
+    const state = parseConsentCookie(raw, options);
+    if (!state) continue;
+    const decidedAt = Date.parse(state.decidedAt);
+    if (!newest || decidedAt > newest.decidedAt) newest = { raw, decidedAt };
+  }
+  return newest?.raw ?? values[0] ?? null;
+}
+
 function checkCategories(categories: readonly ConsentCategory[]): void {
   if (!categories.some((category) => category.required)) {
     throw new Error('CookieConsentProvider: one category must be required');
@@ -108,7 +125,7 @@ export function CookieConsentProvider({
   // browser render matches the HTML and only then switches to document.cookie.
   const raw = React.useSyncExternalStore(
     subscribe,
-    () => readCookieValue(document.cookie, cookieName) ?? null,
+    () => currentCookie(cookieName, { version, maxAgeDays }),
     () => (initialCookie === undefined ? NOT_LOOKED : initialCookie),
   );
   const known = raw !== NOT_LOOKED;
@@ -143,8 +160,14 @@ export function CookieConsentProvider({
         choices: Object.fromEntries(optional.map(({ id }) => [id, choices[id] === true])),
         decidedAt: new Date().toISOString(),
       };
-      const previous = consent;
+      // Read now, not from the render: a callback captured before the last
+      // decision would otherwise compare against a stale choice and skip the
+      // reload a withdrawal needs.
+      const options = { version, maxAgeDays };
+      const previous = parseConsentCookie(currentCookie(cookieName, options), options);
 
+      // The host-only cookie of the same name would outlive this one.
+      if (cookieDomain) document.cookie = `${cookieName}=; Max-Age=0; Path=/`;
       document.cookie = formatConsentCookie(next, {
         name: cookieName,
         maxAgeDays,
@@ -166,7 +189,7 @@ export function CookieConsentProvider({
       const withdrew = optional.some(({ id }) => previous?.choices[id] === true && !next.choices[id]);
       if (reloadOnWithdraw && withdrew) reloadPage();
     },
-    [categories, consent, cookieDomain, cookieName, maxAgeDays, onChange, reloadOnWithdraw, version],
+    [categories, cookieDomain, cookieName, maxAgeDays, onChange, reloadOnWithdraw, version],
   );
 
   const value = React.useMemo<CookieConsentState>(() => {

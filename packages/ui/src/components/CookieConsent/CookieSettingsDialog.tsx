@@ -36,7 +36,9 @@ function SettingsBody({ labels, privacyHref }: CookieSettingsDialogProps) {
   const [draft, setDraft] = React.useState<Record<string, boolean>>(() => ({ ...consent?.choices }));
 
   return (
-    <ModalDialog className="w-full max-w-[520px] gap-5">
+    // The modal's frame pads 16 px on every side; the rest scrolls, because
+    // the modal locks the page's own scrolling.
+    <ModalDialog className="max-h-[calc(100dvh-32px)] w-full max-w-[520px] gap-5 overflow-y-auto">
       <ModalClose aria-label={labels.close} />
       <div className="flex flex-col gap-2 pr-10">
         <DialogTitle>{labels.settingsTitle}</DialogTitle>

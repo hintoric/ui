@@ -69,15 +69,25 @@ export function parseConsentCookie(
   return { version, choices, decidedAt };
 }
 
-/** The raw value of one cookie in a `Cookie` header or `document.cookie`. */
-export function readCookieValue(cookieHeader: string, name: string): string | undefined {
+/**
+ * Every raw value of one cookie name in a `Cookie` header or `document.cookie`.
+ * A host-only cookie and one set for a parent domain share a name, and the
+ * browser sends both.
+ */
+export function readCookieValues(cookieHeader: string, name: string): string[] {
+  const values: string[] = [];
   for (const part of cookieHeader.split(';')) {
     const pair = part.trim();
     const separator = pair.indexOf('=');
     if (separator === -1) continue;
-    if (pair.slice(0, separator) === name) return pair.slice(separator + 1);
+    if (pair.slice(0, separator) === name) values.push(pair.slice(separator + 1));
   }
-  return undefined;
+  return values;
+}
+
+/** The first raw value of one cookie name in a `Cookie` header or `document.cookie`. */
+export function readCookieValue(cookieHeader: string, name: string): string | undefined {
+  return readCookieValues(cookieHeader, name)[0];
 }
 
 /** A string for `document.cookie` that stores `state`. */

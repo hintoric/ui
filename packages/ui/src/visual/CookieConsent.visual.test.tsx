@@ -202,6 +202,29 @@ describe('CookieConsent layout', () => {
     expect(rect(button('Ablehnen')).top).toBeLessThan(rect(button('Einzeln auswählen')).top);
   });
 
+  // A phone held sideways, and 320 CSS px at 400 % zoom (WCAG 1.4.10).
+  for (const short of [{ width: 568, height: 320 }, { width: 320, height: 256 }]) {
+    it(`keeps the banner on a ${short.width}×${short.height} screen and scrolls it`, async () => {
+      await renderBanner(short);
+      const card = rect(banner());
+
+      expect(card.top).toBeGreaterThanOrEqual(0);
+      expect(card.bottom).toBeLessThanOrEqual(short.height);
+      expect(getComputedStyle(banner()).overflowY).toBe('auto');
+    });
+
+    it(`keeps the dialog on a ${short.width}×${short.height} screen and scrolls it`, async () => {
+      await renderBanner(short);
+      await openSettings();
+      const dialog = screen.getByRole('dialog');
+      const box = rect(dialog);
+
+      expect(box.top).toBeGreaterThanOrEqual(0);
+      expect(box.bottom).toBeLessThanOrEqual(short.height);
+      expect(getComputedStyle(dialog).overflowY).toBe('auto');
+    });
+  }
+
   it('does not animate with reduced motion', async () => {
     await renderBanner(DESKTOP, true);
 

@@ -41,8 +41,10 @@ function Banner({ labels, privacyHref }: BannerProps) {
       component="section"
       aria-labelledby={titleId}
       className={cx(
-        'fixed inset-x-0 bottom-0 z-40 gap-4 rounded-t-[12px] rounded-b-none p-6 pb-8 shadow-lg',
-        'sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[440px] sm:max-w-[calc(100vw-48px)] sm:rounded-[12px] sm:pb-6',
+        // Capped at the screen and scrollable, so a phone held sideways or a
+        // 400 % zoom still reaches every button instead of losing the title.
+        'fixed inset-x-0 bottom-0 z-40 max-h-dvh gap-4 overflow-y-auto rounded-t-[12px] rounded-b-none p-6 pb-8 shadow-lg',
+        'sm:inset-x-auto sm:bottom-6 sm:left-6 sm:max-h-[calc(100dvh-48px)] sm:w-[440px] sm:max-w-[calc(100vw-48px)] sm:rounded-[12px] sm:pb-6',
         !reducedMotion && 'animate-consent-in',
       )}
     >

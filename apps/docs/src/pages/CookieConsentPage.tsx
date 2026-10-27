@@ -118,21 +118,33 @@ const allowed = useConsent('marketing');`}</Code>
 
       <h2>Google Consent Mode</h2>
       <p>
-        The library knows no tracking tool. Translate the choice yourself in <code>onChange</code>, which runs
-        after every stored decision:
+        The library knows no tracking tool, so translate the choice yourself. Two things matter. Deny everything
+        before the Google tag loads, or the tag acts as if it had consent until someone decides. And apply the
+        stored choice on every page load, not only in <code>onChange</code>, which runs when someone decides and
+        never when a page opens.
       </p>
-      <Code>{`<CookieConsentProvider
-  categories={categories}
-  version="1"
-  onChange={(next) => {
+      <Code>{`// In <head>, before the Google tag:
+gtag('consent', 'default', {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+});
+
+// Anywhere inside the provider: on every load and after every change.
+function ConsentMode() {
+  const { consent } = useCookieConsent();
+  useEffect(() => {
+    if (!consent) return;
     gtag('consent', 'update', {
-      analytics_storage: next.choices.statistics ? 'granted' : 'denied',
-      ad_storage: next.choices.marketing ? 'granted' : 'denied',
-      ad_user_data: next.choices.marketing ? 'granted' : 'denied',
-      ad_personalization: next.choices.marketing ? 'granted' : 'denied',
+      analytics_storage: consent.choices.statistics ? 'granted' : 'denied',
+      ad_storage: consent.choices.marketing ? 'granted' : 'denied',
+      ad_user_data: consent.choices.marketing ? 'granted' : 'denied',
+      ad_personalization: consent.choices.marketing ? 'granted' : 'denied',
     });
-  }}
->`}</Code>
+  }, [consent]);
+  return null;
+}`}</Code>
 
       <h2>Reporting to your server</h2>
       <p>
@@ -176,6 +188,11 @@ export function Consent({ initialCookie, children }) {
     </CookieConsentProvider>
   );
 }`}</Code>
+      <p>
+        Whether a choice has expired is decided by the clock of whoever reads it. If a visitor&apos;s clock is
+        off by more than a day, server and browser can disagree, and React renders the page again in the
+        browser.
+      </p>
 
       <h2>Asking again</h2>
       <p>

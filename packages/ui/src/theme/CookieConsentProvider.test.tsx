@@ -180,9 +180,9 @@ describe('CookieConsentProvider decisions', () => {
 
     act(() => result.current.acceptAll());
 
-    expect(written).toHaveLength(1);
-    expect(written[0]).toContain('Domain=.hintoric.com');
-    expect(written[0]).toContain('Max-Age=2592000');
+    // First the host-only cookie of the same name is expired, then the choice is written.
+    expect(written).toEqual(['hintoric_consent=; Max-Age=0; Path=/', expect.stringContaining('Domain=.hintoric.com')]);
+    expect(written[1]).toContain('Max-Age=2592000');
   });
 });
 
@@ -196,6 +196,21 @@ describe('CookieConsentProvider withdrawal', () => {
     act(() => result.current.save({ statistics: false }));
 
     expect(calls).toEqual(['change', 'reload']);
+  });
+
+  it('reloads a withdrawal made through a callback captured before the decision', () => {
+    const onChange = vi.fn();
+    const { result } = renderConsent({ onChange });
+    const staleRejectAll = result.current.rejectAll;
+
+    act(() => result.current.acceptAll());
+    act(() => staleRejectAll());
+
+    expect(reloadPage).toHaveBeenCalledTimes(1);
+    expect(onChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({ choices: { statistics: false, marketing: false } }),
+      expect.objectContaining({ choices: { statistics: true, marketing: true } }),
+    );
   });
 
   it('does not reload when nothing was withdrawn', () => {
