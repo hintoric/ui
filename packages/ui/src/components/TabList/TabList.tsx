@@ -5,6 +5,7 @@ import { cx } from '../../utils/cx';
 import { useReducedMotion } from '../../theme/ReducedMotionProvider';
 import { STATIC_COLOR_CLASSES } from '../../utils/colorVariantClasses';
 import { INDICATOR_COLOR_CLASSES, TabIndicatorContext, useSelectedTabLook } from '../Tab/TabIndicatorContext';
+import { outlineWidth } from '../../styles/palette';
 import type { TabListProps } from './types';
 
 // Confirmed against @mui/joy's TabList.js source: variant/color default
@@ -28,6 +29,22 @@ export const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function T
 ) {
   const reducedMotion = useReducedMotion();
   const [look, reportLook] = useSelectedTabLook();
+  const indicatorRef = React.useRef<HTMLSpanElement>(null);
+  const [overhang, setOverhang] = React.useState(0);
+
+  // Joy offsets its `::after` by `min(-1 * --variant-borderWidth, -1px)` from
+  // the tab's padding box, so it spans the tab's border exactly — as long as
+  // the border is drawn at its specified width (1px, or the 1.5px outline when
+  // outlined). A browser that draws the outline thinner (Chromium floors it to
+  // 1px at a 1x pixel ratio) leaves Joy's indicator hanging over the tab by
+  // the difference. Measure what was drawn and hang over by the same amount.
+  React.useLayoutEffect(() => {
+    const tab = indicatorRef.current?.parentElement?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]');
+    if (!tab) return;
+    const drawn = parseFloat(getComputedStyle(tab).borderTopWidth);
+    const specified = look.variant === 'outlined' ? parseFloat(outlineWidth) : 1;
+    setOverhang(Math.min(drawn - specified, 0));
+  }, [look]);
 
   return (
     <BaseTabs.List
@@ -41,8 +58,10 @@ export const TabList = React.forwardRef<HTMLDivElement, TabListProps>(function T
     >
       <TabIndicatorContext.Provider value={reportLook}>{children}</TabIndicatorContext.Provider>
       <BaseTabs.Indicator
+        ref={indicatorRef}
+        style={{ '--indicator-overhang': `${overhang}px` } as React.CSSProperties}
         className={cx(
-          'pointer-events-none absolute bottom-0 z-[1] left-[var(--active-tab-left)] h-0.5 w-[var(--active-tab-width)] bg-current data-[orientation=vertical]:top-[var(--active-tab-top)] data-[orientation=vertical]:right-0 data-[orientation=vertical]:bottom-auto data-[orientation=vertical]:left-auto data-[orientation=vertical]:h-[var(--active-tab-height)] data-[orientation=vertical]:w-0.5',
+          'pointer-events-none absolute bottom-0 z-[1] left-[calc(var(--active-tab-left)+var(--indicator-overhang))] h-0.5 w-[calc(var(--active-tab-width)-2*var(--indicator-overhang))] bg-current data-[orientation=vertical]:top-[calc(var(--active-tab-top)+var(--indicator-overhang))] data-[orientation=vertical]:right-0 data-[orientation=vertical]:bottom-auto data-[orientation=vertical]:left-auto data-[orientation=vertical]:h-[calc(var(--active-tab-height)-2*var(--indicator-overhang))] data-[orientation=vertical]:w-0.5',
           INDICATOR_COLOR_CLASSES[look.variant][look.color],
           !reducedMotion && 'transition-all duration-200',
         )}
