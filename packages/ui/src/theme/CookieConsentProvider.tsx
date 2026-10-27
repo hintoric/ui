@@ -76,6 +76,10 @@ function notify(): void {
   for (const listener of listeners) listener();
 }
 
+// The server snapshot when the server never looked at the request's cookies.
+// A cookie value cannot contain NUL, so this never collides with a real one.
+const NOT_LOOKED = '\u0000';
+
 function checkCategories(categories: readonly ConsentCategory[]): void {
   if (!categories.some((category) => category.required)) {
     throw new Error('CookieConsentProvider: one category must be required');
@@ -94,15 +98,22 @@ export function CookieConsentProvider({
   cookieName = CONSENT_COOKIE_NAME,
   cookieDomain,
   maxAgeDays = CONSENT_MAX_AGE_DAYS,
+  initialCookie,
   onChange,
   reloadOnWithdraw = true,
 }: CookieConsentProviderProps) {
   checkCategories(categories);
 
-  const raw = React.useSyncExternalStore(subscribe, () => readCookieValue(document.cookie, cookieName) ?? null);
-  const known = true;
+  // The server snapshot also serves the hydration render, so the first
+  // browser render matches the HTML and only then switches to document.cookie.
+  const raw = React.useSyncExternalStore(
+    subscribe,
+    () => readCookieValue(document.cookie, cookieName) ?? null,
+    () => (initialCookie === undefined ? NOT_LOOKED : initialCookie),
+  );
+  const known = raw !== NOT_LOOKED;
   const consent = React.useMemo(
-    () => parseConsentCookie(raw, { version, maxAgeDays }),
+    () => (raw === NOT_LOOKED ? null : parseConsentCookie(raw, { version, maxAgeDays })),
     [raw, version, maxAgeDays],
   );
 
