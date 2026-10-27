@@ -16,7 +16,7 @@ describe('tailwindEntry()', () => {
   it('carries the tokens, including the dark block', () => {
     expect(css).toMatch(/^@theme \{/m);
     expect(css).toContain('--color-primary-500: #0B6BCB;');
-    expect(css).toContain('--color-surface-1: var(--color-neutral-100);');
+    expect(css).toContain('--color-surface-1: var(--color-neutral-200);');
     expect(css).toMatch(/^\[data-color-scheme="dark"\] \{/m);
     expect(css).toContain('--color-surface-1: var(--color-neutral-800);');
   });

@@ -1,15 +1,19 @@
 @theme {
-  /* raw palette stops (from Joy UI's colors.ts: blue/grey/yellow/red/green) */
-  --color-neutral-50: #FBFCFE;
-  --color-neutral-100: #F0F4F8;
-  --color-neutral-200: #DDE7EE;
-  --color-neutral-300: #CDD7E1;
-  --color-neutral-400: #9FA6AD;
-  --color-neutral-500: #636B74;
-  --color-neutral-600: #555E68;
-  --color-neutral-700: #32383E;
-  --color-neutral-800: #171A1C;
-  --color-neutral-900: #0B0D0E;
+  /* raw palette stops, light scheme. primary is Joy UI's (colors.ts blue);
+     neutral/danger/success/warning are the KLM-inspired stops recorded in
+     palette.ts's lightPalette and derived by scripts/palette/deriveKlmPalette.ts
+     (spec: docs/superpowers/specs/2026-10-27-klm-inspired-look-design.md).
+     Edit palette.ts first — theme.test.ts fails until this block agrees. */
+  --color-neutral-50: #FBF7F3;
+  --color-neutral-100: #F5F1ED;
+  --color-neutral-200: #EBE2DB;
+  --color-neutral-300: #D4CCC6;
+  --color-neutral-400: #AAA49E;
+  --color-neutral-500: #6E6966;
+  --color-neutral-600: #605C5A;
+  --color-neutral-700: #393735;
+  --color-neutral-800: #1A1918;
+  --color-neutral-900: #0D0C0C;
   --color-primary-50: #EDF5FD;
   --color-primary-100: #E3EFFB;
   --color-primary-200: #C7DFF7;
@@ -20,40 +24,45 @@
   --color-primary-700: #12467B;
   --color-primary-800: #0A2744;
   --color-primary-900: #051423;
-  --color-warning-50: #FEFAF6;
-  --color-warning-100: #FDF0E1;
-  --color-warning-200: #FCE1C2;
-  --color-warning-300: #F3C896;
-  --color-warning-400: #EA9A3E;
-  --color-warning-500: #9A5B13;
-  --color-warning-600: #72430D;
-  --color-warning-700: #492B08;
-  --color-warning-800: #2E1B05;
-  --color-warning-900: #1D1002;
-  --color-danger-50: #FEF6F6;
-  --color-danger-100: #FCE4E4;
-  --color-danger-200: #F7C5C5;
-  --color-danger-300: #F09898;
-  --color-danger-400: #E47474;
-  --color-danger-500: #C41C1C;
-  --color-danger-600: #A51818;
-  --color-danger-700: #7D1212;
-  --color-danger-800: #430A0A;
-  --color-danger-900: #240505;
-  --color-success-50: #F6FEF6;
-  --color-success-100: #E3FBE3;
-  --color-success-200: #C7F7C7;
-  --color-success-300: #A1E8A1;
-  --color-success-400: #51BC51;
-  --color-success-500: #1F7A1F;
-  --color-success-600: #136C13;
-  --color-success-700: #0A470A;
-  --color-success-800: #042F04;
-  --color-success-900: #021D02;
+  --color-warning-50: #FDEFD9;
+  --color-warning-100: #FCE0B2;
+  --color-warning-200: #F9C674;
+  --color-warning-300: #F5A31E;
+  --color-warning-400: #CA8312;
+  --color-warning-500: #7D4E00;
+  --color-warning-600: #6F4300;
+  --color-warning-700: #583400;
+  --color-warning-800: #382100;
+  --color-warning-900: #1D1200;
+  --color-danger-50: #FFEEF6;
+  --color-danger-100: #FFD9E3;
+  --color-danger-200: #FEBEC6;
+  --color-danger-300: #FD989E;
+  --color-danger-400: #FC6063;
+  --color-danger-500: #B50200;
+  --color-danger-600: #9B1A12;
+  --color-danger-700: #751811;
+  --color-danger-800: #4C100B;
+  --color-danger-900: #2A0906;
+  --color-success-50: #DAFADA;
+  --color-success-100: #B7F1BA;
+  --color-success-200: #99DEA6;
+  --color-success-300: #73C58B;
+  --color-success-400: #40A469;
+  --color-success-500: #00653C;
+  --color-success-600: #125640;
+  --color-success-700: #0F433A;
+  --color-success-800: #0A2B26;
+  --color-success-900: #051714;
   --color-common-white: #FFFFFF;
   --color-common-black: #000000;
 
-  /* per-variant semantic tokens (light mode default) */
+  /* per-variant semantic tokens (light mode default). The formula is Joy's
+     createLightModeVariantVariables, with one exception: neutral's fills
+     (soft bg, hover, active) and every colour's solid-disabled-bg sit one stop
+     darker than Joy's. The canvas is neutral-100, which Joy's formula would
+     otherwise also use for those fills — a soft Chip or a plain IconButton's
+     hover straight on the page would show nothing. */
   --color-primary-plain-color: var(--color-primary-500);
   --color-primary-plain-hover-bg: var(--color-primary-100);
   --color-primary-plain-active-bg: var(--color-primary-200);
@@ -76,29 +85,29 @@
   --color-primary-solid-hover-bg: var(--color-primary-600);
   --color-primary-solid-active-bg: var(--color-primary-700);
   --color-primary-solid-disabled-color: var(--color-neutral-400);
-  --color-primary-solid-disabled-bg: var(--color-neutral-100);
+  --color-primary-solid-disabled-bg: var(--color-neutral-200);
   /* Joy UI overrides plainColor/outlinedColor to neutral-700 specifically for
      the neutral color (light mode) — every other color keeps the generic
      -500 from createLightModeVariantVariables. Confirmed against @mui/joy's
      extendTheme.ts and caught by Button.visual.test.tsx. */
   --color-neutral-plain-color: var(--color-neutral-700);
-  --color-neutral-plain-hover-bg: var(--color-neutral-100);
+  --color-neutral-plain-hover-bg: var(--color-neutral-200);
   /* Joy's extendTheme.js gives only neutral a plainHoverColor (900 light, 300
      dark); found 2026-10-02 by ToggleButtonGroup's hover test. */
   --color-neutral-plain-hover-color: var(--color-neutral-900);
-  --color-neutral-plain-active-bg: var(--color-neutral-200);
+  --color-neutral-plain-active-bg: var(--color-neutral-300);
   --color-neutral-plain-disabled-color: var(--color-neutral-400);
   --color-neutral-outlined-color: var(--color-neutral-700);
   --color-neutral-outlined-border: var(--color-neutral-300);
-  --color-neutral-outlined-hover-bg: var(--color-neutral-100);
-  --color-neutral-outlined-active-bg: var(--color-neutral-200);
+  --color-neutral-outlined-hover-bg: var(--color-neutral-200);
+  --color-neutral-outlined-active-bg: var(--color-neutral-300);
   --color-neutral-outlined-disabled-color: var(--color-neutral-400);
   --color-neutral-outlined-disabled-border: var(--color-neutral-200);
   --color-neutral-soft-color: var(--color-neutral-700);
-  --color-neutral-soft-bg: var(--color-neutral-100);
-  --color-neutral-soft-hover-bg: var(--color-neutral-200);
+  --color-neutral-soft-bg: var(--color-neutral-200);
+  --color-neutral-soft-hover-bg: var(--color-neutral-300);
   --color-neutral-soft-active-color: var(--color-neutral-800);
-  --color-neutral-soft-active-bg: var(--color-neutral-300);
+  --color-neutral-soft-active-bg: var(--color-neutral-400);
   --color-neutral-soft-disabled-color: var(--color-neutral-400);
   --color-neutral-soft-disabled-bg: var(--color-neutral-50);
   --color-neutral-solid-color: var(--color-common-white);
@@ -106,7 +115,7 @@
   --color-neutral-solid-hover-bg: var(--color-neutral-600);
   --color-neutral-solid-active-bg: var(--color-neutral-700);
   --color-neutral-solid-disabled-color: var(--color-neutral-400);
-  --color-neutral-solid-disabled-bg: var(--color-neutral-100);
+  --color-neutral-solid-disabled-bg: var(--color-neutral-200);
   --color-danger-plain-color: var(--color-danger-500);
   --color-danger-plain-hover-bg: var(--color-danger-100);
   --color-danger-plain-active-bg: var(--color-danger-200);
@@ -129,7 +138,7 @@
   --color-danger-solid-hover-bg: var(--color-danger-600);
   --color-danger-solid-active-bg: var(--color-danger-700);
   --color-danger-solid-disabled-color: var(--color-neutral-400);
-  --color-danger-solid-disabled-bg: var(--color-neutral-100);
+  --color-danger-solid-disabled-bg: var(--color-neutral-200);
   --color-success-plain-color: var(--color-success-500);
   --color-success-plain-hover-bg: var(--color-success-100);
   --color-success-plain-active-bg: var(--color-success-200);
@@ -152,7 +161,7 @@
   --color-success-solid-hover-bg: var(--color-success-600);
   --color-success-solid-active-bg: var(--color-success-700);
   --color-success-solid-disabled-color: var(--color-neutral-400);
-  --color-success-solid-disabled-bg: var(--color-neutral-100);
+  --color-success-solid-disabled-bg: var(--color-neutral-200);
   --color-warning-plain-color: var(--color-warning-500);
   --color-warning-plain-hover-bg: var(--color-warning-100);
   --color-warning-plain-active-bg: var(--color-warning-200);
@@ -175,20 +184,26 @@
   --color-warning-solid-hover-bg: var(--color-warning-600);
   --color-warning-solid-active-bg: var(--color-warning-700);
   --color-warning-solid-disabled-color: var(--color-neutral-400);
-  --color-warning-solid-disabled-bg: var(--color-neutral-100);
+  --color-warning-solid-disabled-bg: var(--color-neutral-200);
 
   /* text + surface tokens (light mode default) */
   --color-ink-primary: var(--color-neutral-800);
   --color-ink-secondary: var(--color-neutral-700);
   --color-ink-tertiary: var(--color-neutral-600);
   --color-ink-icon: var(--color-neutral-500);
-  --color-canvas: var(--color-common-white);
-  --color-surface: var(--color-neutral-50);
+  /* A warm canvas with white surfaces on it — Joy has it the other way round
+     (white body, neutral-50 surface). Light Cards are borderless, so they are
+     only visible because canvas and surface differ. The levels step away from
+     the canvas, so they start at neutral-200. */
+  --color-canvas: var(--color-neutral-100);
+  --color-surface: var(--color-common-white);
   --color-surface-popup: var(--color-common-white);
-  --color-surface-1: var(--color-neutral-100);
-  --color-surface-2: var(--color-neutral-200);
-  --color-surface-3: var(--color-neutral-300);
-  --color-divider: rgba(99, 107, 116, 0.2);
+  --color-surface-1: var(--color-neutral-200);
+  --color-surface-2: var(--color-neutral-300);
+  --color-surface-3: var(--color-neutral-400);
+  /* Joy's divider formula — neutral.mainChannel (step 500) at 0.2 — on the
+     new neutral-500 (#6E6966). */
+  --color-divider: rgba(110, 105, 102, 0.2);
 
   /* Joy's `mainChannel` — the palette step a component reaches for when it
      wants "the" colour rather than a variant slot. Joy remaps it per scheme
@@ -211,20 +226,29 @@
 
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
-  /* radius scale (Joy UI defaultTheme.radius) */
-  --radius-xs: 2px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* radius scale: Joy's slot names, KLM's steps (subtler 4, default 12,
+     strong 16, stronger 24, strongest 32). Joy's were 2/6/8/12/16. */
+  --radius-xs: 4px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
 
-  /* shadow.xs/md/lg (Joy UI defaultTheme.shadow, light mode: shadowChannel
+  /* Every bare `border` utility draws this width: component outlines are
+     1.5px (Joy's are 1px). Chromium snaps borders to whole device pixels, so
+     it reads as 1px on a 1x display — klm.de behaves the same. Anything that
+     must stay 1px (dividers, rules) says `border-1`. */
+  --default-border-width: 1.5px;
+
+  /* shadow.md/lg (Joy UI defaultTheme.shadow, light mode: shadowChannel
      '21 21 21' / shadowOpacity 0.08). Joy's real formula prefixes every
      shadow level with a `shadowRing` layer (`0 0 #000`) — a zero-blur,
      zero-spread shadow that renders as nothing visible, so it's dropped
      here rather than carried as a dead layer. Confirmed against
-     @mui/joy's extendTheme.js source. */
-  --shadow-xs: 0px 1px 2px 0px rgba(21, 21, 21, 0.08);
+     @mui/joy's extendTheme.js source. shadow.xs — what Joy puts on inputs
+     and other resting surfaces — is none: the look is flat at rest, and only
+     floating surfaces (menus, popovers, modals) cast a shadow. */
+  --shadow-xs: none;
   --shadow-md: 0px 2px 8px -2px rgba(21, 21, 21, 0.08), 0px 6px 12px -2px rgba(21, 21, 21, 0.08);
   --shadow-lg: 0px 2px 8px -2px rgba(21, 21, 21, 0.08), 0px 12px 16px -4px rgba(21, 21, 21, 0.08);
 
@@ -238,6 +262,50 @@
 }
 
 [data-color-scheme="dark"] {
+  /* Dark keeps @mui/joy's palette. The light block above carries the
+     KLM-inspired stops, so every dark value is redeclared here rather than
+     inherited (see palette.ts's joyPalette). */
+  --color-neutral-50: #FBFCFE;
+  --color-neutral-100: #F0F4F8;
+  --color-neutral-200: #DDE7EE;
+  --color-neutral-300: #CDD7E1;
+  --color-neutral-400: #9FA6AD;
+  --color-neutral-500: #636B74;
+  --color-neutral-600: #555E68;
+  --color-neutral-700: #32383E;
+  --color-neutral-800: #171A1C;
+  --color-neutral-900: #0B0D0E;
+  --color-danger-50: #FEF6F6;
+  --color-danger-100: #FCE4E4;
+  --color-danger-200: #F7C5C5;
+  --color-danger-300: #F09898;
+  --color-danger-400: #E47474;
+  --color-danger-500: #C41C1C;
+  --color-danger-600: #A51818;
+  --color-danger-700: #7D1212;
+  --color-danger-800: #430A0A;
+  --color-danger-900: #240505;
+  --color-success-50: #F6FEF6;
+  --color-success-100: #E3FBE3;
+  --color-success-200: #C7F7C7;
+  --color-success-300: #A1E8A1;
+  --color-success-400: #51BC51;
+  --color-success-500: #1F7A1F;
+  --color-success-600: #136C13;
+  --color-success-700: #0A470A;
+  --color-success-800: #042F04;
+  --color-success-900: #021D02;
+  --color-warning-50: #FEFAF6;
+  --color-warning-100: #FDF0E1;
+  --color-warning-200: #FCE1C2;
+  --color-warning-300: #F3C896;
+  --color-warning-400: #EA9A3E;
+  --color-warning-500: #9A5B13;
+  --color-warning-600: #72430D;
+  --color-warning-700: #492B08;
+  --color-warning-800: #2E1B05;
+  --color-warning-900: #1D1002;
+
   --color-primary-plain-color: var(--color-primary-300);
   --color-primary-plain-hover-bg: var(--color-primary-800);
   --color-primary-plain-active-bg: var(--color-primary-700);
@@ -379,10 +447,10 @@
   --color-success-main: var(--color-success-400);
   --color-warning-main: var(--color-warning-400);
 
-  /* shadow.xs/md/lg (Joy UI defaultTheme.shadow, dark mode: shadowChannel
+  /* shadow.md/lg (Joy UI defaultTheme.shadow, dark mode: shadowChannel
      '0 0 0' / shadowOpacity 0.6). See the light-mode block's comment for
-     why the `shadowRing` layer is dropped. */
-  --shadow-xs: 0px 1px 2px 0px rgba(0, 0, 0, 0.6);
+     why the `shadowRing` layer is dropped, and why shadow.xs is none. */
+  --shadow-xs: none;
   --shadow-md: 0px 2px 8px -2px rgba(0, 0, 0, 0.6), 0px 6px 12px -2px rgba(0, 0, 0, 0.6);
   --shadow-lg: 0px 2px 8px -2px rgba(0, 0, 0, 0.6), 0px 12px 16px -4px rgba(0, 0, 0, 0.6);
 }
