@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton } from '@mui/joy';
 import { IconButton as HintoricIconButton } from '../components/IconButton';
 import { setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 /*
  * A guard for setColorScheme itself. Every dark assertion in this suite is
@@ -13,7 +14,7 @@ import { setColorScheme, settleTransitions } from './helpers';
 describe('setColorScheme', () => {
   it('flips real Joy, producing a different soft background than light', async () => {
     render(
-      <JoyCssVarsProvider defaultMode="light">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="light">
         <JoyIconButton data-testid="joy" variant="soft" color="neutral">
           +
         </JoyIconButton>

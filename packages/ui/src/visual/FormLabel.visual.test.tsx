@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, FormLabel as JoyFormLabel } from '@mui/joy';
 import { FormLabel as HintoricFormLabel } from '../components/FormLabel';
 import { COLOR_SCHEMES, expectSameLineHeight, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // No color/variant axis — tests its actual supported state (required
 // asterisk), per CLAUDE.md's allowance for components without that axis.
@@ -13,7 +14,7 @@ describe('FormLabel visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyFormLabel data-testid="joy">Email</JoyFormLabel>
         </JoyCssVarsProvider>,
       );

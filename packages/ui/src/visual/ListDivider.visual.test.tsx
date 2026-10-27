@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, ListDivider as JoyListDivider } from '@mui/joy';
 import { ListDivider as HintoricListDivider } from '../components/ListDivider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('ListDivider visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('ListDivider visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 200 }}>
             <JoyListDivider data-testid="joy" />
           </div>

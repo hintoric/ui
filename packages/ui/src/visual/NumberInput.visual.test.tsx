@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton, Inp
 import { NumberInput as HintoricNumberInput } from '../components/NumberInput';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -63,7 +64,7 @@ describe('NumberInput visual parity with a Joy Input + IconButtons', () => {
           await setColorScheme(scheme);
           const { container: joy } = render(
             <div data-testid={`joy-${variant}-${color}`} style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyNumberInput variant={variant} color={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -91,7 +92,7 @@ describe('NumberInput visual parity with a Joy Input + IconButtons', () => {
           await setColorScheme(scheme);
           const { container: joy } = render(
             <div style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyNumberInput error variant={variant} color={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -113,7 +114,7 @@ describe('NumberInput visual parity with a Joy Input + IconButtons', () => {
       it(`focus ring for color=${color} matches Joy UI's inset ring in ${scheme}`, async () => {
         await setColorScheme(scheme);
         const { container: joy } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyNumberInput color={color} />
           </JoyCssVarsProvider>,
         );
@@ -166,7 +167,7 @@ describe('NumberInput visual parity with a Joy Input + IconButtons', () => {
       await setColorScheme(scheme);
       const { container: joy } = render(
         <div data-testid="joy-disabled" style={{ width: 400 }}>
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyNumberInput disabled />
           </JoyCssVarsProvider>
         </div>,
@@ -204,7 +205,7 @@ describe('NumberInput size parity with a Joy Input', () => {
         await setColorScheme(scheme);
         const { container: joy } = render(
           <div data-testid={`joy-size-${size}`} style={{ width: 400 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyInput size={size} defaultValue="12" />
             </JoyCssVarsProvider>
           </div>,

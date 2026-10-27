@@ -12,6 +12,7 @@ import { Step as HintoricStep } from '../components/Step';
 import { StepIndicator as HintoricStepIndicator } from '../components/StepIndicator';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Step is layout-only: no variant or colour of its own (confirmed in
 // Step.tsx against Joy's Step.js). What it does contribute is the connector
@@ -33,7 +34,7 @@ describe('Step visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={{ width: 320 }}>
               <JoyStepper orientation={orientation}>
                 <JoyStep

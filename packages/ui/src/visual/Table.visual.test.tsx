@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Table as JoyTable } from '@mui/j
 import { Table as HintoricTable } from '../components/Table';
 import type { TableBorderAxis } from '../components/Table';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -40,7 +41,7 @@ describe('Table visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyTable data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 <TableBody data-testid={`joy-${variant}-${color}`} />
               </JoyTable>
@@ -77,7 +78,7 @@ describe('Table visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTable size={size}>
               <TableBody data-testid={`joy-size-${size}`} />
             </JoyTable>
@@ -105,7 +106,7 @@ describe('Table visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTable borderAxis={borderAxis}>
               <TableBody data-testid={`joy-axis-${borderAxis}`} />
             </JoyTable>

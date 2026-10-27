@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Box as JoyBox } from '@mui/joy';
 import { Box as HintoricBox } from '../components/Box';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Box is the thinnest component in the library: a <div> that forwards
 // everything and adds nothing. It has no variant, colour or size axis, so
@@ -20,7 +21,7 @@ describe('Box visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 200 }}>
             <JoyBox data-testid="joy-box">content</JoyBox>
           </div>

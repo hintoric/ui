@@ -11,6 +11,7 @@ import { TabNav as HintoricTabNav } from '../components/TabNav';
 import { Tab as HintoricTab } from '../components/Tab';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // TabNav has no Joy component of its own, but Joy's answer to the same need —
 // `<Tab component="a" href>` inside `Tabs`/`TabList` — is the oracle for its
@@ -76,7 +77,7 @@ type TabLook = Strip & { disabled?: boolean };
  */
 function renderPair(scheme: 'light' | 'dark', strip: Strip, tab: TabLook) {
   render(
-    <JoyCssVarsProvider defaultMode={scheme}>
+    <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
       <div style={{ width: 480 }}>
         <JoyTabs value="/b">
           <JoyTabList data-testid="joy-strip" variant={strip.variant} color={strip.color}>

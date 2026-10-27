@@ -11,6 +11,7 @@ import { List as HintoricList } from '../components/List';
 import { ListItem as HintoricListItem } from '../components/ListItem';
 import { ListItemButton as HintoricListItemButton } from '../components/ListItemButton';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('List visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -18,7 +19,7 @@ describe('List visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyList data-testid="joy">
             <JoyListItem>One</JoyListItem>
             <JoyListItem>Two</JoyListItem>
@@ -50,7 +51,7 @@ describe('List visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyList data-testid="joy-h" orientation="horizontal">
             <JoyListItem>One</JoyListItem>
           </JoyList>
@@ -85,7 +86,7 @@ describe('List size parity with @mui/joy', () => {
 
         const { container: joyContainer } = render(
           <div data-testid={`joy-size-${size}`} style={{ width: 320 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyList size={size}>
                 <JoyListItem>One</JoyListItem>
                 <JoyListItem>Two</JoyListItem>

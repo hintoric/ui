@@ -12,6 +12,7 @@ import { Step as HintoricStep } from '../components/Step';
 import { StepIndicator as HintoricStepIndicator } from '../components/StepIndicator';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Composed inside a real Stepper + Step, unlike the bare rendering in
 // Stepper.visual.test.tsx: StepIndicator takes its size from Stepper's
@@ -30,7 +31,7 @@ describe('StepIndicator visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyStepper>
                 <JoyStep
                   indicator={
@@ -99,7 +100,7 @@ describe('StepIndicator visual parity with @mui/joy', () => {
 
       for (const size of SIZES) {
         const joy = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyStepper size={size}>
               <JoyStep indicator={<JoyStepIndicator data-testid="joy-size">1</JoyStepIndicator>}>
                 One

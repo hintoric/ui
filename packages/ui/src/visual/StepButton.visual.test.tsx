@@ -14,6 +14,7 @@ import { StepButton as HintoricStepButton } from '../components/StepButton';
 import { StepIndicator as HintoricStepIndicator } from '../components/StepIndicator';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, settleTransitions, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // StepButton has no variant or colour of its own — StepButton.tsx documents it
 // as a transparent clickable wrapper, with the colouring living on the child
@@ -31,7 +32,7 @@ describe('StepButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 320 }}>
             <JoyStepper>
               <JoyStep indicator={<JoyStepIndicator>1</JoyStepIndicator>}>
@@ -83,7 +84,7 @@ describe('StepButton visual parity with @mui/joy', () => {
 
       for (const size of SIZES) {
         const joy = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyStepper size={size}>
               <JoyStep indicator={<JoyStepIndicator>1</JoyStepIndicator>}>
                 <JoyStepButton data-testid="joy-size">One</JoyStepButton>

@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { contrastRatio } from '../../scripts/palette/color';
-import { parseThemeCss, resolveToken } from '../../scripts/palette/themeCss';
+import { contrastRatio } from './color';
+import { parseThemeCss, resolveToken } from './themeCss';
 
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
-const { light } = parseThemeCss(readFileSync(resolve(import.meta.dirname, 'theme.css'), 'utf8'));
+const { light } = parseThemeCss(readFileSync(resolve(import.meta.dirname, '../../src/styles/theme.css'), 'utf8'));
 const r = (name: string) => resolveToken(light, name);
 
 /*

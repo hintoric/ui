@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Breadcrumbs as JoyBreadcrumbs, Link as JoyLink } from '@mui/joy';
 import { Breadcrumbs as HintoricBreadcrumbs } from '../components/Breadcrumbs';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const SIZES = ['sm', 'md', 'lg'] as const;
 
@@ -16,7 +17,7 @@ describe('Breadcrumbs visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyBreadcrumbs data-testid={`joy-${size}`} size={size}>
               <JoyLink href="/">Home</JoyLink>
               <span>Button</span>

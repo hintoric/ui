@@ -11,6 +11,7 @@ import { Modal as HintoricModal } from '../components/Modal';
 import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { Tooltip as HintoricTooltip } from '../components/Tooltip';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -33,7 +34,7 @@ describe('Tooltip visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyTooltip title={color} variant={variant} color={color} open>
                 <button>trigger</button>
               </JoyTooltip>
@@ -76,7 +77,7 @@ describe('Tooltip over a Modal', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyModal open>
             <JoyModalDialog data-testid="joy-dialog">
               <JoyTooltip title="joy-tip" placement="top" open>

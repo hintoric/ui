@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, AvatarGroup as JoyAvatarGroup, A
 import { AvatarGroup as HintoricAvatarGroup } from '../components/AvatarGroup';
 import { Avatar as HintoricAvatar } from '../components/Avatar';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // No color/variant axis of its own — tests its actual supported states
 // (sizes), per CLAUDE.md's allowance for components without that axis.
@@ -15,7 +16,7 @@ describe('AvatarGroup visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyAvatarGroup data-testid={`joy-${size}`} size={size}>
               <JoyAvatar>A</JoyAvatar>
               <JoyAvatar>B</JoyAvatar>

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Sheet as JoySheet } from '@mui/j
 import { Sheet as HintoricSheet } from '../components/Sheet';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -19,7 +20,7 @@ describe('Sheet visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoySheet data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 {color}
               </JoySheet>

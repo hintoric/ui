@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, LinearProgress as JoyLinearProgress } from '@mui/joy';
 import { LinearProgress as HintoricLinearProgress } from '../components/LinearProgress';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -16,7 +17,7 @@ describe('LinearProgress visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyLinearProgress data-testid={`joy-${variant}-${color}`} variant={variant} color={color} determinate value={50} />
             </JoyCssVarsProvider>,
           );

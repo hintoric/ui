@@ -6,6 +6,7 @@ import { Radio as HintoricRadio } from '../components/Radio';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -18,7 +19,7 @@ describe('Radio visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyRadio data-testid={`joy-${variant}-${color}`} variant={variant} color={color} />
             </JoyCssVarsProvider>,
           );
@@ -51,7 +52,7 @@ describe('Radio visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyRadio data-testid="joy-default-checked" defaultChecked />
         </JoyCssVarsProvider>,
       );
@@ -68,7 +69,7 @@ describe('Radio visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyRadio data-testid={`joy-size-${size}`} size={size} />
           </JoyCssVarsProvider>,
         );
@@ -85,7 +86,7 @@ describe('Radio visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyRadio data-testid="joy-focus" />
         </JoyCssVarsProvider>,
       );
@@ -136,7 +137,7 @@ describe('Radio error state with no explicit colour', () => {
       await parkPointer('radio-nocolor');
       const { container: joyContainer } = render(
         <div data-testid="joy-radio-danger">
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error>
               <JoyRadio label="x" />
             </JoyFormControl>
@@ -177,7 +178,7 @@ describe('Radio labelled size parity with @mui/joy', () => {
 
         const { container: joyContainer } = render(
           <div data-testid={`joy-labelled-${size}`} style={{ width: 200 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyRadio size={size} label="Label" />
             </JoyCssVarsProvider>
           </div>,
@@ -222,7 +223,7 @@ describe('Radio labelled colour parity with @mui/joy', () => {
 
         const { container: joyContainer } = render(
           <div data-testid={`joy-label-${state}`} style={{ width: 200 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyRadio label="Label" disabled={disabled} />
             </JoyCssVarsProvider>
           </div>,

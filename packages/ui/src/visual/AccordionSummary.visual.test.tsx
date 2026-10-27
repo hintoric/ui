@@ -14,6 +14,7 @@ import { AccordionSummary as HintoricAccordionSummary } from '../components/Acco
 import { AccordionDetails as HintoricAccordionDetails } from '../components/AccordionDetails';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, settleTransitions, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Composed inside a real AccordionGroup + Accordion, never in a hand-built
 // parent. That is the structural finding of the 2026-09-06 coverage audit:
@@ -46,7 +47,7 @@ describe('AccordionSummary visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAccordionGroup>
                 <JoyAccordion variant={variant} color={color}>
                   <JoyAccordionSummary data-testid={`joy-${variant}-${color}`}>
@@ -100,7 +101,7 @@ describe('AccordionSummary visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAccordionGroup>
             <JoyAccordion>
               <JoyAccordionSummary data-testid="joy-focus">Title</JoyAccordionSummary>

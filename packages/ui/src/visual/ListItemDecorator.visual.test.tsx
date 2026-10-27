@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, ListItemDecorator as JoyListItemDecorator } from '@mui/joy';
 import { ListItemDecorator as HintoricListItemDecorator } from '../components/ListItemDecorator';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('ListItemDecorator visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('ListItemDecorator visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItemDecorator data-testid="joy">
             <svg width="16" height="16" />
           </JoyListItemDecorator>

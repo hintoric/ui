@@ -6,6 +6,7 @@ import { Modal as HintoricModal } from '../components/Modal';
 import { ModalOverflow as HintoricModalOverflow } from '../components/ModalOverflow';
 import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('ModalOverflow visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -13,7 +14,7 @@ describe('ModalOverflow visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyModal open>
             <JoyModalOverflow data-testid="joy">
               <JoyModalDialog>content</JoyModalDialog>

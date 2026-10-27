@@ -13,6 +13,7 @@ import { IconButton as HintoricIconButton } from '../components/IconButton';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 import { parkPointer } from './errorParity';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -94,7 +95,7 @@ function renderBoth(
   { icons = false, labels = ['a', 'b', 'c'] }: { icons?: boolean; labels?: string[] } = {},
 ) {
   render(
-    <JoyCssVarsProvider defaultMode={scheme}>
+    <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
       <JoyButtonGroup data-testid="joy" {...props}>
         {labels.map((l) =>
           icons ? (
@@ -280,7 +281,7 @@ describe('ButtonGroup visual parity with @mui/joy', () => {
     it(`fills the same share of a fixed-width parent as Joy UI in ${scheme}`, async () => {
       await setColorScheme(scheme);
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 400 }}>
             <JoyButtonGroup data-testid="joy-sized">
               <JoyButton>A</JoyButton>

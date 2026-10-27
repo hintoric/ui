@@ -6,6 +6,7 @@ import { Switch as HintoricSwitch } from '../components/Switch';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
+import { joyTheme } from './joyTheme';
 
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
@@ -16,7 +17,7 @@ describe('Switch visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySwitch data-testid={`joy-${color}`} color={color} />
           </JoyCssVarsProvider>,
         );
@@ -47,7 +48,7 @@ describe('Switch visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySwitch data-testid={`joy-checked-${color}`} color={color} defaultChecked />
           </JoyCssVarsProvider>,
         );
@@ -68,7 +69,7 @@ describe('Switch visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySwitch data-testid="joy-default" />
         </JoyCssVarsProvider>,
       );
@@ -85,7 +86,7 @@ describe('Switch visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySwitch data-testid={`joy-size-${size}`} size={size} />
           </JoyCssVarsProvider>,
         );
@@ -102,7 +103,7 @@ describe('Switch visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySwitch data-testid="joy-focus" />
         </JoyCssVarsProvider>,
       );
@@ -152,7 +153,7 @@ describe('Switch error state with no explicit colour', () => {
       await parkPointer('switch-nocolor');
       const { container: joyContainer } = render(
         <div data-testid="joy-switch-danger">
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error>
               <JoySwitch />
             </JoyFormControl>

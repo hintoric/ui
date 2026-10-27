@@ -6,6 +6,7 @@ import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, settleTransitions, setColorScheme, lastShadowLayer } from './helpers';
 import type { JoyColor, JoyVariant } from '../utils/colorVariantClasses';
+import { joyTheme } from './joyTheme';
 
 /**
  * Moves the real mouse onto an empty spacer before styles are measured.
@@ -101,7 +102,7 @@ export function describeErrorParity(config: ErrorParityConfig): void {
           // position-independent.)
           const { container: joyContainer } = render(
             <div data-testid={`joy-err-${key}`} style={JOY_BOX}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 {config.renderJoy({ variant, color })}
               </JoyCssVarsProvider>
             </div>,

@@ -14,6 +14,7 @@ import { AccordionSummary as HintoricAccordionSummary } from '../components/Acco
 import { AccordionDetails as HintoricAccordionDetails } from '../components/AccordionDetails';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // AccordionGroup has no variant/colour axis of its own — it is the list
 // wrapper, and its whole visible contribution is the divider between items,
@@ -53,7 +54,7 @@ describe('AccordionGroup visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={{ width: 320 }}>
               <JoyAccordionGroup data-testid={`joy-${key}`} disableDivider={disableDivider}>
                 <JoyAccordion>

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Chip as JoyChip } from '@mui/joy
 import { Chip as HintoricChip } from '../components/Chip';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -20,7 +21,7 @@ describe('Chip visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyChip data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 {color}
               </JoyChip>
@@ -62,7 +63,7 @@ describe('Chip visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyChip data-testid={`joy-size-${size}`} size={size}>
               {size}
             </JoyChip>

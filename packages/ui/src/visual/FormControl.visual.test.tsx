@@ -13,13 +13,14 @@ import { FormLabel as HintoricFormLabel } from '../components/FormLabel';
 import { FormHelperText as HintoricFormHelperText } from '../components/FormHelperText';
 import { Input as HintoricInput } from '../components/Input';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('FormControl visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
     it(`matches Joy UI's flex layout in ${scheme}`, async () => {
       await setColorScheme(scheme);
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyFormControl data-testid="joy">
             <JoyFormLabel>Email</JoyFormLabel>
             <JoyInput placeholder="you@example.com" />
@@ -70,7 +71,7 @@ describe('FormControl visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl
               data-testid={`joy-${state.key}`}
               error={state.error}

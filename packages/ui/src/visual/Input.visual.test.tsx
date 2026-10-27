@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Input as JoyInput } from '@mui/j
 import { Input as HintoricInput } from '../components/Input';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -23,7 +24,7 @@ describe('Input visual parity with @mui/joy', () => {
 
           const { container: joyContainer } = render(
             <div data-testid={`joy-${variant}-${color}`} style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyInput variant={variant} color={color} placeholder={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -76,7 +77,7 @@ describe('Input visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         const { container: joyContainer } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyInput color={color} placeholder="focus" />
           </JoyCssVarsProvider>,
         );
@@ -118,7 +119,7 @@ describe('Input disabled-state parity with @mui/joy', () => {
           await setColorScheme(scheme);
           const { container: joyContainer } = render(
             <div data-testid={`joy-dis-${variant}-${color}`} style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyInput disabled variant={variant} color={color} placeholder={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -164,7 +165,7 @@ describe('Input error-state parity with @mui/joy', () => {
           await setColorScheme(scheme);
           const { container: joyContainer } = render(
             <div data-testid={`joy-err-${variant}-${color}`}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyInput error variant={variant} color={color} placeholder={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -208,7 +209,7 @@ describe('Input size parity with @mui/joy', () => {
 
         const { container: joyContainer } = render(
           <div data-testid={`joy-size-${size}`} style={{ width: 400 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyInput size={size} placeholder={size} />
             </JoyCssVarsProvider>
           </div>,

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Modal as JoyModal, ModalDialog a
 import { Modal as HintoricModal } from '../components/Modal';
 import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { COLOR_SCHEMES, lastShadowLayers, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -17,7 +18,7 @@ describe('ModalDialog visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyModal open>
                 <JoyModalDialog data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                   {color}
@@ -56,7 +57,7 @@ describe('ModalDialog visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyModal open>
               <JoyModalDialog data-testid={`joy-size-${size}`} size={size}>
                 {size}

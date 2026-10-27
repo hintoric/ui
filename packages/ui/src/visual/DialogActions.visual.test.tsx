@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, DialogActions as JoyDialogActions, Button as JoyButton } from '@mui/joy';
 import { DialogActions as HintoricDialogActions } from '../components/DialogActions';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('DialogActions visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('DialogActions visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyDialogActions data-testid="joy">
             <JoyButton>Cancel</JoyButton>
           </JoyDialogActions>

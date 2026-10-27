@@ -9,6 +9,7 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, lastShadowLayers, setColorScheme, settleTransitions, settleUntilStable } from './helpers';
 import { describeErrorParity, parkPointer } from './errorParity';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -35,7 +36,7 @@ describe('Select visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <div style={BOX}>
                 <JoySelect data-testid={`joy-${variant}-${color}`} variant={variant} color={color} value="a">
                   <JoyOption value="a">Alpha</JoyOption>
@@ -101,7 +102,7 @@ describe('Select visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={BOX}>
               <JoySelect data-testid={`joy-size-${size}`} size={size} value="a">
                 <JoyOption value="a">Alpha</JoyOption>
@@ -142,7 +143,7 @@ describe('Select visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySelect data-testid="joy-plain-shadow" variant="plain" value="a">
             <JoyOption value="a">Alpha</JoyOption>
           </JoySelect>
@@ -172,7 +173,7 @@ describe('Select visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         const { container: joyContainer } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySelect data-testid={`joy-focus-${color}`} color={color} value="a">
               <JoyOption value="a">Alpha</JoyOption>
             </JoySelect>
@@ -212,7 +213,7 @@ describe('Select visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={BOX}>
               <JoySelect data-testid={`joy-disabled-${variant}`} variant={variant} value="a" disabled>
                 <JoyOption value="a">Alpha</JoyOption>
@@ -271,7 +272,7 @@ describe('Select visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={BOX}>
               <JoySelect data-testid={`joy-hover-${variant}`} variant={variant} value="a">
                 <JoyOption value="a">Alpha</JoyOption>
@@ -310,7 +311,7 @@ describe('Select visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySelect value="a" defaultListboxOpen slotProps={{ listbox: { 'data-testid': 'joy-listbox' } }}>
             <JoyOption value="a">Alpha</JoyOption>
             <JoyOption value="b">Beta</JoyOption>
@@ -394,7 +395,7 @@ describe('Select error state with no explicit colour', () => {
       await parkPointer('select-nocolor');
       const { container: joyContainer } = render(
         <div data-testid="joy-select-danger">
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error>
               <JoySelect placeholder="—">
                 <JoyOption value="a">A</JoyOption>

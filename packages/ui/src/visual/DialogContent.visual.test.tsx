@@ -6,6 +6,7 @@ import { Modal as HintoricModal } from '../components/Modal';
 import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { DialogContent as HintoricDialogContent } from '../components/DialogContent';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('DialogContent visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -13,7 +14,7 @@ describe('DialogContent visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyModal open>
             <JoyModalDialog>
               <JoyDialogContent data-testid="joy">Are you sure?</JoyDialogContent>

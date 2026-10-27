@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Card as JoyCard } from '@mui/joy
 import { Card as HintoricCard } from '../components/Card';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -19,7 +20,7 @@ describe('Card visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyCard data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 {color}
               </JoyCard>

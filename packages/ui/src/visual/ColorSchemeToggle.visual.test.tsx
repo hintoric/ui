@@ -6,6 +6,7 @@ import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton } fr
 import { ColorSchemeToggle } from '../components/ColorSchemeToggle';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const SIZES = ['sm', 'md', 'lg'] as const;
 
@@ -23,7 +24,7 @@ describe('ColorSchemeToggle visual', () => {
       </ColorSchemeProvider>,
     );
     render(
-      <JoyCssVarsProvider defaultMode="light">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="light">
         <JoyIconButton data-testid={`joy-${size}`} variant="outlined" color="neutral" size={size}>
           +
         </JoyIconButton>
@@ -59,7 +60,7 @@ describe('ColorSchemeToggle visual', () => {
 
   it.each(COLOR_SCHEMES)('matches Joy UI in %s mode', async (scheme) => {
     render(
-      <JoyCssVarsProvider defaultMode={scheme}>
+      <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
         <JoyIconButton data-testid="joy" variant="outlined" color="neutral">
           +
         </JoyIconButton>
@@ -82,7 +83,7 @@ describe('ColorSchemeToggle visual', () => {
 
   it('shows the same focus-visible outline as Joy UI', async () => {
     render(
-      <JoyCssVarsProvider defaultMode="light">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="light">
         <JoyIconButton data-testid="joy-focus">+</JoyIconButton>
       </JoyCssVarsProvider>,
     );

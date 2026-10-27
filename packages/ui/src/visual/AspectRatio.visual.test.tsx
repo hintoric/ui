@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, AspectRatio as JoyAspectRatio } from '@mui/joy';
 import { AspectRatio as HintoricAspectRatio } from '../components/AspectRatio';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Joy UI achieves the ratio via a legacy padding-bottom hack; we use the
 // modern CSS `aspect-ratio` property. The underlying CSS techniques differ,
@@ -22,7 +23,7 @@ describe('AspectRatio visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <div style={{ width: 300 }}>
               <JoyAspectRatio data-testid={`joy-${ratio}`} ratio={ratio}>
                 <div />

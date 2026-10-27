@@ -9,6 +9,7 @@ import { FormControl as HintoricFormControl } from '../components/FormControl';
 import { FormHelperText as HintoricFormHelperText } from '../components/FormHelperText';
 import { parkPointer } from './errorParity';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // No color/variant axis of its own — tests its actual supported states
 // (orientation), per CLAUDE.md's allowance for components without that axis.
@@ -17,7 +18,7 @@ describe('RadioGroup visual parity with @mui/joy', () => {
     it(`matches Joy UI's vertical flex layout in ${scheme}`, async () => {
       await setColorScheme(scheme);
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyRadioGroup data-testid="joy" defaultValue="a">
             <JoyRadio value="a" label="A" />
             <JoyRadio value="b" label="B" />
@@ -47,7 +48,7 @@ describe('RadioGroup visual parity with @mui/joy', () => {
     it(`matches Joy UI's horizontal flex layout in ${scheme}`, async () => {
       await setColorScheme(scheme);
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyRadioGroup data-testid="joy-h" orientation="horizontal" defaultValue="a">
             <JoyRadio value="a" label="A" />
           </JoyRadioGroup>
@@ -78,7 +79,7 @@ describe('RadioGroup error state', () => {
       await parkPointer('radiogroup-error');
       const { container: joyContainer } = render(
         <div data-testid="joy-rg-error" style={{ position: 'fixed', top: 0, left: 0, width: 320 }}>
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error>
               <JoyRadioGroup defaultValue="a">
                 <JoyRadio value="a" label="A" />

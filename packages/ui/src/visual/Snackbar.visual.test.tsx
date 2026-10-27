@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Snackbar as JoySnackbar } from '@mui/joy';
 import { Snackbar as HintoricSnackbar } from '../components/Snackbar';
 import { COLOR_SCHEMES, lastShadowLayers, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -16,7 +17,7 @@ describe('Snackbar visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoySnackbar open variant={variant} color={color} data-testid={`joy-${variant}-${color}`}>
                 {color}
               </JoySnackbar>
@@ -50,7 +51,7 @@ describe('Snackbar visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySnackbar open size={size} data-testid={`joy-size-${size}`}>
               {size}
             </JoySnackbar>
@@ -82,7 +83,7 @@ describe('Snackbar visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySnackbar open anchorOrigin={anchorOrigin} data-testid={`joy-anchor-${anchorOrigin.vertical}-${anchorOrigin.horizontal}`}>
               anchor
             </JoySnackbar>
@@ -137,7 +138,7 @@ describe('Snackbar visual parity with @mui/joy', () => {
       const icon = (id: string) => <svg data-testid={id} width="20" height="20" />;
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySnackbar open data-testid="joy-deco" startDecorator={icon('joy-icon')} anchorOrigin={{ vertical: 'top', horizontal: 'left' }}>
             Text
           </JoySnackbar>

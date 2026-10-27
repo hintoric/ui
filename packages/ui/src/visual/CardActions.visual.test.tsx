@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, CardActions as JoyCardActions, Button as JoyButton } from '@mui/joy';
 import { CardActions as HintoricCardActions } from '../components/CardActions';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('CardActions visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('CardActions visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyCardActions data-testid="joy">
             <JoyButton>Save</JoyButton>
           </JoyCardActions>

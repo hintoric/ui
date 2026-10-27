@@ -14,6 +14,7 @@ import { Menu as HintoricMenu } from '../components/Menu';
 import { MenuItem as HintoricMenuItem } from '../components/MenuItem';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // MenuItem only exists inside an open Menu, and that Menu is portalled to
 // <body> — which makes this file one of the direct reasons the colour scheme
@@ -32,7 +33,7 @@ describe('MenuItem visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyDropdown open>
                 <JoyMenuButton>Open</JoyMenuButton>
                 <JoyMenu>

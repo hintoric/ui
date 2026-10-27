@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Badge as JoyBadge } from '@mui/joy';
 import { Badge as HintoricBadge } from '../components/Badge';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -16,7 +17,7 @@ describe('Badge visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyBadge data-testid={`joy-${variant}-${color}`} variant={variant} color={color} badgeContent={3}>
                 <span style={{ width: 32, height: 32, display: 'block', background: '#ccc' }} />
               </JoyBadge>
@@ -52,7 +53,7 @@ describe('Badge visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyBadge data-testid="joy-inv" badgeContent={3} invisible>
             <span style={{ width: 32, height: 32, display: 'block' }} />
           </JoyBadge>

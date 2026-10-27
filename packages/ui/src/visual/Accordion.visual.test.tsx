@@ -14,6 +14,7 @@ import { Accordion as HintoricAccordion } from '../components/Accordion';
 import { AccordionSummary as HintoricAccordionSummary } from '../components/AccordionSummary';
 import { AccordionDetails as HintoricAccordionDetails } from '../components/AccordionDetails';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -26,7 +27,7 @@ describe('Accordion visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAccordionGroup>
                 <JoyAccordion variant={variant} color={color} data-testid={`joy-${variant}-${color}`}>
                   <JoyAccordionSummary>Title</JoyAccordionSummary>
@@ -70,7 +71,7 @@ describe('Accordion visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAccordion variant="solid" color="danger">
             <JoyAccordionSummary data-testid="joy-summary">Title</JoyAccordionSummary>
             <JoyAccordionDetails>Body</JoyAccordionDetails>
@@ -95,7 +96,7 @@ describe('Accordion visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAccordion>
             <JoyAccordionSummary>Title</JoyAccordionSummary>
             <JoyAccordionDetails variant="soft" color="success" data-testid="joy-details">
@@ -128,7 +129,7 @@ describe('Accordion visual parity with @mui/joy', () => {
 
       const joyUser = userEvent.setup();
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAccordion>
             <JoyAccordionSummary>Title</JoyAccordionSummary>
             <JoyAccordionDetails>Body content</JoyAccordionDetails>

@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parseThemeCss, resolveToken } from '../../scripts/palette/themeCss';
-import { joyPalette, lightPalette, radius } from './palette';
+import { parseThemeCss, resolveToken } from './themeCss';
+import { joyPalette, lightPalette, radius } from '../../src/styles/palette';
 
 const STOPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 
-const { light, dark } = parseThemeCss(readFileSync(resolve(import.meta.dirname, 'theme.css'), 'utf8'));
+const { light, dark } = parseThemeCss(readFileSync(resolve(import.meta.dirname, '../../src/styles/theme.css'), 'utf8'));
 const r = (name: string) => resolveToken(light, name);
 
 // The spec this checks: docs/superpowers/specs/2026-10-27-klm-inspired-look-design.md.
