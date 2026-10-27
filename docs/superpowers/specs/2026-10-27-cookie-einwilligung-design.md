@@ -8,8 +8,12 @@ core/web noch die Marketing-Seite laden Tracking, und für die Sitzung von Krato
 Einwilligung nötig (§ 25 Abs. 2 TDDDG). Die Bausteine sollen fertig sein, bevor das erste Tool
 kommt, damit es dann nicht unter Zeitdruck an einen eingekauften Dienst geht.
 
-Entwurf (Claude Design, privat): https://claude.ai/artifact/4tFz6YY9GtSxikXmtqCzxd — Banner am
-Desktop, Einstellungen, Banner am Handy. Die Texte sind mit dem Skill `ux-writing-de` geprüft.
+Entwurf (Claude Design, privat): https://claude.ai/artifact/4tFz6YY9GtSxikXmtqCzxd. Die Texte sind
+mit dem Skill `ux-writing-de` geprüft.
+
+| Banner am Desktop | Einstellungen | Banner am Handy |
+|---|---|---|
+| ![Banner am Desktop](2026-10-27-cookie-einwilligung/banner-desktop.png) | ![Einstellungen](2026-10-27-cookie-einwilligung/settings.png) | ![Banner am Handy](2026-10-27-cookie-einwilligung/banner-phone.png) |
 
 ## Grundentscheidungen
 
