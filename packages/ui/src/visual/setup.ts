@@ -1,6 +1,14 @@
 import { afterEach, beforeEach } from 'vitest';
+import { commands } from 'vitest/browser';
 import { cleanup } from '@testing-library/react';
 import '../styles/index.css';
+import './commands';
+
+// The pointer stays where the last hover left it — possibly in another file —
+// and whatever renders under it next comes up in :hover. Park it first.
+beforeEach(async () => {
+  await commands.resetPointer();
+});
 
 afterEach(() => {
   cleanup();
