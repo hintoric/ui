@@ -42,4 +42,20 @@ describe('package entry point', () => {
       expect((HintoricUI as Record<string, unknown>)[name]).toBeDefined();
     }
   });
+
+  it('exports the cookie consent parts', () => {
+    const parts = [
+      'CookieConsentProvider',
+      'useCookieConsent',
+      'useConsent',
+      'ConsentGate',
+      'parseConsentCookie',
+      'CookieConsent',
+    ];
+    for (const name of parts) {
+      expect((HintoricUI as Record<string, unknown>)[name]).toBeDefined();
+    }
+    // It carries `known`, which only the library's own banner should read.
+    expect(HintoricUI).not.toHaveProperty('useCookieConsentState');
+  });
 });

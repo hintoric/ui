@@ -235,6 +235,9 @@
   --animate-map-reveal: hintoric-map-reveal 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
   --animate-pin-drop: hintoric-pin-drop 550ms 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
   --animate-ink-ripple: hintoric-ink-ripple 900ms 400ms ease-out both;
+
+  /* CookieConsent's banner slides up once, when it first appears. */
+  --animate-consent-in: hintoric-consent-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 [data-color-scheme="dark"] {
@@ -391,6 +394,13 @@
    above. 150% on the circle radius comfortably reaches every corner for any
    realistic width/height combination (circle()'s percentage basis is the
    box's corner distance, so 100% alone can undershoot on wide/tall boxes). */
+@keyframes hintoric-consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
 @keyframes hintoric-map-reveal {
   from {
     clip-path: circle(0% at 50% 50%);
