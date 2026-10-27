@@ -8,15 +8,15 @@ import { setColorScheme } from './helpers';
 // button we gave them. Tailwind's stock `dark:` reads prefers-color-scheme, so
 // this only holds once index.css declares a custom variant.
 //
-// The expected values are --color-neutral-100 (#f0f4f8) and --color-neutral-800
-// (#171a1c) from theme.css.
+// The expected values are --color-neutral-100 (#F5F1ED, light) and --color-neutral-800
+// (#171A1C, dark — Joy's) from theme.css.
 describe('the dark: variant follows data-color-scheme', () => {
   it('does not apply inside a light subtree', async () => {
     render(<div data-testid="light-box" className="bg-neutral-100 dark:bg-neutral-800" />);
     await setColorScheme('light');
 
     expect(getComputedStyle(page.getByTestId('light-box').element()).backgroundColor).toBe(
-      'rgb(240, 244, 248)',
+      'rgb(245, 241, 237)',
     );
   });
 

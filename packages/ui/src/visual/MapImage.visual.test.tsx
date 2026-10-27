@@ -20,8 +20,8 @@ describe('MapImage visual', () => {
     const style = getComputedStyle(el);
     expect(style.width).toBe('240px');
     expect(style.height).toBe('160px');
-    expect(style.borderRadius).toBe('8px');
-    expect(style.backgroundColor).toBe('rgb(11, 13, 14)');
+    expect(style.borderRadius).toBe('16px');
+    expect(style.backgroundColor).toBe('rgb(13, 12, 12)');
     expect(page.getByTestId('map-loading').element()).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe('MapImage visual', () => {
     await expect.element(page.getByText('Map unavailable'), { timeout: 15000 }).toBeInTheDocument();
     const el = page.getByTestId('map').element() as HTMLElement;
     expect(el.querySelector('img')).not.toBeInTheDocument();
-    expect(getComputedStyle(el.querySelector('div')!).backgroundColor).toBe('rgb(240, 244, 248)');
+    expect(getComputedStyle(el.querySelector('div')!).backgroundColor).toBe('rgb(235, 226, 219)');
     await expect.element(page.getByTestId('map')).toMatchScreenshot('mapimage-error-light');
   });
 

@@ -26,6 +26,14 @@ export default defineConfig({
       // accumulate junk that looks like a baseline but is not one. Failure
       // diffs still land in .vitest-attachments/, which is where they belong.
       screenshotFailures: false,
+      // Screenshots are for review, not the pass/fail signal (computed styles
+      // are). Since the radii grew to 12px, a dark rounded corner's
+      // anti-aliasing varies by a pixel or two from run to run — Select's
+      // solid triggers moved between tests on every rerun — so a handful of
+      // pixels is tolerated. Any real change touches far more.
+      expect: {
+        toMatchScreenshot: { comparatorName: 'pixelmatch', comparatorOptions: { allowedMismatchedPixels: 4 } },
+      },
     },
   },
 });

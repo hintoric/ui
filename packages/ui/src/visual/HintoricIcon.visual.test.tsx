@@ -15,7 +15,7 @@ describe('HintoricIcon visual', () => {
     await setColorScheme('light');
     render(<HintoricIcon data-testid="hintoric-icon-light" />);
     const el = page.getByTestId('hintoric-icon-light').element() as SVGSVGElement;
-    expect(getComputedStyle(el).color).toBe('rgb(23, 26, 28)');
+    expect(getComputedStyle(el).color).toBe('rgb(26, 25, 24)');
     await expect.element(page.getByTestId('hintoric-icon-light')).toMatchScreenshot('hintoric-icon-light');
   });
 
@@ -31,6 +31,6 @@ describe('HintoricIcon visual', () => {
     await setColorScheme('light');
     render(<HintoricIcon className="text-danger-500" data-testid="hintoric-icon-override" />);
     const el = page.getByTestId('hintoric-icon-override').element() as SVGSVGElement;
-    expect(getComputedStyle(el).color).not.toBe('rgb(23, 26, 28)');
+    expect(getComputedStyle(el).color).not.toBe('rgb(26, 25, 24)');
   });
 });
