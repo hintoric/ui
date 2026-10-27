@@ -69,11 +69,11 @@ const SwitchBase = React.forwardRef<HTMLElement, SwitchProps>(function SwitchBas
           onCheckedChange?.(next);
         }}
         className={cx(
-          // Literal 16px (theme.vars.radius.xl) rather than Tailwind's
+          // `rounded-xl` (theme.vars.radius.xl) rather than Tailwind's
           // `rounded-full` (a huge computed px number) — same lesson as
           // Avatar/Chip/Badge/ChipDelete/Skeleton. Confirmed against
           // @mui/joy's Switch.js source.
-          'relative inline-flex shrink-0 items-center rounded-[16px] transition-colors cursor-pointer data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
+          'relative inline-flex shrink-0 items-center rounded-xl transition-colors cursor-pointer data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500',
           className,
         )}
         style={{ width: trackWidth, height: trackHeight, backgroundColor: track, padding }}
