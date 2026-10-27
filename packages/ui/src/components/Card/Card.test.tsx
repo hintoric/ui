@@ -7,7 +7,7 @@ describe('Card', () => {
     render(<Card data-testid="card">content</Card>);
     const el = screen.getByTestId('card');
     // Card imposes its own radius since bare Sheet has none.
-    expect(el).toHaveClass('border-neutral-outlined-border', 'flex', 'flex-col', 'rounded-md');
+    expect(el).toHaveClass('border-card-outlined-neutral-border', 'flex', 'flex-col', 'rounded-lg');
   });
 
   it('applies a different variant/color when requested', () => {

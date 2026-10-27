@@ -43,6 +43,11 @@ describe('Card visual parity with @mui/joy', () => {
           expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
           expect(hintoricStyle.color).toBe(joyStyle.color);
           expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          if (variant === 'outlined' && color === 'neutral') {
+            // The default Card: borderless on the light canvas, outlined in
+            // dark, where its surface sits at ~1.08:1 against the black canvas.
+            expect(hintoricStyle.borderTopColor).toBe(scheme === 'light' ? 'rgba(0, 0, 0, 0)' : 'rgb(50, 56, 62)');
+          }
           expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
           expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
           expect(hintoricStyle.padding).toBe(joyStyle.padding);

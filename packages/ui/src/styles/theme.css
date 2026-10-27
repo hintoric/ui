@@ -204,6 +204,9 @@
   /* Joy's divider formula — neutral.mainChannel (step 500) at 0.2 — on the
      new neutral-500 (#6E6966). */
   --color-divider: rgba(110, 105, 102, 0.2);
+  /* The default (outlined, neutral) Card's border: none visible on the light
+     canvas, Joy's outline in dark (redeclared below). */
+  --color-card-outlined-neutral-border: transparent;
 
   /* Joy's `mainChannel` — the palette step a component reaches for when it
      wants "the" colour rather than a variant slot. Joy remaps it per scheme
@@ -440,6 +443,7 @@
      dark against a dark surface. Measured against real @mui/joy: it renders
      rgba(159, 166, 173, 0.16). */
   --color-divider: rgba(159, 166, 173, 0.16);
+  --color-card-outlined-neutral-border: var(--color-neutral-outlined-border);
 
   --color-primary-main: var(--color-primary-400);
   --color-neutral-main: var(--color-neutral-400);

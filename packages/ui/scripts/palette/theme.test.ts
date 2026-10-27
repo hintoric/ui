@@ -58,6 +58,11 @@ describe('theme.css', () => {
     for (const name of fills) expect(r(name), name).not.toBe('#F5F1ED');
   });
 
+  it('keeps the default Card borderless in light and outlined in dark', () => {
+    expect(light['--color-card-outlined-neutral-border']).toBe('transparent');
+    expect(dark['--color-card-outlined-neutral-border']).toBe('var(--color-neutral-outlined-border)');
+  });
+
   it('redeclares in dark everything built on a raw stop that changed', () => {
     // A dark scheme set on an inner element inherits :root's already-resolved
     // values for anything the dark block doesn't redeclare — warm, there.
