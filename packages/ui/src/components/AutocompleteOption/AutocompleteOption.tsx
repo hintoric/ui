@@ -20,7 +20,7 @@ function AutocompleteOptionComponent<Value = string>(
       disabled={disabled}
       className={(state) =>
         cx(
-          'flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
+          'flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[inherit] border-1 border-transparent px-3 py-1 text-left transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
           STATIC_COLOR_CLASSES[variant][color],
           state.highlighted && !state.selected && HOVER_BG_CLASS[variant][color],
           state.selected && cx(ACTIVE_BG_CLASS[variant][color], 'font-medium'),

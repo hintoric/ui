@@ -21,7 +21,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(function
       closeOnClick={closeOnClick}
       className={(state) =>
         cx(
-          'flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[inherit] border border-transparent px-3 py-1 text-left transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
+          'flex min-h-9 cursor-pointer items-center gap-2.5 rounded-[inherit] border-1 border-transparent px-3 py-1 text-left transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-60',
           STATIC_COLOR_CLASSES[variant][color],
           state.highlighted && !selected && HOVER_BG_CLASS[variant][color],
           selected && ACTIVE_BG_CLASS[variant][color],

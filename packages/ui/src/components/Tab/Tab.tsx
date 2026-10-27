@@ -38,10 +38,12 @@ const PADDING_CLASS = {
   md: 'px-4 pt-[4px] pb-[5px] data-[orientation=vertical]:pb-[4px] data-[orientation=vertical]:pr-[calc(1rem+1px)]',
   lg: 'px-5 pt-[6px] pb-[7px] data-[orientation=vertical]:pb-[6px] data-[orientation=vertical]:pr-[calc(1.25rem+1px)]',
 } as const;
+// Outlined subtracts its 1.5px outline (theme.css `--default-border-width`)
+// from the block padding, as Joy subtracts `--variant-borderWidth`.
 const OUTLINED_PADDING_CLASS = {
-  sm: 'px-3 pt-[2px] pb-[3px] data-[orientation=vertical]:pb-[2px] data-[orientation=vertical]:pr-[calc(0.75rem+1px)]',
-  md: 'px-4 pt-[3px] pb-[4px] data-[orientation=vertical]:pb-[3px] data-[orientation=vertical]:pr-[calc(1rem+1px)]',
-  lg: 'px-5 pt-[5px] pb-[6px] data-[orientation=vertical]:pb-[5px] data-[orientation=vertical]:pr-[calc(1.25rem+1px)]',
+  sm: 'px-3 pt-[1.5px] pb-[2.5px] data-[orientation=vertical]:pb-[1.5px] data-[orientation=vertical]:pr-[calc(0.75rem+1px)]',
+  md: 'px-4 pt-[2.5px] pb-[3.5px] data-[orientation=vertical]:pb-[2.5px] data-[orientation=vertical]:pr-[calc(1rem+1px)]',
+  lg: 'px-5 pt-[4.5px] pb-[5.5px] data-[orientation=vertical]:pb-[4.5px] data-[orientation=vertical]:pr-[calc(1.25rem+1px)]',
 } as const;
 
 // Extends ListItemButton's own styling (STATIC/INTERACTIVE base, no separate
@@ -143,7 +145,7 @@ export const Tab = React.forwardRef<HTMLElement, TabProps>(function Tab(
     // `theme.focus.default`; disabled is `pointer-events: none` like Joy's
     // `${variant}Disabled`, not a dimmed opacity. Joy centres a tab's content
     // only in a row (`justifyContent: row ? 'center' : 'initial'`).
-    'relative flex cursor-pointer items-center justify-center data-[orientation=vertical]:justify-normal gap-1.5 rounded-[inherit] border border-transparent font-body no-underline transition-colors focus-visible:z-[1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 data-[disabled]:pointer-events-none data-[disabled]:cursor-default',
+    'relative flex cursor-pointer items-center justify-center data-[orientation=vertical]:justify-normal gap-1.5 rounded-[inherit] border-1 border-transparent font-body no-underline transition-colors focus-visible:z-[1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 data-[disabled]:pointer-events-none data-[disabled]:cursor-default',
     SIZE_CLASS[size],
     variant === 'outlined' ? OUTLINED_PADDING_CLASS[size] : PADDING_CLASS[size],
     INTERACTIVE_COLOR_CLASSES[variant][color],

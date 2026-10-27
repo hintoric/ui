@@ -8,12 +8,16 @@ import {
   CssVarsProvider as JoyCssVarsProvider,
   Divider as JoyDivider,
   Input as JoyInput,
+  List as JoyList,
+  ListItem as JoyListItem,
+  ListItemButton as JoyListItemButton,
 } from '@mui/joy';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Chip } from '../components/Chip';
 import { Divider } from '../components/Divider';
 import { Input } from '../components/Input';
+import { ListItemButton } from '../components/ListItemButton';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 import { joyTheme } from './joyTheme';
@@ -70,6 +74,41 @@ describe('outline width', () => {
       }
       expect(style('joy-divider').height).toBe('1px');
       expect(style('ours-divider').height).toBe('1px');
+    });
+
+    // Joy's ListItemButton — under Tab, MenuItem, Option and AutocompleteOption
+    // too — carries a fixed `1px solid transparent` border; only its outlined
+    // variant swaps in `--variant-borderWidth`.
+    it(`keeps ListItemButton's 1px transparent border except when outlined in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      render(
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
+          <div style={ZOOM}>
+            <JoyList>
+              <JoyListItem>
+                <JoyListItemButton data-testid="joy-plain" variant="plain">Plain</JoyListItemButton>
+              </JoyListItem>
+              <JoyListItem>
+                <JoyListItemButton data-testid="joy-outlined" variant="outlined">Outlined</JoyListItemButton>
+              </JoyListItem>
+            </JoyList>
+          </div>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <ColorSchemeProvider defaultMode={scheme}>
+          <div style={ZOOM}>
+            <ListItemButton data-testid="ours-plain" variant="plain">Plain</ListItemButton>
+            <ListItemButton data-testid="ours-outlined" variant="outlined">Outlined</ListItemButton>
+          </div>
+        </ColorSchemeProvider>,
+      );
+      const width = (id: string) => getComputedStyle(page.getByTestId(id).element()).borderTopWidth;
+
+      expect(width('joy-plain')).toBe('1px');
+      expect(width('ours-plain')).toBe('1px');
+      expect(width('joy-outlined')).toBe('1.5px');
+      expect(width('ours-outlined')).toBe('1.5px');
     });
   }
 });
