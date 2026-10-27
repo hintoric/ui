@@ -147,8 +147,29 @@ oracle expresses this through Joy's `palette.neutral.*Bg` tokens, and `@hintoric
   KLM's hue and chroma (OKLCH) and lower only the lightness of 400–900. Go just far enough that
   **every text colour meets ≥ 4.5:1 against every background the variant formula pairs it with,
   in every state** (resting, hover, active), plus status text on the canvas and on white. Result:
-  status text a little darker than KLM's, fills unchanged. The builder derives the values and
-  records them here together with the resulting contrast table.
+  status text a little darker than KLM's, fills unchanged.
+
+  **Derived values** (`packages/ui/scripts/palette/deriveKlmPalette.ts`, recorded in
+  `packages/ui/src/styles/palette.ts`; 50–400 are KLM's, 500–900 derived):
+
+  | | 500 | 600 | 700 | 800 | 900 |
+  |---|---|---|---|---|---|
+  | danger | `#B50200` (KLM `#D42A1E`) | `#9B1A12` (KLM `#A02118`) | `#751811` | `#4C100B` | `#2A0906` |
+  | success | `#00653C` (KLM `#287D52`) | `#125640` (KLM `#1C5D47`) | `#0F433A` | `#0A2B26` | `#051714` |
+  | warning | `#7D4E00` (KLM `#A3680C`) | `#6F4300` (KLM `#764905`) | `#583400` | `#382100` | `#1D1200` |
+
+  The binding pair is plain/outlined text (500) on its active fill (200): 4.50 (danger),
+  4.56 (success), 4.51 (warning). Everything else clears it comfortably (resting text on the
+  canvas 6.3–6.4, on white 7.1–7.2; soft text 7.0–8.7; white on solid 7.1 and up). The darkened
+  500 would sit right on KLM's 600 (warning: `#7D4E00` against `#764905`), and 600/700 are
+  solid's hover and active fills. So each stop from 600 on also sits at least 0.04 OKLCH lightness
+  below the previous one, which is why the two 600s moved too. *(Builder's call; Joy's own
+  primary steps by 0.05 and 0.09.)*
+
+  **Primary is exempt in two pairs.** Primary is unchanged (decision above), and its plain and
+  outlined text on its active fill (500 on 200) is 3.85:1, the same as under Joy today. The
+  contrast test asserts those two pairs stay at 3.85 rather than reach 4.5. Every other pair, of
+  every colour, is ≥ 4.5.
 - **Page and surfaces:** `--color-canvas` (page) becomes neutral-100 `#F5F1ED`;
   `--color-surface` (Card/Sheet resting background) and `--color-surface-popup` become white.
 
