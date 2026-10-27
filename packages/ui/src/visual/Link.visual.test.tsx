@@ -32,6 +32,8 @@ describe('Link visual parity with @mui/joy', () => {
         const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${color}`).element());
 
         expect(hintoricStyle.color).toBe(joyStyle.color);
+        // Joy's Link reads radius.xs (Link.js) — visible on its focus ring.
+        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
