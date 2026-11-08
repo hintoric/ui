@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Body, Container, Head, Html, Preview } from 'react-email';
 import { emailClass, emailStylesheet } from '../styles';
-import { emailFonts, emailSchemes, variantTokens } from '../tokens';
+import { emailFonts, emailOutlineWidth, emailSchemes, variantTokens } from '../tokens';
 import { safeHref } from '../safeUrl';
 import { Link } from './Link';
 import { Typography } from './Typography';
@@ -50,7 +50,7 @@ export function Layout({ lang, preview, footer, unsubscribe, colorScheme, childr
             maxWidth: '440px',
             boxSizing: 'border-box',
             backgroundColor: t.surface,
-            border: `1px solid ${variantTokens('light', 'outlined', 'neutral').borderColor}`,
+            border: `${emailOutlineWidth} solid ${variantTokens('light', 'outlined', 'neutral').borderColor}`,
             borderRadius: '20px',
           }}
         >

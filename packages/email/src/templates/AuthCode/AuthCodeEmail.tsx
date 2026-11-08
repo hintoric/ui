@@ -5,7 +5,7 @@ import { HintoricLogo } from '../../components/HintoricLogo';
 import { Layout } from '../../components/Layout';
 import { Typography } from '../../components/Typography';
 import { renderEmail } from '../../render';
-import { emailFonts } from '../../tokens';
+import { emailFonts, emailOutlineWidth, variantTokens } from '../../tokens';
 import type { RenderedEmail } from '../SecurityActivityAlert';
 import type { AuthCodeContext, AuthCodeProps } from './types';
 
@@ -60,8 +60,11 @@ export function AuthCodeContent(props: AuthCodeProps) {
         </Typography>
       </div>
       {/* Outlined, not soft: in dark the layout card is surface-1, exactly the
-          soft-neutral fill, which would make the box vanish. */}
-      <Card>
+          soft-neutral fill, which would make the box vanish. The border is
+          spelled out because the default Card is borderless in light (it is
+          made for the warm canvas), and this one sits on the white layout
+          card; the dark stylesheet still swaps in the dark outline. */}
+      <Card style={{ border: `${emailOutlineWidth} solid ${variantTokens('light', 'outlined', 'neutral').borderColor}` }}>
         {/* One text node, no spaces between the digits: a double-click selects
             the whole code and copies it as it is to be typed. The letter
             spacing trails the last digit too, so the indent re-centres it. */}

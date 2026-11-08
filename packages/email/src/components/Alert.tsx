@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Img } from 'react-email';
 import { emailAlertIcon } from '../alertIcons';
 import { emailClass } from '../styles';
-import { emailFonts, emailRadius, emailSchemes, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
+import { emailFonts, emailOutlineWidth, emailRadius, emailSchemes, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
 
 /**
  * alertVariants.ts: `gap-2/2.5/3.5`, `p-2/3/4`, `text-xs/sm/base` at a 1.5
@@ -75,7 +75,7 @@ export function Alert({ variant = 'soft', color = 'neutral', size = 'md', startD
         borderRadius: emailRadius.sm,
         backgroundColor: v.backgroundColor ?? emailSchemes.light.surface,
         color: v.color,
-        border: v.borderColor ? `1px solid ${v.borderColor}` : undefined,
+        border: v.borderColor ? `${emailOutlineWidth} solid ${v.borderColor}` : undefined,
         ...type,
         ...style,
       }}
