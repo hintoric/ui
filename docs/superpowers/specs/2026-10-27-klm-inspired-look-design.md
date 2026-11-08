@@ -246,6 +246,14 @@ blue-greys (`#8f9ba3`, `#8c98a1` …) that will look cool on the warm canvas. Th
 with Recraft in a separate step after this lands. The release notes say the illustrations don't
 match yet.
 
+*Done separately, discovered while doing it:* `#8f9ba3` and `#8c98a1` are in the **dark**
+variants, which stay as they are. The light variants' cool colours are lavender tints
+(`rgb(232,234,243)`, `#e1e4f2` …), slate outlines and a near-neutral charcoal ink. They were
+recoloured, not regenerated: `packages/icons/scripts/warm.ts` moves every neutral (OKLCH chroma
+< 0.045) to the same position on the warm ramp, so Joy's stop N lands on warm stop N. Accents,
+including the periwinkle text lines (chroma ≥ 0.059), and white stay. `scripts/warm.test.ts`
+fails on a cool neutral in any `svg/*/light.svg`, which is what a new Recraft icon brings in.
+
 **Anti-goals (a failure even if everything is green):**
 - A hintoric screen that reads as KLM (their blue, their font, their imagery).
 - Tests that pass because the oracle was bent to match us instead of being configured with the
