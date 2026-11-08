@@ -16,16 +16,16 @@ export interface CardProps {
  * only box Outlook pads reliably; Card's `gap-2` has no email equivalent, so
  * spacing between children is theirs to set.
  *
- * Like the web Card, the default (outlined, neutral) one is borderless in
- * light — its border keeps its width but is transparent — and the dark
- * stylesheet's outlined-neutral rule gives it Joy's outline back. On a white
- * surface rather than the canvas it is invisible, so pass a `border` in
- * `style` where it has to stand out there (AuthCodeEmail's code box does).
+ * Unlike the web Card, the default (outlined, neutral) one keeps its outline
+ * in light. The web Card drops it because it sits on the warm canvas; in an
+ * email every Card sits on Layout's white card, where a borderless white Card
+ * would vanish. The parity test compares it with a web Card that asks for
+ * the outline explicitly.
  */
 export function Card({ variant = 'outlined', color = 'neutral', style, children }: CardProps) {
   const v = variantTokens('light', variant, color);
   const filled = v.backgroundColor !== undefined;
-  const borderColor = variant === 'outlined' && color === 'neutral' ? 'transparent' : v.borderColor;
+  const borderColor = v.borderColor;
   return (
     <table
       role="presentation"

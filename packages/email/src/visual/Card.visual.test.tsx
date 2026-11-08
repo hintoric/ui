@@ -17,6 +17,14 @@ const PADDING = ['paddingTop', 'paddingLeft', 'paddingBottom', 'paddingRight'] a
 
 const content = <div style={{ height: 40 }}>Inhalt</div>;
 
+// The one deliberate difference from the web Card: the default (outlined,
+// neutral) web Card is borderless in light, made to sit on the warm canvas —
+// but in an email every Card sits on Layout's white card, where a borderless
+// white Card would vanish. So the email Card keeps its outline, and is
+// compared against the web Card with that outline asked for explicitly.
+const webClassName = (variant: string, color: string) =>
+  variant === 'outlined' && color === 'neutral' ? 'border-neutral-outlined-border' : undefined;
+
 describe('Email.Card parity with Card', () => {
   for (const scheme of COLOR_SCHEMES) {
     for (const variant of EMAIL_VARIANTS) {
@@ -24,7 +32,7 @@ describe('Email.Card parity with Card', () => {
         it(`${variant} / ${color} matches in ${scheme}`, async () => {
           await setColorScheme(scheme);
           const { web, email } = await renderPair(
-            <Card variant={variant} color={color}>
+            <Card variant={variant} color={color} className={webClassName(variant, color)}>
               {content}
             </Card>,
             <Email.Card variant={variant} color={color}>
@@ -47,7 +55,7 @@ describe('Email.Card parity with Card', () => {
         <div style={grid}>
           {EMAIL_VARIANTS.flatMap((variant) =>
             EMAIL_COLORS.map((color) => (
-              <Card key={`${variant}-${color}`} variant={variant} color={color}>
+              <Card key={`${variant}-${color}`} variant={variant} color={color} className={webClassName(variant, color)}>
                 {color[0]!.toUpperCase()}
               </Card>
             )),
