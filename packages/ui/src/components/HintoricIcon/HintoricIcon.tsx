@@ -4,11 +4,11 @@ import type { HintoricIconProps } from './types';
 
 /*
  * Just the mark from the real logo (cdn.hintoric.com/assets/logo/{black,white}.svg),
- * not a separate asset — there is none. The mark is the clip-path group inside
- * that SVG (viewBox 0 0 282.481 326); the rest of the file is the wordmark.
- * The connector "flag" path outside the group runs from x≈99 to x≈324, past
- * the mark's own 282.481-wide clip bounds, so cropping to this viewBox drops
- * it identically to how the original SVG's own clipPath already does.
+ * not a separate asset — there is none. The mark is three needles around two
+ * rings. Four of its paths sit in that SVG's clip-path group (a 282.481 × 326
+ * rect, which crops nothing); the fifth, the right needle (x 224.6–324), is
+ * drawn outside the group, so the logo shows it in full. Cropping to the group's
+ * rect would cut it off, so this viewBox spans the whole mark: 0 0 324 326.
  *
  * `black`/`white` fills become `currentColor`, coloured by `text-ink-primary`
  * (overridable via `className`) instead of switching between the two asset
@@ -22,9 +22,9 @@ export const HintoricIcon = React.forwardRef<SVGSVGElement, HintoricIconProps>(f
   return (
     <svg
       ref={ref}
-      width="0.867em"
+      width="0.994em"
       height="1em"
-      viewBox="0 0 282.481 326"
+      viewBox="0 0 324 326"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role={role}
@@ -44,6 +44,7 @@ export const HintoricIcon = React.forwardRef<SVGSVGElement, HintoricIconProps>(f
       />
       <path d="M171.659 154.399L153.773 154.471L161.64 0.0377281L171.659 154.399Z" fill="currentColor" />
       <path d="M99.3041 226.063L99.3759 208.164L0.0357722 216.739L99.3041 226.063Z" fill="currentColor" />
+      <path d="M224.696 226.063L224.624 208.164L323.964 216.739L224.696 226.063Z" fill="currentColor" />
     </svg>
   );
 });
