@@ -1,18 +1,18 @@
 # @hintoric/ui
 
-Joy UI's look and API, built on Base UI (behavior) and Tailwind CSS (styling). See `docs/superpowers/specs/2026-09-02-hintoric-ui-design.md` for the design and `docs/superpowers/plans/2026-09-02-hintoric-ui-phase-1.md` for the implementation history and every "discovered during implementation" correction made against the real `@mui/joy` package.
+Joy UI's API and component structure, built on Base UI (behavior) and Tailwind CSS (styling), with a look of its own: rounder, flatter and warmer than Joy's, inspired by KLM's 2026 web refresh. See `docs/superpowers/specs/2026-09-02-hintoric-ui-design.md` for the original design, `docs/superpowers/plans/2026-09-02-hintoric-ui-phase-1.md` for the implementation history and every "discovered during implementation" correction made against the real `@mui/joy` package, and `docs/superpowers/specs/2026-10-27-klm-inspired-look-design.md` for the look.
 
 ## Hard requirement: every component needs full visual regression coverage
 
 Every component in `packages/ui/src/components/*` — new or modified — **must** have a matching `packages/ui/src/visual/<Component>.visual.test.tsx` that:
 
-1. Renders the real `@mui/joy` component and our own component side by side, for **every variant the component supports** (`solid`/`soft`/`outlined`/`plain` where applicable) **crossed with every color** (`primary`/`neutral`/`danger`/`success`/`warning` where applicable) **crossed with both color schemes** (`light`/`dark`) — not a representative subset. If a component has no `variant`/`color` axis (e.g. Card's default), test its actual supported states instead. The scheme axis has no exceptions: every component renders in both.
+1. Renders the real `@mui/joy` component, configured with the shared oracle theme `visual/joyTheme.ts`, and our own component side by side, for **every variant the component supports** (`solid`/`soft`/`outlined`/`plain` where applicable) **crossed with every color** (`primary`/`neutral`/`danger`/`success`/`warning` where applicable) **crossed with both color schemes** (`light`/`dark`) — not a representative subset. If a component has no `variant`/`color` axis (e.g. Card's default), test its actual supported states instead. The scheme axis has no exceptions: every component renders in both.
 2. Covers **interactive/focus states** where the component has them (`:focus-within` ring, `:hover`, `:disabled`) — not just the resting state. Input's focus ring is the reason this rule exists: it was the kind of bug a resting-state-only screenshot would never catch.
 3. Asserts pass/fail via `getComputedStyle()` equality on the properties that define the component's look (`backgroundColor`, `color`, `borderColor`, `borderRadius`, `boxShadow`, `minHeight`/`width`/`height`, padding, `cursor` — whichever apply), **including `fontSize`, `fontWeight` and `lineHeight`, and `display` plus `width` inside a fixed-width parent**. This is the actual test signal, and it is only as good as the list: `Button` rendered at 16px/500 where Joy uses 14px/600 through 852 green tests, because nothing compared a font property. Sizing has the same history — see P1/P2 in `docs/superpowers/specs/2026-09-06-visual-test-coverage-audit.md`.
 4. Also calls Vitest's real `toMatchScreenshot()` on both the Joy and the Hintoric element, committing the resulting PNGs under `__screenshots__/`. These are for humans to review, not the pass/fail logic — two independently-rendered elements can differ by a stray anti-aliased pixel even when every computed style is identical, so a raw image-diff between them would be noisy. (`toMatchScreenshot()` only supports comparing a live screenshot against its own stored baseline anyway — see the Vitest docs — it can't directly diff two live elements against each other.)
 5. Sets the scheme with `setColorScheme(scheme)` from `visual/helpers.ts`, which writes `data-color-scheme` and `data-joy-color-scheme` onto `<html>`. It has to be the document, not a wrapper element: `Menu`, `Modal`, `Drawer`, `Tooltip`, `Snackbar`, `Select` and `Autocomplete` portal their popup to `body`, where a wrapper scope never reaches — such a popup renders light inside a dark test, silently, and the test stays green. Joy providers additionally take `defaultMode={scheme}` so Joy's JS-side mode matches its CSS.
 
-   `visual/darkMode.tsx`'s wrapper-scope helpers (`renderJoyDark` and friends) are the deliberate exception, for tests that need a light and a dark element in one document — the `DarkTokens` grid. Don't reach for them in a per-component test.
+   Joy providers also always take `theme={joyTheme}`. Without it Joy falls back to its stock theme — the old look — and the comparison is against the wrong oracle; `scripts/joyThemeUsage.test.ts` fails on any provider that forgets it. `joyTheme.ts` encodes the spec's decisions in Joy's own terms and is checked on its own by `JoyTheme.visual.test.tsx`: never adjust it to make a comparison pass.
 
 ### Components without an `@mui/joy` counterpart
 
@@ -41,7 +41,11 @@ Baselines are named per browser+platform (`*-chromium-darwin.png` on macOS) and 
 pnpm test:visual 2>&1 | grep -oE "src/visual/__screenshots__/[^ ]*\.png" | grep -v vitest-attachments | sort -u
 ```
 
-Delete those, re-run, and look at the diffs. If a Joy baseline moves and you cannot explain why, stop — Joy is the oracle, and an unexplained change to it means the oracle is no longer trustworthy.
+Delete those, re-run, and look at the diffs. If a Joy baseline moves and you cannot explain why, stop — Joy is the oracle, and an unexplained change to it means the oracle is no longer trustworthy. A change to `visual/joyTheme.ts` is an explained reason: it moves Joy's images on purpose, and they are retaken with ours.
+
+To review many retaken baselines at once, `node packages/ui/scripts/contactSheets.ts <screenshots dir> <out dir> joy hintoric` writes one HTML sheet per test file with Joy's and our images side by side, light and dark (`web email` for `packages/email`); `.contact-sheets/` is git-ignored.
+
+The suite's Chromium floors fractional border widths to whole CSS pixels, so the 1.5px outline computes and screenshots as 1px almost everywhere. `Outline.visual.test.tsx` checks it under `zoom: 2`, where it survives.
 
 Our light tokens live in Tailwind's `@theme { }` block, which compiles to `:root`; there is no `[data-color-scheme="light"]` block. A light-mode island nested inside a dark region therefore stays dark. Joy supports this and we deliberately don't — the alternative is duplicating every light value into a second hand-maintained block. Consequence for tests: **never nest scopes.** The scheme is document state and there is only one.
 
@@ -49,8 +53,8 @@ Our light tokens live in Tailwind's `@theme { }` block, which compiles to `:root
 
 Transactional email components on react-email — a separate package so the web library never pulls
 in react-email's CLI. Mail clients understand neither Tailwind nor CSS variables, so every component
-paints with inline styles from `src/tokens.ts` (a hex copy of `theme.css`'s formula) and dark mode is
-a generated stylesheet (`src/styles.ts`).
+paints with inline styles from `src/tokens.ts` (a hex copy of `theme.css`'s formula, with one palette
+per scheme in `emailPalettes`) and dark mode is a generated stylesheet (`src/styles.ts`).
 
 The parity rule mirrors the one above, with **`@hintoric/ui` as the oracle** instead of `@mui/joy`:
 every component (`Button`, `Typography`, … — same names as in `@hintoric/ui`) needs a `src/visual/<Component>.visual.test.tsx` that renders it next to its
@@ -68,7 +72,9 @@ doctype. `Button` passed every parity test in the HTML5 test page while every se
 short — a line's height stopped coming from the link's own `line-height`. Box-sensitive components
 also run a `{ quirks: true }` variant.
 Changing a `@hintoric/ui` token therefore means updating `tokens.ts` too; the parity suite is what
-tells you.
+tells you. A changed text colour also changes Alert's icon files: each icon is a PNG per ink on the
+CDN, so run `scripts/alert-icons.mjs` and upload the new files (keep the old ones there — sent mails
+still link them).
 
 Images in emails are linked https PNGs at twice their display size, never SVG (Gmail and desktop
 Outlook drop it) and not `cid:` attachments. Parity tests import the email side as a namespace
@@ -124,4 +130,9 @@ npm view @hintoric/ui dist-tags && git ls-remote --tags origin && gh release lis
 
 ## Don't re-derive what's already been reverse-engineered
 
-Every color/spacing/shadow/radius token in `packages/ui/src/styles/theme.css` and every per-variant class map in `packages/ui/src/utils/colorVariantClasses.ts` was copied from real `@mui/joy` source or measured against the real rendered package — not guessed. If something looks off, it's more likely a token this project hasn't reverse-engineered yet than a wrong assumption in the existing tokens. Check the Phase 1 plan's "Post-Phase-1" addenda first; if it's genuinely new, verify against the real package (a throwaway `@mui/joy` + `@emotion/react` + `@emotion/styled` sandbox, or the visual test suite above) before changing a token, and document what you found the same way those addenda do.
+Two sources, kept apart:
+
+- **The look's values are ours, not Joy's.** The light palette (neutral, danger, success, warning), the radius scale, the outline width and `shadow-xs` come from `docs/superpowers/specs/2026-10-27-klm-inspired-look-design.md`. They are recorded in `packages/ui/src/styles/palette.ts` and derived from KLM's v47 stops by `packages/ui/scripts/palette/deriveKlmPalette.ts`. Change a value in `palette.ts` first: `scripts/palette/theme.test.ts` then shows where `theme.css` disagrees, `themeContrast.test.ts` whether every light text/background pair still reaches 4.5:1, and `visual/joyTheme.ts` picks the value up for the oracle. Dark values are still Joy's, redeclared in the dark block.
+- **Everything else is Joy's.** Every per-variant formula in `theme.css` (which stop `soft`/`solid`/`outlined`/`plain` reads — with neutral's light fills one stop darker, the one deliberate exception), every spacing and type token, and every per-variant class map in `packages/ui/src/utils/colorVariantClasses.ts` was copied from real `@mui/joy` source or measured against the real rendered package — not guessed.
+
+If something looks off, it's more likely a token this project hasn't reverse-engineered yet than a wrong assumption in the existing tokens. Check the Phase 1 plan's "Post-Phase-1" addenda first; if it's genuinely new, verify against the real package (a throwaway `@mui/joy` + `@emotion/react` + `@emotion/styled` sandbox, or the visual test suite above) before changing a token, and document what you found the same way those addenda do.
