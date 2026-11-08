@@ -23,7 +23,7 @@ one screenshot per sheet:
 | TabList / TabNav / List / StepIndicator / Skeleton / Alert | 1–4 pairs each | **ok.** Joy and ours match in computed styles; differences are anti-aliasing at the new 12/24px corners (Alert solid success 679 vs 335 px of edge pixels). |
 | Card | — | **ok.** Light default Card white and borderless on the canvas, 24px; dark keeps its outline. |
 | Dark scheme, all components | — | **ok.** No warm tone in any dark image looked at; dark values are Joy's. |
-| **Email Alert grid (light), AuthNoAccount (light, phone light)** | icons missing | **Blocked on the CDN.** The seven new alert icon PNGs (`packages/email/assets/email/alert/`, new inks) are not on `cdn.hintoric.com` yet, so these baselines show broken images. Retake them after the upload. |
+| **Email Alert grid (light), AuthNoAccount (light, phone light)** | icons missing | **Resolved.** The seven new alert icon PNGs (new inks) were not on `cdn.hintoric.com` at first, so these baselines showed broken images. They were uploaded to the Drive `cdn` folder `email/alert/` (old files kept for sent mails), went live, and the three baselines were retaken and looked at: every icon renders. |
 
 Nothing contradicts the spec: no visible light Card border, no shadow on a resting input,
 no warm tone in dark.
