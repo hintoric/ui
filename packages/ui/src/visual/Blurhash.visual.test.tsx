@@ -21,8 +21,14 @@ import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
  * screenshots carry a tolerance, and the properties that would actually
  * regress — radius, box size, object-fit, the decoded colours — are asserted
  * on directly below rather than left to the image.
+ *
+ * Vitest allows the smaller of `allowedMismatchedPixels` and the ratio, and
+ * vitest.visual.config.ts sets a suite-wide cap of 4 pixels for corner
+ * anti-aliasing — so the cap is lifted here and the ratio decides.
  */
-const RASTER_NOISE = { comparatorOptions: { allowedMismatchedPixelRatio: 0.03 } };
+const RASTER_NOISE = {
+  comparatorOptions: { allowedMismatchedPixelRatio: 0.03, allowedMismatchedPixels: Number.MAX_SAFE_INTEGER },
+};
 
 /** A 32×32 picture, red on the left half, blue on the right. */
 async function twoToneImage(): Promise<Blob> {
