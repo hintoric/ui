@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 import { render } from '@testing-library/react';
 import {
+  Accordion as JoyAccordion,
+  AccordionDetails as JoyAccordionDetails,
+  AccordionGroup as JoyAccordionGroup,
+  AccordionSummary as JoyAccordionSummary,
   Button as JoyButton,
   Card as JoyCard,
   Chip as JoyChip,
@@ -11,13 +15,19 @@ import {
   List as JoyList,
   ListItem as JoyListItem,
   ListItemButton as JoyListItemButton,
+  Table as JoyTable,
 } from '@mui/joy';
+import { Accordion } from '../components/Accordion';
+import { AccordionDetails } from '../components/AccordionDetails';
+import { AccordionGroup } from '../components/AccordionGroup';
+import { AccordionSummary } from '../components/AccordionSummary';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { Chip } from '../components/Chip';
 import { Divider } from '../components/Divider';
 import { Input } from '../components/Input';
 import { ListItemButton } from '../components/ListItemButton';
+import { Table } from '../components/Table';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 import { joyTheme } from './joyTheme';
@@ -74,6 +84,78 @@ describe('outline width', () => {
       }
       expect(style('joy-divider').height).toBe('1px');
       expect(style('ours-divider').height).toBe('1px');
+    });
+
+    // Rules stay 1px (spec: "dividers, table rules … keep today's thickness"):
+    // Joy's Table sets `borderBottomWidth: 1` etc. per cell, and AccordionGroup
+    // `--Accordion-borderBottom: 1px solid divider`.
+    it(`keeps table and accordion rules at 1px in ${scheme}`, async () => {
+      await setColorScheme(scheme);
+      const rows = (
+        <>
+          <thead>
+            <tr>
+              <th>A</th>
+              <th>B</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>2</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>4</td>
+            </tr>
+          </tbody>
+        </>
+      );
+      render(
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
+          <div style={ZOOM}>
+            <JoyTable data-testid="joy-table" borderAxis="both">{rows}</JoyTable>
+            <JoyAccordionGroup>
+              <JoyAccordion data-testid="joy-accordion">
+                <JoyAccordionSummary>One</JoyAccordionSummary>
+                <JoyAccordionDetails>1</JoyAccordionDetails>
+              </JoyAccordion>
+              <JoyAccordion>
+                <JoyAccordionSummary>Two</JoyAccordionSummary>
+                <JoyAccordionDetails>2</JoyAccordionDetails>
+              </JoyAccordion>
+            </JoyAccordionGroup>
+          </div>
+        </JoyCssVarsProvider>,
+      );
+      render(
+        <ColorSchemeProvider defaultMode={scheme}>
+          <div style={ZOOM}>
+            <Table data-testid="ours-table" borderAxis="both">{rows}</Table>
+            <AccordionGroup data-testid="ours-accordion-group">
+              <Accordion>
+                <AccordionSummary>One</AccordionSummary>
+                <AccordionDetails>1</AccordionDetails>
+              </Accordion>
+              <Accordion>
+                <AccordionSummary>Two</AccordionSummary>
+                <AccordionDetails>2</AccordionDetails>
+              </Accordion>
+            </AccordionGroup>
+          </div>
+        </ColorSchemeProvider>,
+      );
+      const cell = (id: string) => getComputedStyle(page.getByTestId(id).element().querySelector('tbody td')!);
+      const accordion = (id: string) => getComputedStyle(page.getByTestId(id).element());
+
+      for (const side of ['borderBottomWidth', 'borderLeftWidth'] as const) {
+        expect(cell('joy-table')[side], `joy td ${side}`).toBe('1px');
+        expect(cell('ours-table')[side], `ours td ${side}`).toBe('1px');
+      }
+      expect(accordion('joy-accordion').borderBottomWidth).toBe('1px');
+      // Our AccordionGroup draws the rule on its direct children (the Accordion roots).
+      const ourFirst = page.getByTestId('ours-accordion-group').element().firstElementChild!;
+      expect(getComputedStyle(ourFirst).borderBottomWidth).toBe('1px');
     });
 
     // Joy's ListItemButton — under Tab, MenuItem, Option and AutocompleteOption
