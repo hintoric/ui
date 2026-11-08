@@ -59,6 +59,16 @@ describe('AnimatedIcon visual', () => {
     expect(dark).not.toContain('rgb(255, 255, 255)');
   });
 
+  it('paints the sheet in the warm light neutrals, not the cool ones it was drawn in', async () => {
+    // The file's light slot colours were moved onto @hintoric/ui's warm ramp
+    // (packages/icons/scripts/warm.ts): sheet [0.95, 0.9265, 0.9069] paints as 242, 236, 231.
+    // The screenshots can't tell the two apart — pixelmatch's default threshold
+    // passes a change this soft — so this is what notices the CDN file going back.
+    const light = fills(await renderPlayer('light', 'icon-light'));
+    expect(light).toContain('rgb(242, 236, 231)');
+    expect(light).not.toContain('rgb(238, 237, 244)');
+  });
+
   it('recolours a mounted icon when <html> switches scheme', async () => {
     const el = await renderPlayer('light', 'icon');
     const before = fills(el);
