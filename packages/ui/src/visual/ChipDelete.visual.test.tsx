@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, ChipDelete as JoyChipDelete } from '@mui/joy';
 import { ChipDelete as HintoricChipDelete } from '../components/ChipDelete';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('ChipDelete visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('ChipDelete visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyChipDelete data-testid="joy-d" aria-label="delete" />
         </JoyCssVarsProvider>,
       );
@@ -35,7 +36,7 @@ describe('ChipDelete visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyChipDelete data-testid="joy-focus" aria-label="delete" />
         </JoyCssVarsProvider>,
       );

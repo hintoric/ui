@@ -62,6 +62,15 @@ export function App() {
   );
 }`}</Code>
 
+      <h2>Put the canvas behind your page</h2>
+      <p>
+        The library does not paint <code>body</code>. Give your page root the{' '}
+        <code>bg-canvas</code> class (or <code>background: var(--color-canvas)</code>): a warm beige
+        in light, black in dark. Components are made for it — a default Card is white with no
+        border in light and only stands out against the canvas.
+      </p>
+      <Code>{`<main className="bg-canvas min-h-screen">…</main>`}</Code>
+
       <h2>Your own dark: classes follow the switcher</h2>
       <p>
         The stylesheet redefines Tailwind&apos;s <code>dark:</code> variant to key off{' '}

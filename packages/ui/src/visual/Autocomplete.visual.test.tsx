@@ -13,6 +13,7 @@ import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
 import { describeErrorParity } from './errorParity';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -27,7 +28,7 @@ describe('Autocomplete visual parity with @mui/joy', () => {
 
           render(
             <div style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyAutocomplete
                   options={OPTIONS}
                   variant={variant}
@@ -84,7 +85,7 @@ describe('Autocomplete visual parity with @mui/joy', () => {
 
         render(
           <div data-testid={`joy-size-box-${size}`} style={{ width: 400 }}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAutocomplete options={OPTIONS} size={size} data-testid={`joy-size-${size}`} />
             </JoyCssVarsProvider>
           </div>,
@@ -129,7 +130,7 @@ describe('Autocomplete visual parity with @mui/joy', () => {
 
           render(
             <div style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyAutocomplete
                   options={OPTIONS}
                   disabled
@@ -188,7 +189,7 @@ describe('Autocomplete visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItem sx={{ color: 'text.secondary' }} data-testid="joy-secondary-text">
             reference
           </JoyListItem>
@@ -210,7 +211,7 @@ describe('Autocomplete visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItem sx={{ color: 'text.secondary' }} data-testid="joy-secondary-text-2">
             reference
           </JoyListItem>

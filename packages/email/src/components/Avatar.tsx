@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Img } from 'react-email';
 import { emailClass } from '../styles';
-import { emailFonts, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
+import { emailFonts, emailOutlineWidth, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
 import { safeImageSrc } from '../safeUrl';
 
 /** avatarVariants.ts: 32/40/48px boxes, text-sm/base/lg, medium/medium/semibold. */
@@ -49,7 +49,7 @@ export function Avatar({ variant = 'soft', color = 'neutral', size = 'md', src, 
         borderRadius: '50%',
         backgroundColor: v.backgroundColor ?? 'transparent',
         color: v.color,
-        border: v.borderColor ? `1px solid ${v.borderColor}` : undefined,
+        border: v.borderColor ? `${emailOutlineWidth} solid ${v.borderColor}` : undefined,
         fontFamily: emailFonts.body,
         fontSize: s.fontSize,
         fontWeight: s.fontWeight,

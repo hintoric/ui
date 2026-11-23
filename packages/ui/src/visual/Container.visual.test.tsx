@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Container as JoyContainer } from '@mui/joy';
 import { Container as HintoricContainer } from '../components/Container';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const MAX_WIDTHS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 
@@ -14,7 +15,7 @@ describe('Container visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyContainer data-testid={`joy-${maxWidth}`} maxWidth={maxWidth}>
               content
             </JoyContainer>
@@ -55,7 +56,7 @@ describe('Container visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyContainer data-testid="joy-nogutter" disableGutters>
             content
           </JoyContainer>

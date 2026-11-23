@@ -6,6 +6,7 @@ import { Typography as HintoricTypography } from '../components/Typography';
 import type { TypographyLevel } from '../components/Typography';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, expectSameLineHeight, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Typography's whole purpose is the type scale, so this is the one component
 // where fontSize/fontWeight/lineHeight are not an extra check bolted onto a
@@ -33,7 +34,7 @@ describe('Typography visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTypography data-testid={`joy-${level}`} level={level}>
               The quick brown fox
             </JoyTypography>
@@ -73,7 +74,7 @@ describe('Typography visual parity with @mui/joy', () => {
 
       for (const level of LEVELS) {
         const { unmount } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTypography data-testid={`joy-tag-${level}`} level={level}>
               x
             </JoyTypography>

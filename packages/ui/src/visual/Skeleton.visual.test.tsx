@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Skeleton as JoySkeleton } from '@mui/joy';
 import { Skeleton as HintoricSkeleton } from '../components/Skeleton';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['text', 'circular', 'rectangular'] as const;
 
@@ -19,7 +20,7 @@ describe('Skeleton visual parity with @mui/joy', () => {
       it(`variant=${variant} matches Joy UI's computed shape in ${scheme}`, async () => {
         await setColorScheme(scheme);
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySkeleton data-testid={`joy-${variant}`} variant={variant} width={80} height={40} />
           </JoyCssVarsProvider>,
         );
@@ -53,7 +54,7 @@ describe('Skeleton visual parity with @mui/joy', () => {
   for (const scheme of ['light', 'dark'] as const) {
     it(`matches Joy UI's computed background color in ${scheme} mode`, async () => {
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySkeleton data-testid={`joy-${scheme}`} variant="rectangular" width={80} height={40} animation={false} />
         </JoyCssVarsProvider>,
       );

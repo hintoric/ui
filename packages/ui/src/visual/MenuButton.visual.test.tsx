@@ -14,6 +14,7 @@ import { Menu as HintoricMenu } from '../components/Menu';
 import { MenuItem as HintoricMenuItem } from '../components/MenuItem';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, settleTransitions, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // MenuButton is the dropdown's trigger, and it reuses Button's variants
 // wholesale (`buttonVariants` in MenuButton.tsx) — which is exactly why it
@@ -34,7 +35,7 @@ describe('MenuButton visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyDropdown>
                 <JoyMenuButton
                   variant={variant}
@@ -102,7 +103,7 @@ describe('MenuButton visual parity with @mui/joy', () => {
 
       for (const size of SIZES) {
         const joy = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyDropdown>
               <JoyMenuButton size={size} data-testid="joy-size">
                 Open
@@ -141,7 +142,7 @@ describe('MenuButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyDropdown>
             <JoyMenuButton data-testid="joy-focus">Open</JoyMenuButton>
             <JoyMenu>
@@ -193,7 +194,7 @@ describe('MenuButton decorators and pill parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyDropdown>
               <JoyMenuButton
                 variant={variant}
@@ -258,7 +259,7 @@ describe('MenuButton decorators and pill parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyDropdown>
             <JoyMenuButton loading data-testid="joy-loading">
               Create

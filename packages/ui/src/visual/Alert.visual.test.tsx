@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Alert as JoyAlert, SvgIcon as Jo
 import { Alert as HintoricAlert, AlertTitle, ALERT_ICONS, ALERT_ICON_FOR_COLOR } from '../components/Alert';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -40,7 +41,7 @@ describe('Alert visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAlert
                 data-testid={`joy-${variant}-${color}`}
                 variant={variant}
@@ -87,7 +88,7 @@ describe('Alert visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyAlert data-testid={`joy-size-${size}`} size={size} startDecorator={joyIcon('neutral', `joy-icon-size-${size}`)}>
               {size}
             </JoyAlert>
@@ -117,7 +118,7 @@ describe('Alert visual parity with @mui/joy', () => {
       const icon = (id: string) => <svg data-testid={id} width="20" height="20" />;
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAlert data-testid="joy-deco" startDecorator={icon('joy-icon')}>
             Text
           </JoyAlert>

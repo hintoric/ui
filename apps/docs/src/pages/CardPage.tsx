@@ -25,6 +25,13 @@ export function CardPage() {
         A Sheet composition with its own border radius, padding and a vertical flex layout for its
         children.
       </p>
+      <p>
+        In light mode the default Card (<code>outlined</code>, <code>neutral</code>) is white with
+        no visible border: it is made to sit on the page&apos;s <code>bg-canvas</code>. On another
+        white surface, ask for the outline explicitly with{' '}
+        <code>className=&quot;border-neutral-outlined-border&quot;</code>. In dark mode it keeps its
+        outline.
+      </p>
 
       <h2>Variants &amp; colors</h2>
       <Demo>

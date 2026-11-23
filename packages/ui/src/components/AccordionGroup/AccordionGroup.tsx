@@ -17,7 +17,7 @@ export const AccordionGroup = React.forwardRef<HTMLDivElement, AccordionGroupPro
       ref={ref}
       className={cx(
         'flex flex-col',
-        !disableDivider && '[&>*:not(:last-child)]:border-b [&>*:not(:last-child)]:border-divider',
+        !disableDivider && '[&>*:not(:last-child)]:border-b-1 [&>*:not(:last-child)]:border-divider',
         className,
       )}
       {...props}

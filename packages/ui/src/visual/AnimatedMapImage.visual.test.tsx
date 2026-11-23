@@ -36,7 +36,7 @@ describe('AnimatedMapImage visual', () => {
     const style = getComputedStyle(el);
     expect(style.width).toBe('240px');
     expect(style.height).toBe('160px');
-    expect(style.borderRadius).toBe('8px');
+    expect(style.borderRadius).toBe('16px');
     expect(page.getByTestId('map-loading').element()).toBeInTheDocument();
   });
 

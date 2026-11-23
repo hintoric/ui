@@ -7,6 +7,7 @@ import { Textarea as HintoricTextarea } from '../components/Textarea';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme } from './helpers';
 import { describeErrorParity } from './errorParity';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -24,7 +25,7 @@ describe('Textarea visual parity with @mui/joy', () => {
 
           const { container: joyContainer } = render(
             <div data-testid={`joy-${variant}-${color}`} style={{ width: 400 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyTextarea variant={variant} color={color} placeholder={color} />
               </JoyCssVarsProvider>
             </div>,
@@ -104,7 +105,7 @@ describe('Textarea autosize parity with @mui/joy', () => {
           await setColorScheme(scheme);
           const { container: joyContainer } = render(
             <div data-testid={`joy-${size}-${slug}`} style={{ width: 300 }}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyTextarea size={size} placeholder="Message" {...props} />
               </JoyCssVarsProvider>
             </div>,
@@ -147,7 +148,7 @@ describe('Textarea autosize parity with @mui/joy', () => {
       await setColorScheme(scheme);
       const { container: joyContainer } = render(
         <div style={{ width: 300 }}>
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTextarea maxRows={3} />
           </JoyCssVarsProvider>
         </div>,

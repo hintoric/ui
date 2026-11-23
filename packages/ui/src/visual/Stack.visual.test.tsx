@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Stack as JoyStack } from '@mui/j
 import { Stack as HintoricStack } from '../components/Stack';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Stack has no variant/color axis — its contract is direction and spacing.
 //
@@ -35,7 +36,7 @@ describe('Stack visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyStack data-testid={`joy-${direction}`} direction={direction} spacing={2}>
               <span>A</span>
               <span>B</span>
@@ -78,7 +79,7 @@ describe('Stack visual parity with @mui/joy', () => {
 
       for (const spacing of SPACINGS) {
         const joy = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyStack data-testid="joy-gap" direction="column" spacing={spacing}>
               <span>A</span>
               <span>B</span>

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Button as JoyButton } from '@mui
 import { Button as HintoricButton } from '../components/Button';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -17,7 +18,7 @@ describe('Button visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyButton data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 {color}
               </JoyButton>
@@ -65,7 +66,7 @@ describe('Button visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyButton data-testid="joy-focus">focus me</JoyButton>
         </JoyCssVarsProvider>,
       );
@@ -119,7 +120,7 @@ describe('Button visual parity with @mui/joy', () => {
       await setColorScheme('light');
 
       render(
-        <JoyCssVarsProvider defaultMode="light">
+        <JoyCssVarsProvider theme={joyTheme} defaultMode="light">
           <JoyButton data-testid="joy-type" size={size}>
             sized
           </JoyButton>
@@ -158,7 +159,7 @@ describe('Button visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 400 }}>
             <JoyButton data-testid="joy-sized">sized</JoyButton>
           </div>
@@ -205,7 +206,7 @@ describe('Button visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyButton data-testid="joy-disabled" variant={variant} disabled>
               disabled
             </JoyButton>
@@ -241,7 +242,7 @@ describe('Button visual parity with @mui/joy', () => {
       it(`loading/solid/${color} hides its label the way Joy UI does in ${scheme}`, async () => {
           await setColorScheme(scheme);
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyButton data-testid={`joy-loading-${color}`} variant="solid" color={color} loading>
               {color}
             </JoyButton>
@@ -309,7 +310,7 @@ describe('Button pill parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyButton
               data-testid={`joy-pill-${variant}`}
               variant={variant}

@@ -52,7 +52,7 @@ export const Link = React.forwardRef<HTMLElement, LinkProps>(function Link(
     props: mergeProps<'a'>(
       {
         className: cx(
-          'inline-flex cursor-pointer items-center rounded-[2px] font-body',
+          'inline-flex cursor-pointer items-center rounded-xs font-body',
           UNDERLINE_CLASS[underline],
           variant ? cx('px-1 py-0.5', INTERACTIVE_COLOR_CLASSES[variant][color]) : PLAIN_COLOR_CLASS[color],
           disabled && 'pointer-events-none opacity-60',

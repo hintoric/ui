@@ -1,6 +1,14 @@
 import { afterEach, beforeEach } from 'vitest';
+import { commands } from 'vitest/browser';
 import { cleanup } from '@testing-library/react';
 import '../styles/index.css';
+import './commands';
+
+// The pointer stays where the last hover left it — possibly in another file —
+// and whatever renders under it next comes up in :hover. Park it first.
+beforeEach(async () => {
+  await commands.resetPointer();
+});
 
 afterEach(() => {
   cleanup();
@@ -21,18 +29,17 @@ beforeEach(() => {
 });
 
 /*
- * Without a scheme-aware page background, dark-mode screenshots of `plain` and
- * `outlined` variants show light text on a white page and are useless to
- * review.
+ * Screenshots are taken on the page a consumer's components sit on: the
+ * canvas, in both schemes. Without it, dark-mode `plain`/`outlined` variants
+ * show light text on a white page, and the light-mode default Card — white
+ * and borderless, made to sit on the warm canvas — is invisible.
  *
- * Scoped to dark mode on purpose. An unscoped `body { background: canvas }` is
- * white in light mode and so looks harmless, but it makes the body OPAQUE
- * where it used to be transparent — and a screenshot that captured a
- * transparent region changes from alpha to composited. ModalOverflow caught
- * this: Joy's semi-transparent backdrop went from dark to light grey, 93% of
- * pixels differing, with no layout change at all. Restricting the rule keeps
- * every existing light-mode baseline byte-identical.
+ * This used to be dark-only, to keep the light baselines byte-identical: an
+ * opaque body turns a screenshot's transparent regions from alpha into
+ * composited colour (ModalOverflow's semi-transparent backdrop changed 93% of
+ * its pixels with no layout change). Every baseline was retaken for the
+ * KLM-inspired look, which is when the light half was added.
  */
 const canvas = document.createElement('style');
-canvas.textContent = '[data-color-scheme="dark"] body { background: var(--color-canvas); }';
+canvas.textContent = 'body { background: var(--color-canvas); }';
 document.head.appendChild(canvas);

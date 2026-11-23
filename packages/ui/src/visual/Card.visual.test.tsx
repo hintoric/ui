@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Card as JoyCard } from '@mui/joy
 import { Card as HintoricCard } from '../components/Card';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -19,7 +20,7 @@ describe('Card visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyCard data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 {color}
               </JoyCard>
@@ -42,6 +43,11 @@ describe('Card visual parity with @mui/joy', () => {
           expect(hintoricStyle.backgroundColor).toBe(joyStyle.backgroundColor);
           expect(hintoricStyle.color).toBe(joyStyle.color);
           expect(hintoricStyle.borderColor).toBe(joyStyle.borderColor);
+          if (variant === 'outlined' && color === 'neutral') {
+            // The default Card: borderless on the light canvas, outlined in
+            // dark, where its surface sits at ~1.08:1 against the black canvas.
+            expect(hintoricStyle.borderTopColor).toBe(scheme === 'light' ? 'rgba(0, 0, 0, 0)' : 'rgb(50, 56, 62)');
+          }
           expect(hintoricStyle.borderWidth).toBe(joyStyle.borderWidth);
           expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
           expect(hintoricStyle.padding).toBe(joyStyle.padding);

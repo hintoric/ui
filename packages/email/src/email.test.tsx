@@ -181,8 +181,8 @@ describe('renderSecurityActivityAlert', () => {
 describe('email tokens', () => {
   it('follow theme.css, including neutral’s light-mode -700 override', () => {
     expect(variantTokens('light', 'solid', 'primary')).toEqual({ color: '#FFFFFF', backgroundColor: '#0B6BCB' });
-    expect(variantTokens('light', 'outlined', 'neutral')).toEqual({ color: '#32383E', borderColor: '#CDD7E1' });
-    expect(variantTokens('light', 'outlined', 'danger')).toEqual({ color: '#C41C1C', borderColor: '#F09898' });
+    expect(variantTokens('light', 'outlined', 'neutral')).toEqual({ color: '#393735', borderColor: '#D4CCC6' });
+    expect(variantTokens('light', 'outlined', 'danger')).toEqual({ color: '#B50200', borderColor: '#FD989E' });
     expect(variantTokens('dark', 'soft', 'success')).toEqual({ color: '#C7F7C7', backgroundColor: '#042F04' });
     expect(mainColor('dark', 'primary')).toBe('#4393E4');
     expect(emailSchemes.dark).toMatchObject({ inkPrimary: '#F0F4F8', surface: '#0B0D0E' });
@@ -530,7 +530,7 @@ describe('Alert icons', () => {
 
   it('shows the icon for its colour as a light / dark pair by default', async () => {
     const [light, dark] = await imgs(<Alert color="warning">Hinweis</Alert>);
-    expect(light?.getAttribute('src')).toBe('https://cdn.hintoric.com/assets/email/alert/warning-492b08.png');
+    expect(light?.getAttribute('src')).toBe('https://cdn.hintoric.com/assets/email/alert/warning-583400.png');
     expect(dark?.getAttribute('src')).toBe('https://cdn.hintoric.com/assets/email/alert/warning-fce1c2.png');
     expect(light?.getAttribute('alt')).toBe('');
     expect(light?.getAttribute('width')).toBe('20');

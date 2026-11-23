@@ -8,6 +8,7 @@ import { FormControl as HintoricFormControl } from '../components/FormControl';
 import { FormHelperText as HintoricFormHelperText } from '../components/FormHelperText';
 import { parkPointer } from './errorParity';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -20,7 +21,7 @@ describe('Slider visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoySlider
                 defaultValue={40}
                 variant={variant}
@@ -67,7 +68,7 @@ describe('Slider visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoySlider defaultValue={40} size={size} slotProps={{ thumb: { 'data-testid': `joy-thumb-size-${size}` } }} />
           </JoyCssVarsProvider>,
         );
@@ -91,7 +92,7 @@ describe('Slider visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySlider defaultValue={40} disabled slotProps={{ track: { 'data-testid': 'joy-track-disabled' } }} />
         </JoyCssVarsProvider>,
       );
@@ -119,7 +120,7 @@ describe('Slider error state', () => {
       await parkPointer('slider-error');
       const { container: joyContainer } = render(
         <div data-testid="joy-sl-error" style={{ position: 'fixed', top: 0, left: 0, width: 320 }}>
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error>
               <JoySlider defaultValue={40} />
               <JoyFormHelperText>zu klein</JoyFormHelperText>

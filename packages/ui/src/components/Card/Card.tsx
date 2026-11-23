@@ -13,7 +13,14 @@ export const Card = React.forwardRef<HTMLElement, CardProps>(function Card(
       ref={ref}
       variant={variant}
       color={color}
-      className={cx('relative flex flex-col gap-2 rounded-md p-4', className)}
+      className={cx(
+        'relative flex flex-col gap-2 rounded-lg p-4',
+        // The default Card is borderless on the light canvas and keeps its
+        // outline in dark; the token carries the scheme, the border keeps its
+        // width so nothing moves when the scheme flips.
+        variant === 'outlined' && color === 'neutral' && 'border-card-outlined-neutral-border',
+        className,
+      )}
       {...props}
     />
   );

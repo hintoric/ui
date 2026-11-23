@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Avatar as JoyAvatar } from '@mui
 import { Avatar as HintoricAvatar } from '../components/Avatar';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -19,7 +20,7 @@ describe('Avatar visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAvatar data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 JW
               </JoyAvatar>
@@ -61,7 +62,7 @@ describe('Avatar visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyAvatar data-testid={`joy-size-${size}`} size={size}>
               JW
             </JoyAvatar>
@@ -89,7 +90,7 @@ describe('Avatar visual parity with @mui/joy', () => {
 
       const src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBTAA7';
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAvatar data-testid="joy-img" src={src} alt="avatar" />
         </JoyCssVarsProvider>,
       );

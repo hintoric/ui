@@ -8,6 +8,7 @@ import { Dropdown } from '../components/Dropdown';
 import { MenuButton } from '../components/MenuButton';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // This file tests the test infrastructure, not a component. It exists because
 // the whole 80-file retrofit rests on two claims that are cheap to assert once
@@ -60,7 +61,7 @@ describe('setColorScheme', () => {
   it('switches real @mui/joy too', async () => {
     await setColorScheme('light');
     render(
-      <JoyCssVarsProvider defaultMode="light">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="light">
         <JoySheet data-testid="joy-light">x</JoySheet>
       </JoyCssVarsProvider>,
     );

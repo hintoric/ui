@@ -10,6 +10,7 @@ import { List as HintoricList } from '../components/List';
 import { ListItem as HintoricListItem } from '../components/ListItem';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Composed inside a real List rather than a hand-built wrapper: ListItem reads
 // the list's CSS variables for its padding and min-height, so a hand-made
@@ -25,7 +26,7 @@ describe('ListItem visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 320 }}>
             <JoyList>
               <JoyListItem data-testid="joy-item">Item</JoyListItem>

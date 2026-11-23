@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Select as JoySelect, Option as J
 import { Select as HintoricSelect } from '../components/Select';
 import { Option as HintoricOption } from '../components/Option';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -25,7 +26,7 @@ describe('Option visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoySelect listboxOpen value={null}>
                 <JoyOption value="a">Alpha</JoyOption>
                 <JoyOption data-testid={`joy-${variant}-${color}`} variant={variant} color={color} value="b">
@@ -82,7 +83,7 @@ describe('Option visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoySelect listboxOpen value="a">
             <JoyOption data-testid="joy-selected" value="a">
               Alpha

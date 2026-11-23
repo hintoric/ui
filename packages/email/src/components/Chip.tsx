@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { emailClass } from '../styles';
-import { emailFonts, emailSchemes, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
+import { emailFonts, emailOutlineWidth, emailSchemes, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
 
 /**
  * chipVariants.ts: `min-h-5/6/7`, `px-1.5/2/3`, `text-xs/sm/base` at a 1.5
@@ -44,7 +44,7 @@ export function Chip({ variant = 'soft', color = 'neutral', size = 'md', style, 
         lineHeight: 1.5,
         color: v.color,
         backgroundColor: v.backgroundColor ?? emailSchemes.light.surface,
-        border: v.borderColor ? `1px solid ${v.borderColor}` : undefined,
+        border: v.borderColor ? `${emailOutlineWidth} solid ${v.borderColor}` : undefined,
         ...style,
       }}
     >

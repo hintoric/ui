@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Link as JoyLink } from '@mui/joy';
 import { Link as HintoricLink } from '../components/Link';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
@@ -15,7 +16,7 @@ describe('Link visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyLink data-testid={`joy-${color}`} color={color}>
               {color}
             </JoyLink>
@@ -31,6 +32,8 @@ describe('Link visual parity with @mui/joy', () => {
         const hintoricStyle = getComputedStyle(page.getByTestId(`hintoric-${color}`).element());
 
         expect(hintoricStyle.color).toBe(joyStyle.color);
+        // Joy's Link reads radius.xs (Link.js) — visible on its focus ring.
+        expect(hintoricStyle.borderRadius).toBe(joyStyle.borderRadius);
         expect(hintoricStyle.cursor).toBe(joyStyle.cursor);
         expect(hintoricStyle.fontSize).toBe(joyStyle.fontSize);
         expect(hintoricStyle.fontWeight).toBe(joyStyle.fontWeight);
@@ -46,7 +49,7 @@ describe('Link visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyLink data-testid={`joy-v-${variant}`} variant={variant} color="primary">
               link
             </JoyLink>
@@ -70,7 +73,7 @@ describe('Link visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyLink data-testid="joy-u" underline="always">
             link
           </JoyLink>

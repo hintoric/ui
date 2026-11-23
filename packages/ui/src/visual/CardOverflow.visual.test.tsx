@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Card as JoyCard, CardOverflow as
 import { Card as HintoricCard } from '../components/Card';
 import { CardOverflow as HintoricCardOverflow } from '../components/CardOverflow';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('CardOverflow visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -12,7 +13,7 @@ describe('CardOverflow visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyCard data-testid="joy-card">
             <JoyCardOverflow data-testid="joy">
               <img src="/a.jpg" alt="a" />

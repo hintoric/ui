@@ -16,13 +16,14 @@ import {
 import type { TextareaProps } from './types';
 import { SHADOW_STYLE, useAutosize } from './useAutosize';
 
-// Joy's --Textarea-paddingBlock, minus the 1px border on outlined so the box
-// is the same height in every variant (sm 32px, md 36px, lg 51px at one row).
-// Measured against @mui/joy's real Textarea.
+// Joy's --Textarea-paddingBlock, minus the 1.5px outline (theme.css
+// `--default-border-width`, Joy's `--variant-borderWidth`) on outlined so the
+// box is the same height in every variant. Measured against @mui/joy's real
+// Textarea.
 const PADDING_BLOCK = {
-  sm: { outlined: 'py-[calc(0.375rem-1.5px)]', other: 'py-[calc(0.375rem-0.5px)]' },
-  md: { outlined: 'py-[calc(0.375rem-1px)]', other: 'py-1.5' },
-  lg: { outlined: 'py-[calc(0.75rem-1px)]', other: 'py-3' },
+  sm: { outlined: 'py-[calc(0.375rem-2px)]', other: 'py-[calc(0.375rem-0.5px)]' },
+  md: { outlined: 'py-[calc(0.375rem-1.5px)]', other: 'py-1.5' },
+  lg: { outlined: 'py-[calc(0.75rem-1.5px)]', other: 'py-3' },
 } as const;
 
 const TextareaBase = React.forwardRef<HTMLTextAreaElement, TextareaProps>(function TextareaBase(

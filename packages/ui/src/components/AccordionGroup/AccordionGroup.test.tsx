@@ -20,11 +20,11 @@ describe('AccordionGroup', () => {
 
   it('applies a divider between items by default', () => {
     render(<AccordionGroup data-testid="group" />);
-    expect(screen.getByTestId('group')).toHaveClass('[&>*:not(:last-child)]:border-b');
+    expect(screen.getByTestId('group')).toHaveClass('[&>*:not(:last-child)]:border-b-1');
   });
 
   it('omits the divider classes when disableDivider is set', () => {
     render(<AccordionGroup disableDivider data-testid="group" />);
-    expect(screen.getByTestId('group')).not.toHaveClass('[&>*:not(:last-child)]:border-b');
+    expect(screen.getByTestId('group')).not.toHaveClass('[&>*:not(:last-child)]:border-b-1');
   });
 });

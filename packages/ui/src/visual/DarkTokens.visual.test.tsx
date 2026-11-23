@@ -16,6 +16,7 @@ import { Button } from '../components/Button';
 import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider } from '@mui/joy';
 import { setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 type Variant = 'solid' | 'soft' | 'outlined' | 'plain';
 type Color = 'primary' | 'neutral' | 'danger' | 'success' | 'warning';
@@ -100,7 +101,7 @@ describe('dark mode token parity with @mui/joy', () => {
         it(`${testCase.name} ${variant}/${color} matches Joy in dark mode`, async () => {
           const joyId = `joy-${testCase.name}-${variant}-${color}`;
           const oursId = `ours-${testCase.name}-${variant}-${color}`;
-          render(<JoyCssVarsProvider defaultMode="dark">{testCase.joy(variant, color, joyId)}</JoyCssVarsProvider>);
+          render(<JoyCssVarsProvider theme={joyTheme} defaultMode="dark">{testCase.joy(variant, color, joyId)}</JoyCssVarsProvider>);
           render(testCase.ours(variant, color, oursId));
           await setColorScheme('dark');
 
@@ -117,7 +118,7 @@ describe('dark mode token parity with @mui/joy', () => {
 
   it('Switch matches Joy in dark mode, unchecked and checked', async () => {
     render(
-      <JoyCssVarsProvider defaultMode="dark">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="dark">
         <JoySwitch data-testid="joy-switch-off" />
         <JoySwitch data-testid="joy-switch-on" checked />
       </JoyCssVarsProvider>,
@@ -145,7 +146,7 @@ describe('dark mode token parity with @mui/joy', () => {
 
   it('Select matches Joy in dark mode', async () => {
     render(
-      <JoyCssVarsProvider defaultMode="dark">
+      <JoyCssVarsProvider theme={joyTheme} defaultMode="dark">
         <JoySelect data-testid="joy-select" placeholder="Pick" />
       </JoyCssVarsProvider>,
     );

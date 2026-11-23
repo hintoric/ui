@@ -15,6 +15,7 @@ import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // This file used to compare only background, colour and the type scale on the
 // root, and so missed that Joy's TabsRoot has no border-radius at all — ours
@@ -78,7 +79,7 @@ type RootProps = { variant?: Variant; color?: Color; size?: Size; orientation: O
 /** Both Tabs, each in its own 480px parent so `width` means something. */
 function renderPair(scheme: 'light' | 'dark', props: RootProps) {
   render(
-    <JoyCssVarsProvider defaultMode={scheme}>
+    <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
       <div style={{ width: 480 }}>
         <JoyTabs defaultValue={0} data-testid="joy-root" {...props}>
           <JoyTabList>
@@ -170,7 +171,7 @@ describe('Tabs visual parity with @mui/joy', () => {
 
       const joyUser = userEvent.setup();
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyTabs defaultValue={0}>
             <JoyTabList>
               <JoyTab value={0}>One</JoyTab>

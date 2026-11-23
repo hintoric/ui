@@ -14,6 +14,7 @@ import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Composed inside a real Tabs rather than a hand-built parent: Tab reads
 // context from Tabs for its selected state, so a stand-in parent would verify
@@ -64,7 +65,7 @@ describe('Tab visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyTabs defaultValue={1}>
                 <JoyTabList>
                   <JoyTab value={0} variant={variant} color={color} data-testid={`joy-${variant}-${color}`}>One</JoyTab>
@@ -115,7 +116,7 @@ describe('Tab visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyTabs defaultValue={0}>
             <JoyTabList>
               <JoyTab value={0} data-testid="joy-selected">One</JoyTab>
@@ -157,7 +158,7 @@ describe('Tab visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyTabs defaultValue={1}>
               <JoyTabList>
                 <JoyTab value={0} variant={variant} disabled data-testid="joy-disabled">One</JoyTab>
@@ -192,7 +193,7 @@ describe('Tab visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyTabs defaultValue={0}>
             <JoyTabList>
               <JoyTab value={0} data-testid="joy-focus">One</JoyTab>

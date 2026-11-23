@@ -9,6 +9,7 @@ import {
 } from '@mui/joy';
 import { AutocompleteOption as HintoricAutocompleteOption } from '../components/AutocompleteOption';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -24,7 +25,7 @@ describe('AutocompleteOption visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyAutocomplete
                 open
                 options={['Alpha', 'Beta']}
@@ -88,7 +89,7 @@ describe('AutocompleteOption visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyAutocomplete
             open
             value="Alpha"

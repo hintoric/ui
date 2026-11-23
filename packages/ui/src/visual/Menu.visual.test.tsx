@@ -13,6 +13,7 @@ import { MenuButton as HintoricMenuButton } from '../components/MenuButton';
 import { Menu as HintoricMenu } from '../components/Menu';
 import { MenuItem as HintoricMenuItem } from '../components/MenuItem';
 import { COLOR_SCHEMES, lastShadowLayers, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -32,7 +33,7 @@ describe('Menu visual parity with @mui/joy', () => {
           // changed (2026-09-07). Joy is the oracle; its baselines must not
           // contain our pixels.
           const joyRender = render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyDropdown open>
                 <JoyMenuButton>Open</JoyMenuButton>
                 <JoyMenu variant={variant} color={color} data-testid={`joy-${variant}-${color}`}>
@@ -92,7 +93,7 @@ describe('Menu visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyDropdown>
             <JoyMenuButton data-testid="joy-button">Open</JoyMenuButton>
             <JoyMenu>
@@ -123,7 +124,7 @@ describe('Menu visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyDropdown open>
             <JoyMenuButton>Open</JoyMenuButton>
             <JoyMenu>

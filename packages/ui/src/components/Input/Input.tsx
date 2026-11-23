@@ -82,9 +82,9 @@ const InputBase = React.forwardRef<HTMLInputElement, InputProps>(function InputB
           // The corners sit inside the pill's border, so they take Joy's
           // `--Input-radius - --variant-borderWidth`: only outlined has a
           // border, and with the <input> now as tall as the pill a full
-          // --radius-sm corner would overlap that border's curve by 1px.
+          // --radius-sm corner would overlap that border's curve by its 1.5px.
           variant === 'outlined'
-            ? '[--input-autofill-radius:calc(var(--radius-sm)-1px)]'
+            ? '[--input-autofill-radius:calc(var(--radius-sm)-1.5px)]'
             : '[--input-autofill-radius:var(--radius-sm)]',
           !startDecorator &&
             '[&:-webkit-autofill]:[margin-inline-start:calc(-1*var(--input-padding-inline))] [&:-webkit-autofill]:[border-start-start-radius:var(--input-autofill-radius)] [&:-webkit-autofill]:[border-end-start-radius:var(--input-autofill-radius)]',

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Input as JoyInput } from '@mui/j
 import { OtpInput as HintoricOtpInput } from '../components/OtpInput';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -40,7 +41,7 @@ describe('OtpInput slot parity with @mui/joy Input', () => {
           await setColorScheme(scheme);
           const { container: joy } = render(
             <div data-testid={`joy-${variant}-${color}`}>
-              <JoyCssVarsProvider defaultMode={scheme}>
+              <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
                 <JoyInput variant={variant} color={color} defaultValue="4" />
               </JoyCssVarsProvider>
             </div>,
@@ -67,7 +68,7 @@ describe('OtpInput slot parity with @mui/joy Input', () => {
         it(`${variant}/${color} slot in error state matches Joy UI in ${scheme}`, async () => {
           await setColorScheme(scheme);
           const { container: joy } = render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyInput error variant={variant} color={color} />
             </JoyCssVarsProvider>,
           );
@@ -86,7 +87,7 @@ describe('OtpInput slot parity with @mui/joy Input', () => {
       it(`focus ring for color=${color} matches Joy UI's inset ring in ${scheme}`, async () => {
         await setColorScheme(scheme);
         const { container: joy } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyInput color={color} />
           </JoyCssVarsProvider>,
         );
@@ -120,7 +121,7 @@ describe('OtpInput slot parity with @mui/joy Input', () => {
       await setColorScheme(scheme);
       const { container: joy } = render(
         <div data-testid="joy-disabled">
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyInput disabled defaultValue="4" />
           </JoyCssVarsProvider>
         </div>,
@@ -146,7 +147,7 @@ describe('OtpInput slot parity with @mui/joy Input', () => {
       it(`size=${size} slots are square, as tall as Joy's Input, and keep their width in ${scheme}`, async () => {
         await setColorScheme(scheme);
         const { container: joy } = render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyInput size={size} />
           </JoyCssVarsProvider>,
         );

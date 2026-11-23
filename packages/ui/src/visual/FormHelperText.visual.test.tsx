@@ -9,13 +9,14 @@ import {
 import { FormHelperText as HintoricFormHelperText } from '../components/FormHelperText';
 import { FormControl as HintoricFormControl } from '../components/FormControl';
 import { COLOR_SCHEMES, expectSameLineHeight, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('FormHelperText visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
     it(`matches Joy UI's computed styles in ${scheme}`, async () => {
       await setColorScheme(scheme);
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyFormHelperText data-testid="joy">Helper text</JoyFormHelperText>
         </JoyCssVarsProvider>,
       );
@@ -47,7 +48,7 @@ describe('FormHelperText visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl error={state.error} disabled={state.disabled}>
               <JoyFormHelperText data-testid={`joy-${state.key}`}>Helper text</JoyFormHelperText>
             </JoyFormControl>

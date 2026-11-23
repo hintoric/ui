@@ -26,12 +26,12 @@ export const TABLE_HEAD_CLASS =
 // are therefore targeted with separate selectors (mirroring Joy's own
 // separate `getHeaderCell()`/`getBodyCellExceptLastRow()` rules).
 const ROW_BETWEEN =
-  '[&_thead_tr>*]:border-b [&_thead_tr>*]:border-divider [&_tbody_tr:not(:last-of-type)>*]:border-b [&_tbody_tr:not(:last-of-type)>*]:border-divider';
+  '[&_thead_tr>*]:border-b-1 [&_thead_tr>*]:border-divider [&_tbody_tr:not(:last-of-type)>*]:border-b-1 [&_tbody_tr:not(:last-of-type)>*]:border-divider';
 const ROW_OUTER =
-  '[&_thead_tr:first-of-type>th]:border-t [&_thead_tr:first-of-type>th]:border-divider [&_tbody_tr:last-of-type>*]:border-b [&_tbody_tr:last-of-type>*]:border-divider';
-const COL_BETWEEN = '[&_tr>*:not(:first-of-type)]:border-l [&_tr>*:not(:first-of-type)]:border-divider';
+  '[&_thead_tr:first-of-type>th]:border-t-1 [&_thead_tr:first-of-type>th]:border-divider [&_tbody_tr:last-of-type>*]:border-b-1 [&_tbody_tr:last-of-type>*]:border-divider';
+const COL_BETWEEN = '[&_tr>*:not(:first-of-type)]:border-l-1 [&_tr>*:not(:first-of-type)]:border-divider';
 const COL_OUTER =
-  '[&_tr>*:first-of-type]:border-l [&_tr>*:first-of-type]:border-divider [&_tr>*:last-of-type]:border-r [&_tr>*:last-of-type]:border-divider';
+  '[&_tr>*:first-of-type]:border-l-1 [&_tr>*:first-of-type]:border-divider [&_tr>*:last-of-type]:border-r-1 [&_tr>*:last-of-type]:border-divider';
 
 // Simplified from Joy UI's exact selector set (which special-cases a 2px
 // header underline and scopes "except last row" separately per thead/tbody)

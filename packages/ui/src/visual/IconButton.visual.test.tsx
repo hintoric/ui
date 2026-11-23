@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, IconButton as JoyIconButton } fr
 import { IconButton as HintoricIconButton } from '../components/IconButton';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -17,7 +18,7 @@ describe('IconButton visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyIconButton data-testid={`joy-${variant}-${color}`} variant={variant} color={color}>
                 +
               </JoyIconButton>
@@ -62,7 +63,7 @@ describe('IconButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyIconButton data-testid="joy-focus">+</JoyIconButton>
         </JoyCssVarsProvider>,
       );
@@ -100,7 +101,7 @@ describe('IconButton pill parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyIconButton
               data-testid={`joy-pill-${variant}`}
               variant={variant}

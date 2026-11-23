@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button as ReactEmailButton } from 'react-email';
 import { emailClass } from '../styles';
-import { emailFonts, emailRadius, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
+import { emailFonts, emailOutlineWidth, emailRadius, variantTokens, type EmailColor, type EmailVariant } from '../tokens';
 import { safeHref } from '../safeUrl';
 
 /*
@@ -59,7 +59,7 @@ export function Button({ href, variant = 'solid', color = 'primary', size = 'md'
         borderRadius: pill ? '9999px' : emailRadius.sm,
         color: v.color,
         backgroundColor: v.backgroundColor ?? 'transparent',
-        border: v.borderColor ? `1px solid ${v.borderColor}` : undefined,
+        border: v.borderColor ? `${emailOutlineWidth} solid ${v.borderColor}` : undefined,
         ...style,
       }}
     >

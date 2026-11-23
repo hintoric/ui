@@ -10,6 +10,7 @@ import { MenuList as HintoricMenuList } from '../components/MenuList';
 import { ListItemButton as HintoricListItemButton } from '../components/ListItemButton';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayers, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // MenuList is the standalone list surface — the same look as Menu's popup but
 // without the portal and positioning, for callers who place it themselves.
@@ -31,7 +32,7 @@ describe('MenuList visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyMenuList
                 variant={variant}
                 color={color}
@@ -84,7 +85,7 @@ describe('MenuList visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 320 }}>
             <JoyMenuList data-testid="joy-sized">
               <JoyMenuItem>Item</JoyMenuItem>

@@ -5,6 +5,7 @@ import { CssVarsProvider as JoyCssVarsProvider, Modal as JoyModal, ModalDialog a
 import { Modal as HintoricModal } from '../components/Modal';
 import { ModalDialog as HintoricModalDialog } from '../components/ModalDialog';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // No color/variant axis of its own (that's ModalDialog's job) — tests its
 // actual supported state: the backdrop, per CLAUDE.md's allowance.
@@ -14,7 +15,7 @@ describe('Modal visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyModal open>
             <JoyModalDialog data-testid="joy">content</JoyModalDialog>
           </JoyModal>

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, Divider as JoyDivider } from '@mui/joy';
 import { Divider as HintoricDivider } from '../components/Divider';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('Divider visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('Divider visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 200 }}>
             <JoyDivider data-testid="joy-h" />
           </div>
@@ -40,7 +41,7 @@ describe('Divider visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ height: 100, display: 'flex' }}>
             <JoyDivider data-testid="joy-v" orientation="vertical" />
           </div>
@@ -66,7 +67,7 @@ describe('Divider visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <div style={{ width: 200 }}>
             <JoyDivider data-testid="joy-c">OR</JoyDivider>
           </div>

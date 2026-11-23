@@ -14,6 +14,7 @@ import { Input } from '../components/Input';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
 import { parkPointer } from './errorParity';
+import { joyTheme } from './joyTheme';
 
 // FormField has no variant/colour axis of its own — it composes. So the states
 // it actually has are the ones tested here: resting, with helper text, in
@@ -43,7 +44,7 @@ describe('Field shell parity with a hand-composed Joy stack', () => {
 
         const { container: joyContainer } = render(
           <div data-testid={`joy-${state.key}`} style={JOY_BOX}>
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyFormControl error={state.error} disabled={state.disabled} required={state.required}>
                 <JoyFormLabel>E-Mail</JoyFormLabel>
                 <JoyInput placeholder="a@b.de" />
@@ -129,7 +130,7 @@ describe('FormField renders the same shell as a bound field', () => {
 
       const { container: joyContainer } = render(
         <div data-testid="joy-formfield" style={JOY_BOX}>
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyFormControl>
               <JoyFormLabel>Farbe</JoyFormLabel>
               <JoyInput placeholder="#000" />

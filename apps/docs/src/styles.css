@@ -348,7 +348,9 @@ h1 .docs-badge-deprecated {
   border-radius: var(--radius-md);
   padding: 24px;
   margin: 16px 0 24px;
-  background-color: var(--color-surface);
+  /* The canvas, not a surface: components are made to sit on it, and a
+     default light Card (white, borderless) vanishes on white. */
+  background-color: var(--color-canvas);
   overflow-x: auto;
 }
 

@@ -14,6 +14,7 @@ import { Tab as HintoricTab } from '../components/Tab';
 import { TabPanel as HintoricTabPanel } from '../components/TabPanel';
 import { ColorSchemeProvider } from '../theme/ColorSchemeProvider';
 import { COLOR_SCHEMES, lastShadowLayer, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 // Composed inside a real Tabs rather than a hand-built parent: TabList reads
 // context from Tabs for its selected state, so a stand-in parent would verify
@@ -91,7 +92,7 @@ type Look = { variant?: Variant; color?: Color };
  */
 function renderPair(scheme: 'light' | 'dark', orientation: Orientation, strip: Look, tab: Look) {
   render(
-    <JoyCssVarsProvider defaultMode={scheme}>
+    <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
       <div style={{ width: 480 }}>
         <JoyTabs defaultValue="b" orientation={orientation}>
           <JoyTabList data-testid="joy-strip" variant={strip.variant} color={strip.color}>

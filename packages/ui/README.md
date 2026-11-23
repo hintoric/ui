@@ -55,15 +55,21 @@ import { Button, Input, Card } from '@hintoric/ui';
 
 function Example() {
   return (
-    <Card variant="outlined" color="neutral">
-      <Input placeholder="Name" />
-      <Button variant="solid" color="primary">
-        Submit
-      </Button>
-    </Card>
+    <main className="bg-canvas min-h-screen p-8">
+      <Card variant="outlined" color="neutral">
+        <Input placeholder="Name" />
+        <Button variant="solid" color="primary">
+          Submit
+        </Button>
+      </Card>
+    </main>
   );
 }
 ```
+
+The library does not paint `body`, so put `bg-canvas` (or `background: var(--color-canvas)`) on
+your page root. In light mode the default Card is white with no visible border and stands out only
+against that canvas; on another white surface, add `className="border-neutral-outlined-border"`.
 
 ## Docs
 

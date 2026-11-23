@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, CircularProgress as JoyCircularProgress } from '@mui/joy';
 import { CircularProgress as HintoricCircularProgress } from '../components/CircularProgress';
 import { COLOR_SCHEMES, setColorScheme } from './helpers';
+import { joyTheme } from './joyTheme';
 
 const VARIANTS = ['solid', 'soft', 'outlined', 'plain'] as const;
 const COLORS = ['primary', 'neutral', 'danger', 'success', 'warning'] as const;
@@ -16,7 +17,7 @@ describe('CircularProgress visual parity with @mui/joy', () => {
           await setColorScheme(scheme);
 
           render(
-            <JoyCssVarsProvider defaultMode={scheme}>
+            <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
               <JoyCircularProgress data-testid={`joy-${variant}-${color}`} variant={variant} color={color} determinate value={60} />
             </JoyCssVarsProvider>,
           );
@@ -50,7 +51,7 @@ describe('CircularProgress visual parity with @mui/joy', () => {
         await setColorScheme(scheme);
 
         render(
-          <JoyCssVarsProvider defaultMode={scheme}>
+          <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
             <JoyCircularProgress data-testid={`joy-size-${size}`} size={size} />
           </JoyCssVarsProvider>,
         );

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import { CssVarsProvider as JoyCssVarsProvider, ListItemButton as JoyListItemButton } from '@mui/joy';
 import { ListItemButton as HintoricListItemButton } from '../components/ListItemButton';
 import { COLOR_SCHEMES, setColorScheme, settleTransitions } from './helpers';
+import { joyTheme } from './joyTheme';
 
 describe('ListItemButton visual parity with @mui/joy', () => {
   for (const scheme of COLOR_SCHEMES) {
@@ -11,7 +12,7 @@ describe('ListItemButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItemButton data-testid="joy">Item</JoyListItemButton>
         </JoyCssVarsProvider>,
       );
@@ -35,7 +36,7 @@ describe('ListItemButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItemButton data-testid="joy-sel" selected>
             Item
           </JoyListItemButton>
@@ -61,7 +62,7 @@ describe('ListItemButton visual parity with @mui/joy', () => {
       await setColorScheme(scheme);
 
       render(
-        <JoyCssVarsProvider defaultMode={scheme}>
+        <JoyCssVarsProvider theme={joyTheme} defaultMode={scheme}>
           <JoyListItemButton data-testid="joy-focus">Item</JoyListItemButton>
         </JoyCssVarsProvider>,
       );

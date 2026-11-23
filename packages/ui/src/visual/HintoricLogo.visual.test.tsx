@@ -15,7 +15,7 @@ describe('HintoricLogo visual', () => {
     await setColorScheme('light');
     render(<HintoricLogo data-testid="hintoric-logo-light" />);
     const el = page.getByTestId('hintoric-logo-light').element() as SVGSVGElement;
-    expect(getComputedStyle(el).color).toBe('rgb(23, 26, 28)');
+    expect(getComputedStyle(el).color).toBe('rgb(26, 25, 24)');
     await expect.element(page.getByTestId('hintoric-logo-light')).toMatchScreenshot('hintoric-logo-light');
   });
 
@@ -31,7 +31,7 @@ describe('HintoricLogo visual', () => {
     await setColorScheme('light');
     render(<HintoricLogo className="text-danger-500" data-testid="hintoric-logo-override" />);
     const el = page.getByTestId('hintoric-logo-override').element() as SVGSVGElement;
-    expect(getComputedStyle(el).color).not.toBe('rgb(23, 26, 28)');
+    expect(getComputedStyle(el).color).not.toBe('rgb(26, 25, 24)');
   });
 
   it('gives two logos on the same page distinct clip-path ids', async () => {
