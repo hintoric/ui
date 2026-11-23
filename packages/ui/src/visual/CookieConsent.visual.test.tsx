@@ -91,6 +91,10 @@ describe('CookieConsent visual (self-baseline)', () => {
       await setColorScheme(scheme);
       await renderBanner(DESKTOP);
 
+      // A floating Card: the Card radius (radius-lg), all round on a desktop.
+      const desktop = getComputedStyle(page.getByRole('region', { name: 'Cookies erlauben?' }).element());
+      expect([desktop.borderTopLeftRadius, desktop.borderBottomRightRadius]).toEqual(['24px', '24px']);
+
       await expect(page.getByRole('region', { name: 'Cookies erlauben?' })).toMatchScreenshot(
         `cookie-consent-banner-desktop-${scheme}`,
       );
@@ -99,6 +103,10 @@ describe('CookieConsent visual (self-baseline)', () => {
     it(`banner on a phone matches its baseline in ${scheme}`, async () => {
       await setColorScheme(scheme);
       await renderBanner(PHONE);
+
+      // A bottom sheet on a phone: rounded on top only.
+      const phone = getComputedStyle(page.getByRole('region', { name: 'Cookies erlauben?' }).element());
+      expect([phone.borderTopLeftRadius, phone.borderBottomLeftRadius]).toEqual(['24px', '0px']);
 
       await expect(page.getByRole('region', { name: 'Cookies erlauben?' })).toMatchScreenshot(
         `cookie-consent-banner-phone-${scheme}`,
