@@ -102,6 +102,7 @@ export const NAV: NavGroup[] = [
     links: [
       { to: '/account-menu', label: 'AccountMenu' },
       { to: '/confirmation-dialog', label: 'ConfirmationDialog' },
+      { to: '/cookie-consent', label: 'CookieConsent' },
       { to: '/locale-switcher', label: 'LocaleSwitcher' },
       { to: '/map-image', label: 'MapImage' },
     ],

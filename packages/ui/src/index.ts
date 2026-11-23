@@ -16,6 +16,16 @@ export type { DateTimeContextValue, DateTimeProviderProps, HourCycle } from './t
 export { ReducedMotionProvider, useReducedMotion } from './theme/ReducedMotionProvider';
 export type { ReducedMotionProviderProps } from './theme/ReducedMotionProvider';
 
+export { ConsentGate, CookieConsentProvider, useConsent, useCookieConsent } from './theme/CookieConsentProvider';
+export type {
+  ConsentCategory,
+  ConsentGateProps,
+  CookieConsentContextValue,
+  CookieConsentProviderProps,
+} from './theme/CookieConsentProvider';
+export { parseConsentCookie } from './theme/consentCookie';
+export type { ConsentState, ParseConsentCookieOptions } from './theme/consentCookie';
+
 export { RelativeTime } from './components/RelativeTime';
 export type {
   RelativeTimeProps,
@@ -111,6 +121,8 @@ export { LocaleSwitcher } from './components/LocaleSwitcher';
 export type { LocaleSwitcherProps } from './components/LocaleSwitcher';
 export { ConfirmationDialog } from './components/ConfirmationDialog';
 export type { ConfirmationDialogProps } from './components/ConfirmationDialog';
+export { CookieConsent } from './components/CookieConsent';
+export type { CookieConsentLabels, CookieConsentProps } from './components/CookieConsent';
 export { MapImage } from './components/MapImage';
 export type { MapImageProps } from './components/MapImage';
 export { AnimatedMapImage } from './components/AnimatedMapImage';

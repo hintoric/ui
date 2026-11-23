@@ -63,6 +63,7 @@ import { ColorSchemeSwitchPage } from './pages/ColorSchemeSwitchPage';
 import { ColorSchemeSelectPage } from './pages/ColorSchemeSelectPage';
 import { LocaleProviderPage } from './pages/LocaleProviderPage';
 import { ConfirmationDialogPage } from './pages/ConfirmationDialogPage';
+import { CookieConsentPage } from './pages/CookieConsentPage';
 import { FormsPage } from './pages/FormsPage';
 import { LocaleSwitcherPage } from './pages/LocaleSwitcherPage';
 import { AccountMenuPage } from './pages/AccountMenuPage';
@@ -158,6 +159,7 @@ export function App() {
             <Route path="/color-scheme-select" element={<ColorSchemeSelectPage />} />
             <Route path="/locale-provider" element={<LocaleProviderPage />} />
             <Route path="/confirmation-dialog" element={<ConfirmationDialogPage />} />
+            <Route path="/cookie-consent" element={<CookieConsentPage />} />
             <Route path="/forms" element={<FormsPage />} />
             <Route path="/locale-switcher" element={<LocaleSwitcherPage />} />
             <Route path="/account-menu" element={<AccountMenuPage />} />

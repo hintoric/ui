@@ -1,5 +1,21 @@
 # @hintoric/ui
 
+## 0.14.0
+
+### Minor Changes
+
+- ddfa43c: New: cookie consent. `CookieConsentProvider` keeps the visitor's choice in a first-party cookie (`hintoric_consent`) the server can read too, `useConsent` and `ConsentGate` load a script only after consent, and `CookieConsent` shows the banner and the settings dialog. Reject and allow carry equal weight, nothing is preselected, a withdrawal reloads the page, and raising `version` asks again. `parseConsentCookie` reads the cookie on the server.
+
+### Patch Changes
+
+- 6e5d5ac: Fixed `HintoricIcon` missing the right needle of the Hintoric mark. It now draws all three needles, the same as the mark in `HintoricLogo`, and its `viewBox` is `0 0 324 326` (was `0 0 282.481 326`). Because the mark is now complete, the icon is wider: `0.994em` instead of `0.867em` at the same height. If you sized it with a fixed width, check that it still fits.
+
+## 0.13.0
+
+### Minor Changes
+
+- 26cf47b: `ReducedMotionProvider` now also writes its value to `<html data-reduced-motion>` (`reduce` or `no-preference`), the way `ColorSchemeProvider` writes `data-color-scheme`. Code that cannot read the provider, such as the animated icons in `@hintoric/icons` or your own CSS, can follow the app setting through it.
+
 ## 0.12.0
 
 ### Minor Changes
